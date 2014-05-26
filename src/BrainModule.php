@@ -133,40 +133,45 @@ class BrainModule implements \Brain\Module {
             $GLOBALS['wp'] = $wp;
         }
         Hooks::addAction(
-            'cortex.route_bind', 'cortex.matched', [ $this, 'bindRoute' ], 10, 2, 1
+            'cortex.route_bind', 'cortex.matched', [ $this, 'bindRoute' ], 10, 1, 1
         );
         Hooks::addAction(
             'cortex.fallback_bind', 'cortex.not_matched', [ $this, 'bindFallback' ], 10, 1, 1
         );
     }
 
-    public function bindRoute( RouteInterface $route, Array $args = [ ] ) {
+    public function bindRoute( RouteInterface $route ) {
+        $bind = $route->getBinding();
         if (
-            $route->getRoutable() instanceof RoutableInterface
-            || ! isset( $args['bind_to'] )
-            || ! is_string( $args['bind_to'] )
-            || $args['bind_to'] === ''
-        ) return;
-        $routable = Brain::instance()->get( $args['bind_to'] );
-        if ( $routable instanceof RoutableInterface ) {
+            empty( $bind )
+            || $route->getRoutable() instanceof RoutableInterface
+            || ! is_string( $bind )
+        ) {
+            return;
+        }
+        $routable = Brain::instance()->get( $bind );
+        if ( $routable instanceof Controllers\RoutableInterface ) {
             $route->setRoutable( $routable );
         }
     }
 
     public function bindFallback( Controllers\Router $router ) {
         $bind = $router->getFallbackBind();
-        if ( ! is_object( $bind ) || ! isset( $bind->bind ) || ! is_string( $bind->bind ) ) return;
-        $fallback = ! empty( $bind->bind ) ? Brain::instance()->get( $bind->bind ) : FALSE;
-        if ( ! $fallback instanceof Controllers\FallbackController ) return;
-        $defaults = [ 'min_pieces' => 0, 'exact' => FALSE, 'condition' => NULL ];
-        $binded_args = isset( $bind->args ) && is_array( $bind->args ) ? $bind->args : [ ];
-        $args = wp_parse_args( $binded_args, $defaults );
-        $fallback->setMinPieces( (int) $args['min_pieces'] );
-        $fallback->isExact( (bool) $args['exact'] );
-        if ( is_callable( $args['condition'] ) ) {
-            $fallback->setCondition( $args['condition'] );
+        if ( ! is_object( $bind ) || ! isset( $bind->bind ) || ! is_string( $bind->bind ) ) {
+            return;
         }
-        $router->setFallback( $fallback );
+        $fallback = ! empty( $bind->bind ) ? Brain::instance()->get( $bind->bind ) : FALSE;
+        if ( $fallback instanceof Controllers\FallbackController ) {
+            $defaults = [ 'min_pieces' => 0, 'exact' => FALSE, 'condition' => NULL ];
+            $binded_args = isset( $bind->args ) && is_array( $bind->args ) ? $bind->args : [ ];
+            $args = wp_parse_args( $binded_args, $defaults );
+            $fallback->setMinPieces( (int) $args['min_pieces'] );
+            $fallback->isExact( (bool) $args['exact'] );
+            if ( is_callable( $args['condition'] ) ) {
+                $fallback->setCondition( $args['condition'] );
+            }
+            $router->setFallback( $fallback );
+        }
     }
 
 }

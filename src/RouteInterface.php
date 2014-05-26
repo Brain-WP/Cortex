@@ -55,4 +55,19 @@ interface RouteInterface {
      * @return mixed
      */
     function runAfter();
+
+    /**
+     * Bing the route to routable saveb in Brain controller using its id.
+     *
+     * @param string $bind
+     * @return \Brain\Cortex\Route Self
+     */
+    function bindTo( $bind = '' );
+
+    /**
+     * Get id of currently binded routable
+     *
+     * @return string
+     */
+    function getBinding();
 }
