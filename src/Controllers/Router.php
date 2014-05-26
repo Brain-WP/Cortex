@@ -1,0 +1,276 @@
+<?php namespace Brain\Cortex\Controllers;
+
+use Brain\Cortex\RequestableInterface;
+use Brain\Cortex\HooksableInterface;
+use Symfony\Component\Routing as Symfony;
+use Brain\Cortex\RouteCollectionInterface as Collection;
+use Brain\Cortex\GroupContainerInterface as Groups;
+use Brain\Cortex\RouteInterface;
+use Brain\Cortex\FrontendRouteInterface;
+
+/**
+ * Concrete implemantation for RouterInterface.
+ *
+ * @author Giuseppe Mazzapica
+ * @package Brain\Cortex
+ */
+class Router implements RouterInterface, RequestableInterface, HooksableInterface {
+
+    use \Brain\Cortex\Requestable,
+        \Brain\Cortex\Hooksable;
+
+    /**
+     * Default routable
+     * @var \Brain\Cortex\Controllers\RoutableInterface
+     */
+    private $def_routable;
+
+    /**
+     * @var \Symfony\Component\Routing\Matcher
+     */
+    private $matcher;
+
+    /**
+     * @var \Symfony\Component\Routing\RequestContext
+     */
+    private $req_context;
+
+    /**
+     * @var \Brain\Cortex\RouteCollectionInterface
+     */
+    private $collection;
+
+    /**
+     * Routes storage
+     * @var \ArrayObject
+     */
+    private $routes;
+
+    /**
+     * Groups container
+     * @var \Brain\Cortex\GroupContainerInterface
+     */
+    private $groups;
+
+    /**
+     * @var \Brain\Cortex\Controllers\FallbackController
+     */
+    private $fallback;
+
+    /**
+     * Container binding for fallback
+     * @var string
+     */
+    private $fallback_bind;
+
+    /**
+     * @var array
+     */
+    private $priorities = [ ];
+
+    /**
+     * @var \Brain\Cortex\RouteInterface
+     */
+    private $matched;
+
+    /**
+     * Matched array returned by Symfony matcher
+     * @var array
+     */
+    private $matched_args;
+
+    /**
+     * Default priority
+     * @var int
+     */
+    private $def_priority = 10;
+
+    public function __construct( Symfony\Matcher $matcher, Symfony\RequestContext $req_context,
+                                 Collection $collection, Groups $groups ) {
+        $this->req_context = $req_context;
+        $this->matcher = $matcher;
+        $this->collection = $collection;
+        $this->routes = new \ArrayObject;
+        $this->groups = $groups;
+    }
+
+    public function getMatcher() {
+        return $this->matcher;
+    }
+
+    public function getCollection() {
+        return $this->collection;
+    }
+
+    public function getRequestContext() {
+        return $this->req_context;
+    }
+
+    public function getRoutes() {
+        return $this->routes;
+    }
+
+    public function getGroups() {
+        return $this->groups;
+    }
+
+    public function getPriorities() {
+        return $this->priorities;
+    }
+
+    public function setFallback( FallbackController $fallback ) {
+        $this->fallback = $fallback;
+    }
+
+    public function getFallback() {
+        return $this->fallback;
+    }
+
+    public function setFallbackBind( $bind = '', Array $args = [ ] ) {
+        if ( ! is_string( $bind ) || $bind === '' ) {
+            throw new \InvalidArgumentException;
+        }
+        $defaults = [ 'min_pieces' => 0, 'exact' => FALSE, 'condition' => NULL ];
+        $args = wp_parse_args( $args, $defaults );
+        $this->fallback_bind = (object) [ 'bind' => $bind, 'args' => $args ];
+    }
+
+    public function getFallbackBind() {
+        return $this->fallback_bind;
+    }
+
+    public function getDefaultRoutable() {
+        return $this->def_routable;
+    }
+
+    public function getRoutable( RouteInterface $route = NULL ) {
+        if ( is_null( $route ) && $this->matched() ) $route = $this->getMatched();
+        $routable = ! is_null( $route ) ? $route->getRoutable() : FALSE;
+        return $routable instanceof RoutableInterface ? $routable : $this->getDefaultRoutable();
+    }
+
+    public function setRoutable( RoutableInterface $routable, RouteInterface $route = NULL ) {
+        if ( ! is_null( $route ) ) {
+            return $route->setRoutable( $routable );
+        } else {
+            $this->def_routable = $routable;
+            return $this;
+        }
+    }
+
+    public function run() {
+        $this->getHooks()->trigger( 'cortex.pre_parse_routes' );
+        $parsed = (bool) $this->parseRoutes();
+        $this->getHooks()->trigger( 'cortex.after_parse_routes', $parsed );
+    }
+
+    public function addRoute( RouteInterface $route ) {
+        $route = $this->getHooks()->filter( 'cortex.pre_add_rule', $this->setupRoute( $route ) );
+        if ( $route instanceof FrontendRouteInterface ) {
+            $this->priorities[] = (int) $route->getPriority();
+            $added = $this->getCollection()->insert( $route );
+            $this->getRoutes()->offsetSet( $route->getId(), $added );
+        }
+        return $route;
+    }
+
+    public function parseRoutes() {
+        $matched = FALSE;
+        if ( $this->getRoutes()->count() >= 1 ) {
+            if ( $this->match() ) {
+                $matched = TRUE;
+                $this->route();
+            } else {
+                $this->getHooks()->trigger( 'cortex.not_matched', $this );
+            }
+        }
+        $this->matcher = NULL;
+        $this->collection = NULL;
+        $this->routes = NULL;
+        $this->groups = NULL;
+        return $matched;
+    }
+
+    public function matched() {
+        return $this->getMatched() instanceof RouteInterface;
+    }
+
+    public function setMatched( RouteInterface $route = NULL ) {
+        $this->matched = $route;
+    }
+
+    public function getMatched() {
+        return $this->matched;
+    }
+
+    public function setMatchedArgs( Array $args = [ ] ) {
+        $this->matched_args = $args;
+    }
+
+    public function getMatchedArgs() {
+        return $this->matched_args;
+    }
+
+    private function match() {
+        $routes = $this->getCollection()->getCollection();
+        if ( ! $routes instanceof Symfony\RouteCollection || $routes->count() <= 0 ) {
+            return FALSE;
+        }
+        try {
+            $context = $this->setupContext();
+            $args = $this->getMatcher()->match( $routes, $context );
+            $this->setMatched( $this->getRoutes()->offsetGet( $args['_route'] ) );
+            unset( $args['_route'] );
+            $this->setMatchedArgs( $args );
+            return TRUE;
+        } catch ( Exception $e ) {
+            unset( $e );
+            return FALSE;
+        }
+    }
+
+    private function route() {
+        if ( ! $this->matched() ) return;
+        $matched = $this->getMatched();
+        $group = $matched->get( 'group' );
+        $args = $this->getMatchedArgs();
+        if ( ! empty( $group ) ) {
+            $this->getGroups()->mergeGroup( $matched );
+        }
+        $request = $this->getRequest();
+        $this->getHooks()->trigger( 'cortex.matched', $matched, $args, $request );
+        $routable = $this->getRoutable( $matched );
+        if ( ! $matched instanceof RouteInterface || ! $routable instanceof RoutableInterface ) {
+            throw new \DomainException;
+        }
+    }
+
+    public function nextPriority() {
+        $priorities = $this->getPriorities();
+        return ! empty( $priorities ) ? max( $priorities ) + 1 : $this->def_priority;
+    }
+
+    public function setupContext() {
+        $context = $this->getRequestContext();
+        $request = $this->getRequest();
+        $context->setBaseUrl( $request->path() );
+        $context->setMethod( $request->method() );
+        $http_port = $request->isSecure() ? 80 : $request->port();
+        $https_port = $request->isSecure() ? $request->port() : 443;
+        $context->setHttpPort( $http_port );
+        $context->setHttpsPort( $https_port );
+        $context->setQueryString( $request->server( 'QUERY_STRING' ) );
+        return $context;
+    }
+
+    public function setupRoute( RouteInterface $route ) {
+        if ( ! is_int( $route->getPriority() ) ) {
+            $route->setPriority( (int) $this->nextPriority() );
+        }
+        if ( ! is_string( $route->getId() ) ) {
+            $route->setId( spl_object_hash( $route ) );
+        }
+        return $route;
+    }
+
+}

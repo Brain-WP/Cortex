@@ -1,0 +1,45 @@
+{
+    "name": "brain/cortex",
+    "description": "Cortex is a package that implements a routing system in WordPress.",
+    "keywords": ["wordpress"],
+    "homepage": "https://github.com/Giuseppe-Mazzapica/Cortex",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Giuseppe Mazzapica",
+            "email": "giuseppe.mazzapica@gmail.com",
+            "homepage": "http://gm.zoomlab.it",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/Giuseppe-Mazzapica/Cortex/issues",
+        "source": "https://github.com/Giuseppe-Mazzapica/Cortex"
+    },
+    "require": {
+        "php": ">=5.4",
+        "brain/brain": "dev-master",
+        "brain/support": "dev-master",
+        "brain/amygdala": "dev-master",
+        "brain/striatum": "dev-master",
+        "symfony/routing": "2.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*",
+        "mockery/mockery": "dev-master",
+        "10up/wp_mock": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brain\\Cortex\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Brain\\Cortex\\Tests\\": "tests/src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}
