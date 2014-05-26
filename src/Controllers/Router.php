@@ -118,12 +118,13 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
         return $this->priorities;
     }
 
-    public function setFallback( FallbackController $fallback ) {
-        $this->fallback = $fallback;
-    }
-
     public function getFallback() {
         return $this->fallback;
+    }
+
+    public function setFallback( FallbackController $fallback ) {
+        $this->fallback = $fallback;
+        return $this;
     }
 
     public function setFallbackBind( $bind = '', Array $args = [ ] ) {
@@ -133,6 +134,7 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
         $defaults = [ 'min_pieces' => 0, 'exact' => FALSE, 'condition' => NULL ];
         $args = wp_parse_args( $args, $defaults );
         $this->fallback_bind = (object) [ 'bind' => $bind, 'args' => $args ];
+        return $this;
     }
 
     public function getFallbackBind() {

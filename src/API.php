@@ -1,7 +1,5 @@
 <?php namespace Brain\Cortex;
 
-use Symfony\Component\Routing\Generator\UrlGenerator;
-
 /**
  * API class.
  *
@@ -170,7 +168,7 @@ class API {
             }
             $object->isExact( (bool) $exact );
             $router = $this->getBrain()->get( 'cortex.router' );
-            $router->setFallback( $object );
+            return $router->setFallback( $object );
         }
     }
 
@@ -187,13 +185,9 @@ class API {
      * @since 0.1
      */
     function useQueryFallback( $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
+        $router = $this->getBrain()->get( 'cortex.router' );
         $args = [ 'min_pieces' => $min_pieces, 'exact' => $exact, 'condition' => $condition ];
-        $callback = function() use($args) {
-            return $args;
-        };
-        $hooks = $this->getHooks();
-        $hooks->addFilter( 'cortex.api_fallback_args', 'cortex.fallback_bind_args', $callback );
-        $this->getBrain()->get( 'cortex.router' )->setFallbackBind( 'cortex.fallback_query_builder' );
+        return $router->setFallbackBind( 'cortex.fallback_query_builder', $args );
     }
 
     /**
