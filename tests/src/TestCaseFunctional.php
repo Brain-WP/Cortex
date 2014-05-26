@@ -5,20 +5,29 @@ use Brain\Container as Brain;
 class TestCaseFunctional extends TestCase {
 
     public function setUp() {
-        \WP_Mock::setUp();
-        $brain = Brain::boot( new \Pimple, FALSE );
-        global $wp;
-        $wp = new \WP;
         if ( ! defined( 'CORTEXBASEPATH' ) ) {
             define( 'CORTEXBASEPATH', dirname( dirname( dirname( __FILE__ ) ) ) );
         }
-        $brain->addModule( new \Brain\Amygdala\BrainModule );
+        \WP_Mock::setUp();
+        $brain = Brain::boot( new \Pimple, FALSE );
+        \WP_Mock::wpFunction( 'is_admin', [ 'return' => FALSE ] );
+        \WP_Mock::wpFunction( 'wp_parse_args', [ 'return' => function( $args, $defaults = [ ] ) {
+            return array_merge( (array) $defaults, (array) $args );
+        } ] );
+        global $wp;
+        $wp = new \WP;
+        $amygdala = new \Brain\Amygdala\BrainModule;
+        $amygdala->getBindings( $brain );
         $brain->addModule( new \Brain\Striatum\BrainModule );
-        $brain->addModule( new \Brain\Cortex\BrainModule );
+        $cortex = new \Brain\Cortex\BrainModule;
+        $brain->addModule( $cortex );
+        Brain::bootModules( $brain, FALSE );
+        $cortex->bootFrontend( $brain );
     }
 
-    function tearDown() {
+    public function tearDown() {
         Brain::flush();
+        $this->request = NULL;
         parent::tearDown();
     }
 
