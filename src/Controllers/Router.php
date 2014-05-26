@@ -2,7 +2,9 @@
 
 use Brain\Cortex\RequestableInterface;
 use Brain\Cortex\HooksableInterface;
-use Symfony\Component\Routing as Symfony;
+use Symfony\Component\Routing\Matcher\UrlMatcher as SymfonyMatcher;
+use Symfony\Component\Routing\RequestContext as SymfonyContext;
+use Symfony\Component\Routing\RouteCollection as SymfonyCollection;
 use Brain\Cortex\RouteCollectionInterface as Collection;
 use Brain\Cortex\GroupContainerInterface as Groups;
 use Brain\Cortex\RouteInterface;
@@ -85,7 +87,7 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
      */
     private $def_priority = 10;
 
-    public function __construct( Symfony\Matcher $matcher, Symfony\RequestContext $req_context,
+    public function __construct( SymfonyMatcher $matcher, SymfonyContext $req_context,
                                  Collection $collection, Groups $groups ) {
         $this->req_context = $req_context;
         $this->matcher = $matcher;
@@ -215,7 +217,7 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
 
     private function match() {
         $routes = $this->getCollection()->getCollection();
-        if ( ! $routes instanceof Symfony\RouteCollection || $routes->count() <= 0 ) {
+        if ( ! $routes instanceof SymfonyCollection || $routes->count() <= 0 ) {
             return FALSE;
         }
         try {

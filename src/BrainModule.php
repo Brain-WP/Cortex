@@ -35,7 +35,7 @@ class BrainModule implements \Brain\Module {
         };
 
         $brain['cortex.queryvars_filter'] = function() {
-            return new Controllers\QueryVarsFilter( new Request );
+            return new QueryVarsFilter( new Request );
         };
 
         $brain['cortex.query_builder'] = function( $c ) {
@@ -71,7 +71,7 @@ class BrainModule implements \Brain\Module {
         };
 
         $brain['symfony.matcher'] = function( $c ) {
-            return new Symfony\UrlMatcher( $c["symfony.routes"], $c["symfony.context"] );
+            return new Symfony\Matcher\UrlMatcher( $c["symfony.routes"], $c["symfony.context"] );
         };
 
         $brain['symfony.generator'] = function( $c ) {
@@ -128,14 +128,16 @@ class BrainModule implements \Brain\Module {
      * @return null
      */
     public function bootFrontend( Brain $brain ) {
-        $wp = $brain->get( 'wp' );
+        $wp = $brain->get( 'cortex.wp' );
         if ( $wp instanceof \WP ) {
             $GLOBALS['wp'] = $wp;
         }
-        Hooks::addAction( 'cortex.route_bind', 'cortex.matched', [ $this, 'bindRoute' ], 10, 2 )
-            ->runOnce();
-        Hooks::addAction( 'cortex.fallback_bind', 'cortex.not_matched', [ $this, 'bindFallback' ] )
-            ->runOnce();
+        Hooks::addAction(
+            'cortex.route_bind', 'cortex.matched', [ $this, 'bindRoute' ], 10, 2, 1
+        );
+        Hooks::addAction(
+            'cortex.fallback_bind', 'cortex.not_matched', [ $this, 'bindFallback' ], 10, 1, 1
+        );
     }
 
     public function bindRoute( RouteInterface $route, Array $args = [ ] ) {
