@@ -11,5 +11,8 @@
         <testsuite name="U">
             <directory>Unit</directory>
         </testsuite>
+        <testsuite name="F">
+            <directory>Functional</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
