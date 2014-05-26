@@ -30,6 +30,7 @@
         "10up/wp_mock": "dev-master"
     },
     "autoload": {
+        "files": ["boot.php"],
         "psr-4": {
             "Brain\\Cortex\\": "src/"
         }
