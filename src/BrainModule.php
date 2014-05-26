@@ -75,7 +75,7 @@ class BrainModule implements \Brain\Module {
         };
 
         $brain['symfony.generator'] = function( $c ) {
-            return new Symfony\UrlMatcher( $c["symfony.routes"], $c["symfony.context"] );
+            return new Symfony\Generator\UrlGenerator( $c["symfony.routes"], $c["symfony.context"] );
         };
 
         $brain['cortex.route'] = $brain->factory( function( $c ) {
