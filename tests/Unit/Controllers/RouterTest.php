@@ -132,10 +132,12 @@ class RouterTest extends TestCase {
         $context = \Mockery::mock( 'Symfony\Component\Routing\RequestContext' );
         $s_matcher = \Mockery::mock( 'Symfony\Component\Routing\Matcher' );
         $s_matcher->shouldReceive( 'match' )
-            ->with( $s_collection, $context )
+            ->with( '/foo/bar' )
             ->once()
             ->andReturn( [ '_route' => 'route_1', 'foo' => 'bar' ] );
         $routable = \Mockery::mock( 'Brain\Cortex\Controllers\RoutableInterface' );
+        $routable->shouldReceive( 'setRoute' )->with( $route1 )->once()->andReturnSelf();
+        $routable->shouldReceive( 'setMatchedArgs' )->with( [ 'foo' => 'bar' ] )->once()->andReturnSelf();
         $router = $this->get( '/foo/bar' );
         $router->shouldReceive( 'getRoutes' )->withNoArgs()->andReturn( $routes );
         $router->shouldReceive( 'getMatcher' )->andReturn( $s_matcher );

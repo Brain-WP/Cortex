@@ -43,7 +43,7 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
      */
     public function run() {
         $route = $this->getRoute();
-        $matches = $this->getRouteArgs();
+        $matches = $this->getMatchedArgs();
         if ( ! $route instanceof FrontendRouteInterface ) {
             throw new \DomainException;
         }

@@ -221,8 +221,8 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
             return FALSE;
         }
         try {
-            $context = $this->setupContext();
-            $args = $this->getMatcher()->match( $routes, $context );
+            $this->setupContext();
+            $args = $this->getMatcher()->match( $this->getRequest()->path() );
             $this->setMatched( $this->getRoutes()->offsetGet( $args['_route'] ) );
             unset( $args['_route'] );
             $this->setMatchedArgs( $args );
@@ -237,16 +237,18 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
         if ( ! $this->matched() ) return;
         $matched = $this->getMatched();
         $group = $matched->get( 'group' );
-        $args = $this->getMatchedArgs();
         if ( ! empty( $group ) ) {
             $this->getGroups()->mergeGroup( $matched );
         }
         $request = $this->getRequest();
+        $args = $this->getMatchedArgs();
         $this->getHooks()->trigger( 'cortex.matched', $matched, $args, $request );
         $routable = $this->getRoutable( $matched );
         if ( ! $matched instanceof RouteInterface || ! $routable instanceof RoutableInterface ) {
             throw new \DomainException;
         }
+        $routable->setRoute( $matched );
+        $routable->setMatchedArgs( $args );
     }
 
     public function nextPriority() {
