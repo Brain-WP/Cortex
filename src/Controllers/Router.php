@@ -259,7 +259,7 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
     public function setupContext() {
         $context = $this->getRequestContext();
         $request = $this->getRequest();
-        $context->setBaseUrl( $request->path() );
+        $context->setBaseUrl( rtrim( home_url(), '/\\ ' ) );
         $context->setMethod( $request->method() );
         $http_port = $request->isSecure() ? 80 : $request->port();
         $https_port = $request->isSecure() ? $request->port() : 443;

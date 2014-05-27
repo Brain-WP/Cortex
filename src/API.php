@@ -5,6 +5,7 @@
  *
  * @author Giuseppe Mazzapica
  * @package Brain\Cortex
+ * @version 0.1
  */
 class API {
 
@@ -193,6 +194,17 @@ class API {
             return new \WP_Error( 'too-early-for-url-generator' );
         }
         return $this->getBrain()->get( 'symfony.generator' )->generate( $route_id, $args );
+    }
+
+    /**
+     * Register a Controller factory closure in the container
+     *
+     * @param type $id Controller id
+     * @return \Brain\Controller
+     * @since 0.1
+     */
+    function registerController( $id = '', \Closure $factory = NULL ) {
+        return $this->getBrain()->set( $id, $factory );
     }
 
     /**
