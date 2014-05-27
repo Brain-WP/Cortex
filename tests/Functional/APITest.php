@@ -132,4 +132,20 @@ class APITest extends TestCaseFunctional {
         assertEquals( $cb, $fallback->getCondition() );
     }
 
+    function testUrl() {
+        \WP_Mock::wpFunction( 'did_action', [ 'return' => TRUE ] );
+        $api = new API;
+        $request = new \Brain\Request;
+        $request->simulate( '/testme' );
+        $api->add( '/test/{foo}/{bar}', 'route_1' );
+        $api->add( '/test-{foo}bar/{bar}', 'route_2' );
+        $api->add( '/hi/bar/{bar}/{foo}-foo', 'route_3' );
+        \Brain\Container::instance()->get( 'cortex.router' )->setupContext();
+        \Brain\Container::instance()->get( 'cortex.routes' )->getCollection();
+        $args = [ 'foo' => 'foo', 'bar' => 'bar' ];
+        assertEquals( 'http://www.example.com/test/foo/bar', $api->url( 'route_1', $args ) );
+        assertEquals( 'http://www.example.com/test-foobar/bar', $api->url( 'route_2', $args ) );
+        assertEquals( 'http://www.example.com/hi/bar/bar/foo-foo', $api->url( 'route_3', $args ) );
+    }
+
 }

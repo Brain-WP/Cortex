@@ -192,9 +192,6 @@ class MatchingTest extends TestCaseFunctional {
     }
 
     function testMatch_10() {
-        \WP_Mock::wpFunction( 'home_url', [ 'return' => function( $relative ) {
-            return 'http://www.example.com/' . ltrim( $relative, '/\\ ' );
-        } ] );
         $request = new \Brain\Request;
         $request->simulate( '/redir' );
         $router = $this->launchTest( $request );

@@ -16,8 +16,8 @@
  *
  * This is useful when the package is used inside OOP plugins, making use of dependency injection.
  *
+ * @author Giuseppe Mazzapica
  * @package Brain\Cortex
- * @version 0.1
  */
 class Routes extends Facade {
 
