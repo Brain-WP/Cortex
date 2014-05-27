@@ -58,9 +58,9 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
     }
 
     public function getQueryClass() {
-        $class = $this->getRoute()->get( 'cortex.query_class' );
+        $class = $this->getRoute()->get( 'queryclass' );
         return $this->getHooks()->filter(
-                'query_class', $class, $this->getRoute(), $this->getRequest()
+                'cortex.query_class', $class, $this->getRoute(), $this->getRequest()
         );
     }
 

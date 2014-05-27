@@ -26,7 +26,7 @@ class API {
      * @since 0.1
      */
     function add( $path = '', $id = NULL, $priority = NULL, Array $options = [ ] ) {
-        return $this->addRoute( $this->create( $path, $id, $priority, $options ) );
+        return $this->create( $path, $id, $priority, $options )->add();
     }
 
     /**
@@ -67,7 +67,8 @@ class API {
         foreach ( $route->getDefaultSettings() as $key => $value ) {
             $route->set( $key, $value );
         }
-        return $route;
+        $router = $this->getBrain()->get( 'cortex.router' );
+        return $route->setRouter( $router );
     }
 
     /**
@@ -91,15 +92,8 @@ class API {
         }
         $route = $this->create( $path, $id, $priority, $options );
         $route->bindTo( 'cortex.redirector' );
-        if ( is_callable( $to ) ) {
+        if ( is_callable( $to ) || is_string( $to ) ) {
             $route->set( 'redirectto', $to );
-        } elseif ( is_string( $to ) && substr_count( $to, '{' ) === 0 ) {
-            $route->set( 'redirectto', function ( ) use ( $to ) {
-                return $to;
-            } );
-        } elseif ( is_string( $to ) && ( substr_count( $to, '{' ) === substr_count( $to, '}' ) ) ) {
-            $defaults = isset( $options['defaults'] ) ? $options['defaults'] : [ ];
-            $route->set( 'redirectto', $this->getDynamicRedirectTo( $to, $defaults ) );
         }
         $route->set( 'redirectexternal', (bool) $external );
         $route->set( 'redirectstatus', (int) $status );
@@ -121,8 +115,7 @@ class API {
      */
     function redirect( $path = '', $to = '', $status = 301, Array $options = [ ], $external = FALSE,
                        $id = NULL, $priority = NULL ) {
-        $route = $this->creteRedirect( $path, $to, $status, $options, $external, $id, $priority );
-        return $this->addRoute( $route );
+        return $this->createRedirect( $path, $to, $status, $options, $external, $id, $priority )->add();
     }
 
     /**
@@ -156,9 +149,8 @@ class API {
     function registerFallback( $bind = '', Controllers\FallbackController $object = NULL,
                                $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
         if ( is_string( $bind ) && ! empty( $bind ) ) {
-            $router = $this->getBrain()->get( 'cortex.router' );
             $args = [ 'min_pieces' => $min_pieces, 'exact' => $exact, 'condition' => $condition ];
-            $router->setFallbackBind( $bind, $args );
+            return $this->getBrain()->get( 'cortex.router' )->setFallbackBind( $bind, $args );
         } elseif ( ! is_null( $object ) ) {
             if ( is_callable( $condition ) ) {
                 $object->setCondition( $condition );
@@ -167,8 +159,7 @@ class API {
                 $object->setMinPieces( (int) $min_pieces );
             }
             $object->isExact( (bool) $exact );
-            $router = $this->getBrain()->get( 'cortex.router' );
-            return $router->setFallback( $object );
+            return $this->getBrain()->get( 'cortex.router' )->setFallback( $object );
         }
     }
 
@@ -185,9 +176,8 @@ class API {
      * @since 0.1
      */
     function useQueryFallback( $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
-        $router = $this->getBrain()->get( 'cortex.router' );
-        $args = [ 'min_pieces' => $min_pieces, 'exact' => $exact, 'condition' => $condition ];
-        return $router->setFallbackBind( 'cortex.fallback_query_builder', $args );
+        $bind = 'cortex.fallback_query_builder';
+        return $this->registerFallback( $bind, NULL, $condition, $min_pieces, $exact );
     }
 
     /**
@@ -217,31 +207,6 @@ class API {
 
     private function getBrain() {
         return \Brain\Container::instance();
-    }
-
-    private function addRoute( RouteInterface $route ) {
-        $router = $this->getBrain()->get( 'cortex.router' );
-        return $router->addRoute( $route );
-    }
-
-    private function getDynamicRedirectTo( $to, Array $defaults = [ ] ) {
-        $matches = [ ];
-        preg_match_all( "|\{[\w]+\}|i", $to, $matches, PREG_PATTERN_ORDER, 0 );
-        if ( ! isset( $matches[0] ) || empty( $matches[0] ) ) return FALSE;
-        return function( $replacements ) use($matches, $defaults, $to) {
-            $keys = array_unique( str_ireplace( [ '{', '}' ], '', $matches[0] ) );
-            foreach ( $keys as $key ) {
-                if ( isset( $replacements[$key] ) ) {
-                    $to = str_ireplace( '{' . $key . '}', $replacements[$key], $to );
-                } elseif ( isset( $defaults[$key] ) ) {
-                    $to = str_ireplace( '{' . $key . '}', $defaults[$key], $to );
-                } else {
-                    $to = str_ireplace( '{' . $key . '}', '', $to );
-                }
-            }
-            $parsed = parse_url( $to );
-            return str_replace( $parsed['path'], str_replace( '//', '/', $parsed['path'] ), $to );
-        };
     }
 
 }
