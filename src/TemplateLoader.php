@@ -81,15 +81,18 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
                 'template_include', $this->getHooks()->filter( "{$type}_template", $path )
             );
         }
-        if ( ! empty( $path ) ) {
-            $function = $this->getFunction();
+        if ( empty( $path ) ) return FALSE;
+        $function = $this->getFunction();
+        if ( is_callable( $function ) ) {
             $function( $path );
-            if ( $main_template ) {
-                return $this->doneAndExit( 'template_loaded' );
-            }
-            return TRUE;
+        } elseif ( is_string( $function ) ) {
+            $function = 'do' . ucfirst( str_ireplace( '_o', 'O', $this->getFunction() ) );
+            call_user_func( [ $this, $function ], $path );
         }
-        return FALSE;
+        if ( $main_template ) {
+            return $this->doneAndExit( 'template_loaded' );
+        }
+        return TRUE;
     }
 
     /**
@@ -230,6 +233,22 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
     function doneAndExit( $hook = 'loader_done_and_exit' ) {
         $this->getHooks()->trigger( "cortex.exit_{$hook}" );
         exit();
+    }
+
+    function doInclude( $path ) {
+        include $path;
+    }
+
+    function doRequire( $path ) {
+        require $path;
+    }
+
+    function doIncludeOnce( $path ) {
+        include_once $path;
+    }
+
+    function doRequireOnce( $path ) {
+        require_once $path;
     }
 
 }
