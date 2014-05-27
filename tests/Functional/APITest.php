@@ -105,4 +105,31 @@ class APITest extends TestCaseFunctional {
         assertEquals( 'foo.php', $route->getTemplate() );
     }
 
+    function testUseFallbackBind() {
+        $api = new API;
+        $cb = function() {
+            return TRUE;
+        };
+        $api->useFallback( 'cortex.fallback_query_builder', NULL, $cb, 3, TRUE );
+        $bind = \Brain\Container::instance()->get( 'cortex.router' )->getFallbackBind();
+        $args = [ 'min_pieces' => 3, 'exact' => TRUE, 'condition' => $cb ];
+        assertTrue( is_object( $bind ) );
+        assertTrue( isset( $bind->bind ) && $bind->bind === 'cortex.fallback_query_builder' );
+        assertTrue( isset( $bind->args ) && $bind->args === $args );
+    }
+
+    function testUseFallbackObject() {
+        $api = new API;
+        $cb = function() {
+            return TRUE;
+        };
+        $fallback = \Brain\Container::instance()->get( 'cortex.fallback_query_builder' );
+        $api->useFallback( FALSE, $fallback, $cb, 3, TRUE );
+        $bind = \Brain\Container::instance()->get( 'cortex.router' )->getFallback();
+        assertEquals( $fallback, $bind );
+        assertEquals( 3, $fallback->getMinPieces() );
+        assertEquals( TRUE, $fallback->isExact() );
+        assertEquals( $cb, $fallback->getCondition() );
+    }
+
 }
