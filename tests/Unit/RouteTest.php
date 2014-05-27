@@ -163,30 +163,26 @@ class RouteTest extends TestCase {
         assertEquals( $inner, $route->prepare() );
     }
 
-    function testPreparePaged() {
+    function testClonePaged() {
         \WP_Mock::wpFunction( 'trailingslashit', [ 'return' => function( $string ) {
             $string = rtrim( $string, '/\\ ' );
             return $string . '/';
         } ] );
-        $route = $this->get();
-        $route->shouldReceive( 'getPath' )->withNoArgs()->andReturn( '/' );
-        $route->shouldReceive( 'getRequirements' )->withNoArgs()->andReturn( [ 'req' => 'foo' ] );
-        $route->shouldReceive( 'getDefaults' )->withNoArgs()->andReturn( [ 'def' => 'bar' ] );
         $GLOBALS['wp_rewrite'] = (object) [ 'pagination_base' => 'page' ];
-        $route->shouldReceive( 'get' )->with( 'paged' )->andReturn( TRUE );
-        $route->shouldReceive( 'getHost' )->withNoArgs()->andReturn( 'example.com' );
-        $route->shouldReceive( 'getSchemes' )->withNoArgs()->andReturn( [ 'http' ] );
-        $route->shouldReceive( 'getMethods' )->withNoArgs()->andReturn( [ 'GET' ] );
-        $inner = $route->getInner();
-        $inner->shouldReceive( 'setPath' )->with( '/page/{paged}' )->once()->andReturnNull();
-        $req = [ 'req' => 'foo', 'paged' => 'd+' ];
-        $def = [ 'def' => 'bar', 'paged' => 1 ];
-        $inner->shouldReceive( 'setRequirements' )->with( $req )->once()->andReturnNull();
-        $inner->shouldReceive( 'setDefaults' )->with( $def )->once()->andReturnNull();
-        $inner->shouldReceive( 'setHost' )->with( 'example.com' )->once()->andReturnNull();
-        $inner->shouldReceive( 'setSchemes' )->with( [ 'http' ] )->once()->andReturnNull();
-        $inner->shouldReceive( 'setMethods' )->with( [ 'GET' ] )->once()->andReturnNull();
-        assertEquals( $inner, $route->prepare() );
+        $inner = \Mockery::mock( 'Symfony\Component\Routing\Route' );
+        $router = \Mockery::mock( '\Brain\Cortex\Controllers\Router' );
+        $router->shouldReceive( 'addRoute' )->andReturnUsing( function( $cloned ) {
+            return $cloned;
+        } );
+        $route = new \Brain\Cortex\Route( $inner );
+        $route->setRouter( $router );
+        $route->setId( 'route_id' );
+        $route->setPath( '/' );
+        $paged = $route->clonePaged();
+        assertEquals( 'route_id-paged', $paged->getId() );
+        assertEquals( '/page/{paged}', $paged->getPath() );
+        assertEquals( [ 'paged' => 1 ], $paged->getDefaults() );
+        assertEquals( [ 'paged' => '[0-9]+' ], $paged->getRequirements() );
     }
 
 }

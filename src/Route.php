@@ -11,7 +11,8 @@ use \Brain\Cortex\Controllers\RouterInterface;
  */
 class Route implements QueryRouteInterface {
 
-    use \Brain\Contextable,
+    use \Brain\Fullclonable,
+        \Brain\Contextable,
         \Brain\Idable;
 
     /**
@@ -58,7 +59,7 @@ class Route implements QueryRouteInterface {
     function __call( $name, $arguments ) {
         $set_aliases = [
             'group', 'redirectto', 'redirectexternal', 'redirectstatus',
-            'qsmerge', 'autocustomvars', 'customvars', 'skipvars', 'queryclass'
+            'qsmerge', 'autocustomvars', 'customvars', 'skipvars', 'queryclass', 'paged'
         ];
         $aliases = [
             'defaults', 'host', 'methods', 'requirements', 'schemes',
@@ -66,14 +67,14 @@ class Route implements QueryRouteInterface {
         ];
         if ( in_array( strtolower( $name ), $set_aliases, TRUE ) ) {
             array_unshift( $arguments, strtolower( $name ) );
-            return call_user_func_array( [ $this, 'set' ], $arguments );
+            return call_user_func_array( [$this, 'set' ], $arguments );
         } elseif ( in_array( strtolower( $name ), $aliases, TRUE ) ) {
             $method = "set" . ucfirst( $name );
             return call_user_func_array( [$this, $method ], $arguments );
         } elseif ( strpos( $name, 'get' ) === 0 || strpos( $name, 'set' ) === 0 ) {
             $method = strpos( $name, 'get' ) === 0 ? 'get' : 'set';
             array_unshift( $arguments, strtolower( substr( $name, 3 ) ) );
-            return call_user_func_array( [ $this, $method ], $arguments );
+            return call_user_func_array( [$this, $method ], $arguments );
         }
         throw new \BadMethodCallException;
     }
@@ -84,7 +85,10 @@ class Route implements QueryRouteInterface {
     }
 
     function getRouter() {
-        return $this->router;
+        if ( $this->router instanceof Controllers\RouterInterface ) {
+            return $this->router;
+        }
+        return \Brain\Container::instance()->get( 'cortex.router' );
     }
 
     function add() {
@@ -182,7 +186,7 @@ class Route implements QueryRouteInterface {
         if ( ( is_object( $ctrl ) || is_string( $ctrl ) ) && method_exists( $ctrl, $method ) ) {
             $closure = function( $matches, $route, $request ) use( $ctrl, $method, $static ) {
                 $object = is_string( $ctrl ) && ! $static ? new $ctrl : $ctrl;
-                return call_user_func( [ $object, $method ], $matches, $route, $request );
+                return call_user_func( [$object, $method ], $matches, $route, $request );
             };
             return $this->bindToClosure( $closure );
         }
@@ -318,24 +322,41 @@ class Route implements QueryRouteInterface {
         }
         $inner = $this->getInner();
         $path = $this->getPath();
+        if ( $path !== '/' ) {
+            $path = rtrim( $path, '/' );
+        }
         $requirements = $this->getRequirements() ? : [ ];
         $defaults = $this->getDefaults() ? : [ ];
-        if ( $this->get( 'paged' ) === TRUE || $this->get( 'paged' ) === 'single' ) {
-            $var = $this->get( 'paged' ) === TRUE ? 'paged' : 'page';
-            $base = $GLOBALS['wp_rewrite']->pagination_base;
-            $path = trailingslashit( $this->getPath() ) . $base . '/{' . $var . '}';
-            $requirements = array_merge( $requirements, [ $var => 'd+' ] );
-            $defaults = array_merge( $defaults, [ $var => 1 ] );
-        }
         $inner->setPath( $path );
         $inner->setRequirements( $requirements );
         $inner->setDefaults( $defaults );
-        foreach ( [ 'Host', 'Schemes', 'Methods' ] as $var ) {
-            $get = call_user_func( [ $this, "get{$var}" ] );
+        foreach ( ['Host', 'Schemes', 'Methods' ] as $var ) {
+            $get = call_user_func( [$this, "get{$var}" ] );
             if ( is_null( $get ) || ( ! is_scalar( $get ) && ! is_array( $get ) ) ) continue;
-            call_user_func( [ $inner, "set{$var}" ], $get );
+            call_user_func( [$inner, "set{$var}" ], $get );
+        }
+        if ( $this->get( 'paged' ) === TRUE || $this->get( 'paged' ) === 'single' ) {
+            $this->clonePaged();
         }
         return $inner;
+    }
+
+    public function clonePaged() {
+        $id = $this->getId() . '-paged';
+        $var = $this->get( 'paged' ) === 'single' ? 'page' : 'paged';
+        $base = $GLOBALS['wp_rewrite']->pagination_base;
+        $path = trailingslashit( $this->getPath() ) . $base . '/{' . $var . '}';
+        $requirements = $this->getRequirements() ? : [ ];
+        $requirements[$var] = '[0-9]+';
+        $defaults = $this->getDefaults() ? : [ ];
+        $defaults[$var] = 1;
+        $clone = clone $this;
+        return $clone->setId( $id )
+                ->setPath( $path )
+                ->setRequirements( $requirements )
+                ->setDefaults( $defaults )
+                ->set( 'paged', FALSE )
+                ->add();
     }
 
     public function getDefaultSettings() {
