@@ -49,28 +49,33 @@ class Route implements QueryRouteInterface {
     }
 
     /**
-     * Magic __call method used to call set/get for arbitrary settings.
+     * Magic __call method used to call set/get for settings.
      *
      * @param string $name
      * @param array $arguments
      * @return mixed
      */
     function __call( $name, $arguments ) {
-        if ( strpos( $name, 'get' ) === 0 || strpos( $name, 'set' ) === 0 ) {
-            $callback = strpos( $name, 'get' ) === 0 ? 'get' : 'set';
+        $set_aliases = [
+            'group', 'redirectto', 'redirectexternal', 'redirectstatus',
+            'qsmerge', 'autocustomvars', 'customvars', 'skipvars', 'queryclass'
+        ];
+        $aliases = [
+            'defaults', 'host', 'methods', 'requirements', 'schemes',
+            'after', 'before', 'id', 'template', 'priority', 'path', 'query'
+        ];
+        if ( in_array( strtolower( $name ), $set_aliases, TRUE ) ) {
+            array_unshift( $arguments, strtolower( $name ) );
+            return call_user_func_array( [ $this, 'set' ], $arguments );
+        } elseif ( in_array( strtolower( $name ), $aliases, TRUE ) ) {
+            $method = "set" . ucfirst( $name );
+            return call_user_func_array( [$this, $method ], $arguments );
+        } elseif ( strpos( $name, 'get' ) === 0 || strpos( $name, 'set' ) === 0 ) {
+            $method = strpos( $name, 'get' ) === 0 ? 'get' : 'set';
             array_unshift( $arguments, strtolower( substr( $name, 3 ) ) );
-            return call_user_func_array( $callback, $arguments );
-        } else {
-            $aliases = [
-                'defaults', 'requirements', 'host', 'methods', 'schemes',
-                'priority', 'path', 'query', 'template', 'after', 'before'
-            ];
-            if ( in_array( strtolower( $name ), $aliases, TRUE ) ) {
-                $callback = "set" . ucfirst( $name );
-                return call_user_func_array( [ $this, $callback ], $arguments );
-            }
-            throw new \BadMethodCallException;
+            return call_user_func_array( [ $this, $method ], $arguments );
         }
+        throw new \BadMethodCallException;
     }
 
     function setRouter( RouterInterface $router = NULL ) {
@@ -217,7 +222,7 @@ class Route implements QueryRouteInterface {
      */
     public function setHost( $host = '' ) {
         $host = filter_var( $host, FILTER_SANITIZE_URL );
-        if ( ! is_string( $host ) || empty( $host ) ) {
+        if ( ! is_string( $host ) ) {
             throw new \InvalidArgumentException;
         }
         $this->set( 'host', $host );
@@ -276,7 +281,7 @@ class Route implements QueryRouteInterface {
         if ( ! is_numeric( $priority ) ) {
             throw new \InvalidArgumentException;
         }
-        return $this->set( 'priority', (float) $priority );
+        return $this->set( 'priority', (int) $priority );
     }
 
     /**
