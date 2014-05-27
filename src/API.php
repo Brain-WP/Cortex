@@ -146,8 +146,8 @@ class API {
      * @return void
      * @since 0.1
      */
-    function registerFallback( $bind = '', Controllers\FallbackController $object = NULL,
-                               $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
+    function useFallback( $bind = '', Controllers\FallbackController $object = NULL,
+                          $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
         if ( is_string( $bind ) && ! empty( $bind ) ) {
             $args = [ 'min_pieces' => $min_pieces, 'exact' => $exact, 'condition' => $condition ];
             return $this->getBrain()->get( 'cortex.router' )->setFallbackBind( $bind, $args );
@@ -164,7 +164,7 @@ class API {
     }
 
     /**
-     * Register the FallbackQueryBuilder as fallaback controller for the router.
+     * Register the FallbackQueryBuilder as fallback controller for the router.
      *
      * Is possible limit the Fallback run under two conditions: a callaback and minimum/maximum/exact
      * number of url "pieces", where a piece is a part of url between two "/".
