@@ -33,7 +33,8 @@
         "files": ["boot.php"],
         "psr-4": {
             "Brain\\Cortex\\": "src/"
-        }
+        },
+        "classmap": ["Routes.php"]
     },
     "autoload-dev": {
         "psr-4": {
