@@ -76,6 +76,12 @@ class Redirector extends RoutableBase {
         $args = $this->getMatchedArgs();
         if ( is_callable( $to ) ) {
             $to = call_user_func( $to, $args, $this->getRequest() );
+        } elseif ( is_string( $to ) ) {
+            $matches = [ ];
+            preg_match_all( "|\{[\w]+\}|i", $to, $matches, PREG_PATTERN_ORDER, 0 );
+            if ( isset( $matches[0] ) || empty( $matches[0] ) ) {
+                $to = $this->getToDynamic( $to, $args, $matches );
+            }
         }
         if ( is_string( $to ) && ( strpos( $to, 'http' ) !== 0 ) ) {
             $parsed = (array) parse_url( filter_var( $to, FILTER_SANITIZE_URL ) );
@@ -88,6 +94,23 @@ class Redirector extends RoutableBase {
             $to .= is_string( $query ) && ! empty( $query ) ? '?' . $query : '';
         }
         return is_string( $to ) ? filter_var( $to, FILTER_SANITIZE_URL ) : FALSE;
+    }
+
+    private function getToDynamic( $to = '', Array $args = [ ], Array $matches = [ ] ) {
+        $keys = array_unique( str_ireplace( [ '{', '}' ], '', $matches[0] ) );
+        $request = $this->getRequest();
+        foreach ( $keys as $i ) {
+            $replacement = isset( $args[$i] ) ? $args[$i] : FALSE;
+            if ( $replacement === FALSE ) {
+                $replacement = $request->request( $i ) ? : '';
+            }
+            $to = str_ireplace( '{' . $i . '}', $replacement, $to );
+        }
+        $parsed = parse_url( $to );
+        if ( ! isset( $parsed['path'] ) ) {
+            return '/';
+        }
+        return str_replace( $parsed['path'], str_ireplace( '//', '/', $parsed['path'] ), $to );
     }
 
 }
