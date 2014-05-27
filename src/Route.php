@@ -374,10 +374,9 @@ class Route implements QueryRouteInterface {
             throw new \InvalidArgumentException;
         }
         $callback = $this->get( $which );
-        if ( ! is_callable( $callback ) ) {
-            throw new \DomainException;
+        if ( is_callable( $callback ) ) {
+            return call_user_func_array( $callback, $args );
         }
-        return call_user_func_array( $callback, $args );
     }
 
 }

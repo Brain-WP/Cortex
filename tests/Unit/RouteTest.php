@@ -13,13 +13,10 @@ class RouteTest extends TestCase {
         return $route;
     }
 
-    /**
-     * @expectedException \DomainException
-     */
-    function testAfterFailsIfBadCallbable() {
+    function testAfterNullIfNotCallbable() {
         $route = $this->get();
         $route->set( 'after', 'foo' );
-        $route->runAfter();
+        assertNull( $route->runAfter() );
     }
 
     function testAfter() {
