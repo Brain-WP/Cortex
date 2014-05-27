@@ -227,8 +227,7 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
             unset( $args['_route'] );
             $this->setMatchedArgs( $args );
             return TRUE;
-        } catch ( Exception $e ) {
-            unset( $e );
+        } catch ( \Exception $e ) {
             return FALSE;
         }
     }
