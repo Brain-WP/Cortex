@@ -144,4 +144,28 @@ class RedirectorTest extends TestCase {
         assertEquals( 'http://www.example.com/foo', $ctrl->getTo() );
     }
 
+    function testGetToDynamic() {
+        $url = 'http://www.example.com/{bar}/{baz}/';
+        $route = \Mockery::mock( 'Brain\Cortex\Route' );
+        $route->shouldReceive( 'get' )->with( 'redirectto' )->andReturn( $url );
+        $ctrl = $this->get();
+        $ctrl->shouldReceive( 'getRoute' )->withNoArgs()->andReturn( $route );
+        $args = [ 'bar' => 'news', 'baz' => '2014' ];
+        $ctrl->shouldReceive( 'getMatchedArgs' )->withNoArgs()->andReturn( $args );
+        assertEquals( 'http://www.example.com/news/2014/', $ctrl->getTo() );
+    }
+
+    function testGetToDynamicFromRequest() {
+        $url = 'http://www.example.com/{bar}/{baz}/';
+        $route = \Mockery::mock( 'Brain\Cortex\Route' );
+        $route->shouldReceive( 'get' )->with( 'redirectto' )->andReturn( $url );
+        $ctrl = $this->get();
+        $ctrl->shouldReceive( 'getRoute' )->withNoArgs()->andReturn( $route );
+        $args = [ 'bar' => 'news' ];
+        $request = $ctrl->getRequest();
+        $request->mock( 'request', 'baz', '2010' );
+        $ctrl->shouldReceive( 'getMatchedArgs' )->withNoArgs()->andReturn( $args );
+        assertEquals( 'http://www.example.com/news/2010/', $ctrl->getTo() );
+    }
+
 }
