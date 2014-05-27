@@ -28,17 +28,32 @@ class GroupContainer implements GroupContainerInterface {
     }
 
     public function mergeGroup( RouteInterface $route ) {
-        $index = $route->get( 'group' );
-        if ( is_string( $index ) && ! empty( $index ) ) {
-            $group = $this->getGroup( $index );
-            if ( ! is_array( $group ) ) {
-                throw new \UnexpectedValueException;
+        $id = $route->get( 'group' );
+        if ( empty( $id ) || ( ! is_string( $id ) && ! is_array( $id ) ) ) return $route;
+        $group = [ ];
+        if ( is_string( $id ) ) {
+            $group = $this->getGroupData( $id );
+        } elseif ( is_array( $id ) ) {
+            $group = [ ];
+            foreach ( $id as $group_id ) {
+                $group = array_merge( $group, $this->getGroupData( $group_id ) );
             }
-            foreach ( $group as $key => $value ) {
+        }
+        $filtered = ! empty( $group ) ?
+            \Brain\stringKeyed( array_unique( array_filter( $group ) ) ) :
+            FALSE;
+        if ( ! empty( $filtered ) ) {
+            foreach ( $filtered as $key => $value ) {
                 $route->set( $key, $value );
             }
         }
         return $route;
+    }
+
+    private function getGroupData( $id ) {
+        if ( ! is_string( $id ) || $id === '' ) return [ ];
+        $data = $this->getGroup( $id ) ? : [ ];
+        return is_array( $data ) ? $data : [ ];
     }
 
 }
