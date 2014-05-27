@@ -13,7 +13,9 @@ class FallbackQueryBuilderTest extends TestCase {
             } );
         $ctrl = \Mockery::mock( 'Brain\Cortex\Controllers\FallbackQueryBuilder' )->makePartial();
         $ctrl->shouldReceive( 'getFilter' )->withNoArgs()->andReturn( $filter );
-        $ctrl->shouldReceive( 'getRequest' )->andReturn( new \Brain\Cortex\Tests\MockedRequest );
+        $request = \Mockery::mock( 'Brain\Request' );
+        $request->shouldReceive( 'getRequest->getRaw' )->andReturn( [ ] );
+        $ctrl->shouldReceive( 'getRequest' )->andReturn( $request );
         $hooks = new \Brain\Cortex\Tests\MockedHooks;
         if ( ! is_null( $template ) ) {
             $hooks->mock( 'cortex.fallback_template', $template );

@@ -49,7 +49,7 @@ class QueryVarsFilter implements RequestableInterface {
         ];
         $args = wp_parse_args( $args, $default );
         if ( $args['qsmerge'] ) {
-            $vars = array_merge( $vars, $this->getRequest()->query() );
+            $vars = array_merge( $vars, $this->getRequest()->getQuery()->getRaw() );
         }
         if ( $args['autocustomvars'] === TRUE ) {
             $allow = array_filter( array_merge( $this->getWPVars(), array_keys( $vars ) ) );

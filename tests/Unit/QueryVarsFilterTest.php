@@ -8,8 +8,8 @@ class QueryVarsFilterTest extends TestCase {
         \WP_Mock::wpFunction( 'wp_parse_args', [ 'return' => function( $args, $default ) {
             return array_merge( (array) $default, (array) $args );
         } ] );
-        $request = new \Brain\Cortex\Tests\MockedRequest;
-        $request->mock( 'query', '__all', $query );
+        $request = \Mockery::mock( 'Brain\Request' );
+        $request->shouldReceive( 'getQuery->getRaw' )->andReturn( $query );
         $filter = \Mockery::mock( 'Brain\Cortex\QueryVarsFilter' )->makePartial();
         $filter->shouldReceive( 'getRequest' )->withNoArgs()->andReturn( $request );
         return $filter;

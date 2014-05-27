@@ -9,9 +9,6 @@ class MockedRequest extends \Brain\Request {
     public function __call( $name, $args ) {
         if ( ! isset( $this->mocked[$name] ) || ! is_array( $this->mocked[$name] ) ) return [ ];
         $arg = ! empty( $args ) ? array_shift( $args ) : FALSE;
-        if ( ! is_string( $arg ) || $arg === '' ) {
-            $arg = '__all';
-        }
         return isset( $this->mocked[$name][$arg] ) ? $this->mocked[$name][$arg] : [ ];
     }
 

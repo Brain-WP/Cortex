@@ -12,7 +12,7 @@ class FallbackControllerTest extends TestCase {
         $request = \Mockery::mock( 'Brain\Request' );
         $pieces = array_fill( 0, $n, 'foo' );
         $request->shouldReceive( 'pathPieces' )->andReturn( $pieces );
-        $request->shouldReceive( 'query' )->andReturn( $query );
+        $request->shouldReceive( 'getQuery->getRaw' )->andReturn( $query );
         $ctrl = $this->get();
         $ctrl->shouldReceive( 'getRequest' )->andReturn( $request );
         $ctrl->shouldReceive( 'isExact' )->andReturn( (bool) $exact );
@@ -56,7 +56,7 @@ class FallbackControllerTest extends TestCase {
     function testShouldNotIfCondition() {
         $ctrl = $this->getMocked( 1, FALSE, [ 'should' => FALSE ] );
         $ctrl->shouldReceive( 'getCondition' )->atLeast( 1 )->andReturn( function( $request ) {
-            $query = $request->query();
+            $query = $request->getQuery()->getRaw();
             return isset( $query['should'] ) && $query['should'];
         } );
         assertFalse( $ctrl->should() );
@@ -65,7 +65,7 @@ class FallbackControllerTest extends TestCase {
     function testShouldIfCondition() {
         $ctrl = $this->getMocked( 1, FALSE, [ 'should' => TRUE ] );
         $ctrl->shouldReceive( 'getCondition' )->atLeast( 1 )->andReturn( function( $request ) {
-            $query = $request->query();
+            $query = $request->getQuery()->getRaw();
             return isset( $query['should'] ) && $query['should'];
         } );
         assertTrue( $ctrl->should() );

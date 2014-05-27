@@ -63,7 +63,7 @@ class FallbackQueryBuilder extends FallbackController implements QueryBuilderInt
      */
     public function run() {
         $this->getHooks()->trigger( 'cortex.pre_query_vars_build', $this );
-        $vars = $this->buildQueryVars( $this->getRequest()->request() );
+        $vars = $this->buildQueryVars( $this->getRequest()->getRequest()->getRaw() );
         if ( ! empty( $vars ) && is_array( $vars ) ) {
             $this->query_args = $vars;
             $this->getHooks()->trigger( 'cortex.query_vars', $this );
