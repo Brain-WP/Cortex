@@ -211,7 +211,7 @@ class Route implements QueryRouteInterface {
      * @return \Brain\Cortex\Route Self
      */
     public function setDefaults( Array $defaults = [ ] ) {
-        return $this->set( 'defaults', $this->stringKeyed( $defaults ) );
+        return $this->set( 'defaults', \Brain\stringKeyed( $defaults ) );
     }
 
     /**
@@ -257,7 +257,7 @@ class Route implements QueryRouteInterface {
      * @return \Brain\Cortex\Route Self
      */
     public function setRequirements( Array $requirements = [ ] ) {
-        return $this->set( 'requirements', $this->stringKeyed( $requirements ) );
+        return $this->set( 'requirements', \Brain\stringKeyed( $requirements ) );
     }
 
     /**
@@ -378,14 +378,6 @@ class Route implements QueryRouteInterface {
             throw new \DomainException;
         }
         return call_user_func_array( $callback, $args );
-    }
-
-    private function stringKeyed( Array $array = [ ] ) {
-        if ( ! empty( $array ) ) {
-            $keys = array_filter( array_keys( $array ), 'is_string' );
-            $array = empty( $keys ) ? [ ] : array_intersect_key( $array, array_flip( $keys ) );
-        }
-        return $array;
     }
 
 }
