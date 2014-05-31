@@ -45,6 +45,8 @@ class GroupContainerTest extends TestCase {
     function testMergeGroup() {
         $route = \Mockery::mock( 'Brain\Cortex\RouteInterface' );
         $route->shouldReceive( 'get' )->with( 'group' )->andReturn( 'foo' );
+        $route->shouldReceive( 'get' )->with( 'foo' )->once()->andReturnNull();
+        $route->shouldReceive( 'get' )->with( 'bar' )->once()->andReturnNull();
         $route->shouldReceive( 'set' )->with( 'foo', 1 )->once()->andReturnSelf();
         $route->shouldReceive( 'set' )->with( 'bar', 2 )->once()->andReturnSelf();
         $gc = \Mockery::mock( 'Brain\Cortex\GroupContainer' )->makePartial();
@@ -55,6 +57,9 @@ class GroupContainerTest extends TestCase {
     function testMergeGroupMultiple() {
         $route = \Mockery::mock( 'Brain\Cortex\RouteInterface' );
         $route->shouldReceive( 'get' )->with( 'group' )->andReturn( [ 'foo', 'foo2' ] );
+        $route->shouldReceive( 'get' )->with( 'foo' )->once()->andReturnNull();
+        $route->shouldReceive( 'get' )->with( 'bar' )->once()->andReturnNull();
+        $route->shouldReceive( 'get' )->with( 'foo2' )->once()->andReturnNull();
         $route->shouldReceive( 'set' )->with( 'foo', 1 )->once()->andReturnSelf();
         $route->shouldReceive( 'set' )->with( 'bar', 2 )->once()->andReturnSelf();
         $route->shouldReceive( 'set' )->with( 'foo2', 3 )->once()->andReturnSelf();
@@ -67,6 +72,9 @@ class GroupContainerTest extends TestCase {
     function testMergeGroupSkipDuplicateAndNonKeyed() {
         $route = \Mockery::mock( 'Brain\Cortex\RouteInterface' );
         $route->shouldReceive( 'get' )->with( 'group' )->andReturn( [ 'foo', 'foo2' ] );
+        $route->shouldReceive( 'get' )->with( 'foo' )->once()->andReturnNull();
+        $route->shouldReceive( 'get' )->with( 'bar' )->once()->andReturnNull();
+        $route->shouldReceive( 'get' )->with( 'foo2' )->once()->andReturnNull();
         $route->shouldReceive( 'set' )->with( 'foo', 1 )->once()->andReturnSelf();
         $route->shouldReceive( 'set' )->with( 'bar', 2 )->once()->andReturnSelf();
         $route->shouldReceive( 'set' )->with( 'foo2', 3 )->once()->andReturnSelf();

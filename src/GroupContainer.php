@@ -44,7 +44,9 @@ class GroupContainer implements GroupContainerInterface {
             FALSE;
         if ( ! empty( $filtered ) ) {
             foreach ( $filtered as $key => $value ) {
-                $route->set( $key, $value );
+                if ( is_null( $route->get( $key ) ) ) {
+                    $route->set( $key, $value );
+                }
             }
         }
         return $route;
