@@ -4,6 +4,9 @@ Cortex is **routing system for WordPress** based on the well-known and affordabl
 
 ![Cortex][2]
 
+[![Build Status](https://api.travis-ci.org/Giuseppe-Mazzapica/Cortex.svg)](https://travis-ci.org/Giuseppe-Mazzapica/Cortex)
+
+
 Using Cortex is possible tell WordPress what to do when a specific url, or better, a specific class of urls, are visited by users.
 
 It is a package (not full plugin) and makes use of [**Composer**][3] to be embedded in larger projects.
