@@ -91,17 +91,21 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
      */
     public function buildQueryVars( Array $vars = [ ] ) {
         $route = $this->getRoute();
+        $query_vars = $this->runQueryCallback( $route, $vars );
         $args = [
-            'qsmerge'        => (bool) $route->get( 'qsmerge' ),
-            'autocustomvars' => (bool) $route->get( 'autocustomvars' ),
-            'customvars'     => (array) $route->get( 'customvars' ),
-            'skipvars'       => (array) $route->get( 'skipvars' ),
+            'qsmerge'        => TRUE,
+            'autocustomvars' => TRUE,
+            'customvars'     => [ ],
+            'skipvars'       => [ ]
         ];
-        return $this->getFilter()->filter( $vars, $args );
+        foreach ( $args as $key => $def ) {
+            $args[$key] = ! is_null( $route->get( $key ) ) ? $route->get( $key ) : $def;
+        }
+        return $this->getFilter()->filter( $query_vars, $args );
     }
 
     private function build( FrontendRouteInterface $route, Array $matches = [ ] ) {
-        $query_vars = $this->runQueryCallback( $route, $this->buildQueryVars( $matches ) );
+        $query_vars = $this->buildQueryVars( $matches );
         if ( ! empty( $query_vars ) && is_array( $query_vars ) ) {
             $this->getHooks()->trigger( 'cortex.query_vars', $query_vars );
             $this->query_args = $query_vars;
