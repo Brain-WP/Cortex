@@ -327,6 +327,11 @@ class Route implements QueryRouteInterface {
         }
         $requirements = $this->getRequirements() ? : [ ];
         $defaults = $this->getDefaults() ? : [ ];
+        if ( $this->get( 'paged' ) === TRUE || $this->get( 'paged' ) === 'single' ) {
+            $var = $this->get( 'paged' ) === 'single' ? 'page' : 'paged';
+            $defaults[$var] = 1;
+            $this->clonePaged( $var );
+        }
         $inner->setPath( $path );
         $inner->setRequirements( $requirements );
         $inner->setDefaults( $defaults );
@@ -335,15 +340,11 @@ class Route implements QueryRouteInterface {
             if ( is_null( $get ) || ( ! is_scalar( $get ) && ! is_array( $get ) ) ) continue;
             call_user_func( [$inner, "set{$var}" ], $get );
         }
-        if ( $this->get( 'paged' ) === TRUE || $this->get( 'paged' ) === 'single' ) {
-            $this->clonePaged();
-        }
         return $inner;
     }
 
-    public function clonePaged() {
+    public function clonePaged( $var = 'paged' ) {
         $id = $this->getId() . '-paged';
-        $var = $this->get( 'paged' ) === 'single' ? 'page' : 'paged';
         $base = $GLOBALS['wp_rewrite']->pagination_base;
         $path = trailingslashit( $this->getPath() ) . $base . '/{' . $var . '}';
         $requirements = $this->getRequirements() ? : [ ];
@@ -357,17 +358,6 @@ class Route implements QueryRouteInterface {
                 ->setDefaults( $defaults )
                 ->set( 'paged', FALSE )
                 ->add();
-    }
-
-    public function getDefaultSettings() {
-        return [
-            'template'       => '',
-            'querycallback'  => NULL, // callable
-            'qsmerge'        => TRUE,
-            'autocustomvars' => TRUE,
-            'customvars'     => [ ],
-            'skipvars'       => [ ]
-        ];
     }
 
     public function setQuery( $callback = NULL ) {
