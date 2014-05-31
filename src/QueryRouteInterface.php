@@ -17,13 +17,6 @@ interface QueryRouteInterface extends FrontendRouteInterface {
     public function setQuery( $callback = NULL );
 
     /**
-     * Get default route settings that make sense when using query builder or redirector routable.
-     *
-     * @return array
-     */
-    public function getDefaultSettings();
-
-    /**
      * Set a template for the route. Make sense when using default query builder routable.
      *
      * @param string $template

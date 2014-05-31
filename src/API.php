@@ -65,9 +65,6 @@ class API {
         $route->setRequirements( $args['requirements'] );
         $route->setMethods( $args['methods'] );
         $route->setHost( $args['host'] );
-        foreach ( $route->getDefaultSettings() as $key => $value ) {
-            $route->set( $key, $value );
-        }
         $router = $this->getBrain()->get( 'cortex.router' );
         return $route->setRouter( $router );
     }
