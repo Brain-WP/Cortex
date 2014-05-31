@@ -175,10 +175,18 @@ class Worker implements HooksableInterface, RequestableInterface {
         return $this->maybeQuery( $controller, $result );
     }
 
+    /**
+     * When routable is a query builder build a result array, to be used by WP clas, when routable
+     * is a redirector exit.
+     * In all other cases just return what controller run() method returned.
+     *
+     * @param \Brain\Cortex\Controllers\ControllerInterface $controller
+     * @param mixed $result
+     * @return \Brain\Cortex\query_class
+     */
     function maybeQuery( Controller $controller, $result ) {
         if ( $controller instanceof Builder && $controller->getQueryArgs() ) {
-            $this->query_vars = $controller->getQueryArgs();
-            $result = [ $controller, $this->query_vars ];
+            $result = [ $controller, $controller->getQueryArgs() ];
             $query_class = trim( $controller->getQueryClass(), '\\' );
             if ( $query_class !== 'WP_Query' && class_exists( $query_class ) ) {
                 $result[] = new $query_class;

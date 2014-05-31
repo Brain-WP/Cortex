@@ -10,25 +10,10 @@ It is a package (not full plugin) and makes use of [**Composer**][3] to be embed
 
 It is part of a [**The Brain WP Project**][4].
 
-API
----
+Table of Contents
+-----------------
 
-Cortex package comes with an API that ease its usage, without having to get, instantiate or digging into package objects. API is defined in a class, stored in the Brain (Pimple) container with the id: `"cortex.api"`. So is possible to get it using Brain instance, something like: `$api = Brain\Container::instance()->get("cortex.api")`, and then call all API function on the instance got in that way. However that's not very easy to use, this is the reason why package also comes with a **facade class**. The term is not referred to [façade pattern][5], but more to [Laravel facades][6], whence the approach (not actual code) comes from: no real static method is present in the class, but a single `__callstatic` method that *proxy* API methods to proper instantiated objects.
-
-The facade class is named **Routes** inside Brain namespace. Using it, add an (very simple) route is something like:
-
-    Brain\Routes::add( '/home' )->defaults( [ 'pagename' => 'home' ] )->template( 'custom-home.php' );
-
-
-Embed in OOP projects
----------------------
-
-The static facade class is easy to use, however using in that way inside other classes, create there hardcoded dependency to Cortex. Moreover, unit testing other classes in isolation becomes pratically impossible. To solve these problems, the easiest way is to use composition via dependency injection. In facts, the Brain\Routes facade class can be used in dynamic way, e.g. the simple route added above can also be added like so:
-
-    $routes = new Brain\Routes;
-    $routes->add( '/home' )->defaults( [ 'pagename' => 'home' ] )->template( 'custom-home.php' );
-
-Looking at Brain\Routes class code, you'll see there is **absolutely no difference** in the two methods, but using the latter is possible to inject an instance of the class inside other classes.
+[TOC]
 
 Requirements
 ------------
