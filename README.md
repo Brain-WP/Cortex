@@ -10,10 +10,78 @@ It is a package (not full plugin) and makes use of [**Composer**][3] to be embed
 
 It is part of a [**The Brain WP Project**][4].
 
-Table of Contents
------------------
+Introduction
+------------
 
-[TOC]
+WordPress frontend workflow can be summarized in:
+
+ 1. an url trigger a query
+ 2. a query is connected to a template using template hierarchy
+ 3. query runs and results are shown using related template
+
+However, when the wanted query become complex, that workflow doesn't work anymore. As example, let's assume we have an url like:
+
+    example.com/products/featured/{cat_name}/{orderby}/{order}/
+    
+where `{cat_name}`, `{orderby}` and `{order}` are variable parts. Now we want that when an url like that is visited, query arguments used are:
+
+    $args = array(
+      'post_type' => 'products',
+      'meta_query' => array(
+        array( 'key' => 'featured' 'value' => '1' ),
+        array( 'key' => 'in_stock' 'value' => '1' )
+      ),
+      'tax_query' => array(
+        array(
+          'taxonomy' => 'product_cat',
+          'terms' => array( 'special', $cat_name ), // $cat_name taken from url
+          'include_children' => false
+        )
+      ),
+      'orderby' => $orderby, // $orderby taken from url
+      'order' => $order // $order taken from url
+    );
+
+After that, we also want to use the template `'custom-products.php'` to display results.
+
+Nothing special, just a common feature in an average e-commerce site.
+    
+However, to do this task, using WordPress core features we have to:
+
+ 1. Write a rewrite rule to handle the url
+ 2. Flush rewrite rules, via code or manually, visiting permalink setting page
+ 3. Filter `pre_get_posts` to add argument like `meta_query` and `tax_query` that can't be added via url. This is hard, because is not easy to recognize if the query object passed via `pre_get_posts` is the right one, i.e. is the one we have to modify. 
+ 4. Add a filter on `template_include` to use our custom template
+
+So much code! Moreover, the whole logic is parted in different places (function that add rule, `pre_get_posts` hook, function for custom template, rules flushing...) This makes our code hard to mantain, read and debug.
+
+Using Cortex, the **same** result is obtained using:
+
+    Brain\Routes::add('/products/featured/{cat_name}/{orderby}/{order}')
+        ->requirements( [ 'cat_name' => '[a-z]+', 'orderby' => 'name|date', 'order' => 'asc|desc' ] )
+        ->template( 'custom-products.php' )
+        ->query( function( $matches ) {
+            return [
+                'post_type' => 'products',
+                'meta_query' => [
+                    [ 'key' => 'featured', 'value' => '1' ],
+                    [ 'key' => 'in_stock', 'value' => '1' ]
+                ],
+                'tax_query' => [
+                    [
+                        'taxonomy' => 'product_cat',
+                        'terms' => [ 'special', $matches['cat_name'] ],
+                        'include_children' => false
+                    ]
+                ],
+                'orderby' => $matches['orderby'],
+                'order' => strtoupper( $matches['order'] )
+            ];
+    });
+    
+It's far less code, the whole logic is in one place, everything is very readable, there is no need to flush rules and everything is perfectly compatible with WordPress core.
+
+If you think this is awesome, you should know that is only a portion of what Cortex can do.
 
 Requirements
 ------------
