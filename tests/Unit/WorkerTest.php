@@ -149,7 +149,6 @@ class WorkerTest extends TestCase {
         $worker = \Mockery::mock( 'Brain\Cortex\Worker' )->makePartial();
         $expected = [ $controller, $args, new \Brain\Cortex\Tests\ActionRoutableStub ];
         assertEquals( $expected, $worker->maybeQuery( $controller, 'foo' ) );
-        assertEquals( $args, $worker->query_vars );
     }
 
 }
