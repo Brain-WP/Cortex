@@ -92,14 +92,9 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
     public function buildQueryVars( Array $vars = [ ] ) {
         $route = $this->getRoute();
         $query_vars = $this->runQueryCallback( $route, $vars );
-        $args = [
-            'qsmerge'        => TRUE,
-            'autocustomvars' => TRUE,
-            'customvars'     => [ ],
-            'skipvars'       => [ ]
-        ];
-        foreach ( $args as $key => $def ) {
-            $args[$key] = ! is_null( $route->get( $key ) ) ? $route->get( $key ) : $def;
+        $args = [ ];
+        foreach ( [ 'qsmerge', 'autocustomvars', 'customvars', 'skipvars' ] as $key ) {
+            if ( ! is_null( $route->get( $key ) ) ) $args[$key] = $route->get( $key );
         }
         return $this->getFilter()->filter( $query_vars, $args );
     }
