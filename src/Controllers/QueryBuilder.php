@@ -108,7 +108,8 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
                 'cortex.route_template', $route->get( 'template' ), $route
             );
             if ( is_string( $template ) && ! empty( $template ) ) {
-                $this->getTemplateLoader()->load( $template );
+                $unfiltered = (bool) $route->get( 'template_unfiltered' );
+                $this->getTemplateLoader()->load( $template, $unfiltered );
             }
             return TRUE;
         }

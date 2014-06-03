@@ -21,6 +21,8 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
 
     private $template;
 
+    private $unfiltered = FALSE;
+
     public function __construct( \Brain\Hooks $hooks ) {
         $this->hooks = $hooks;
     }
@@ -29,11 +31,13 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
      * Method used to add a 'template_redirect' action hook to loadTemplate() method that will load
      * the given template.
      *
-     * @param mixed $template the template(s) to load
+     * @param mixed $template   The template(s) to load
+     * @param bool $unfiltered  If true found template is not filtered using core hooks
      * @return void
      * @access public
      */
-    public function load( $template = NULL ) {
+    public function load( $template = NULL, $unfiltered = FALSE ) {
+        $this->unfiltered = $unfiltered;
         if ( ! did_action( 'template_redirect' ) && is_string( $template ) && $template !== '' ) {
             $this->template = $template;
             $this->getHooks()->addAction(
@@ -77,9 +81,11 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
             } elseif ( empty( $type ) ) {
                 $type = 'index';
             }
-            $path = $this->getHooks()->filter(
-                'template_include', $this->getHooks()->filter( "{$type}_template", $path )
-            );
+            if ( ! $this->unfiltered ) {
+                $path = $this->getHooks()->filter(
+                    'template_include', $this->getHooks()->filter( "{$type}_template", $path )
+                );
+            }
         }
         if ( empty( $path ) ) return FALSE;
         $function = $this->getFunction();

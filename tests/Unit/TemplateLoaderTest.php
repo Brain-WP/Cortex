@@ -98,13 +98,49 @@ class TemplateLoaderTest extends TestCase {
         } );
         $loader->shouldReceive( 'setDirectories' )->once()->with( TRUE )->andReturnNull();
         $loader->shouldReceive( 'getTemplateFile' )->once()->with( 'foo' )->andReturn( '/path/to/foo' );
-        $loader->shouldReceive( 'getFunction' )->once()->withNoArgs()->andReturn( function( $path ) {
-            if ( $path !== '/path/to/foo/filter/filter' ) {
-                throw new \RuntimeException;
-            }
-            return TRUE;
+        $loader->shouldReceive( 'getFunction' )
+            ->once()
+            ->withNoArgs()
+            ->andReturn( function( $path ) {
+                if ( $path !== '/path/to/foo/filter/filter' ) {
+                    throw new \RuntimeException;
+                }
+                return TRUE;
+            } );
+        $loader->shouldReceive( 'doneAndExit' )
+            ->once()
+            ->with( 'template_loaded' )
+            ->andReturn( 'Main Loaded!' );
+        assertEquals( 'Main Loaded!', $loader->loadFile( 'foo', TRUE ) );
+    }
+
+    function testLoadFileMainUnfiltered() {
+        \WP_Mock::wpFunction( 'did_action', [ 'return' => TRUE ] );
+        $GLOBALS['wp_query'] = FALSE;
+        $loader = $this->get();
+        $loader->load( NULL, TRUE );
+        $hooks = $loader->getHooks();
+        $hooks->mock( 'index_template', '/path/to/foo/filter', function( $path ) {
+            return $path === '/path/to/foo';
         } );
-        $loader->shouldReceive( 'doneAndExit' )->once()->with( 'template_loaded' )->andReturn( 'Main Loaded!' );
+        $hooks->mock( 'template_include', '/path/to/foo/filter/filter', function($path) {
+            return $path === '/path/to/foo/filter';
+        } );
+        $loader->shouldReceive( 'setDirectories' )->once()->with( TRUE )->andReturnNull();
+        $loader->shouldReceive( 'getTemplateFile' )->once()->with( 'foo' )->andReturn( '/path/to/foo' );
+        $loader->shouldReceive( 'getFunction' )
+            ->once()
+            ->withNoArgs()
+            ->andReturn( function( $path ) {
+                if ( $path !== '/path/to/foo' ) {
+                    throw new \RuntimeException;
+                }
+                return TRUE;
+            } );
+        $loader->shouldReceive( 'doneAndExit' )
+            ->once()
+            ->with( 'template_loaded' )
+            ->andReturn( 'Main Loaded!' );
         assertEquals( 'Main Loaded!', $loader->loadFile( 'foo', TRUE ) );
     }
 

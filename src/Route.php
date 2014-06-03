@@ -63,11 +63,11 @@ class Route implements QueryRouteInterface {
         ];
         $aliases = [
             'defaults', 'host', 'methods', 'requirements', 'schemes',
-            'after', 'before', 'id', 'template', 'priority', 'path', 'query'
+            'after', 'before', 'id', 'template', 'templateunfiltered', 'priority', 'path', 'query'
         ];
         if ( in_array( strtolower( $name ), $set_aliases, TRUE ) ) {
             array_unshift( $arguments, strtolower( $name ) );
-            return call_user_func_array( [$this, 'set' ], $arguments );
+            return call_user_func_array( [ $this, 'set' ], $arguments );
         } elseif ( in_array( strtolower( $name ), $aliases, TRUE ) ) {
             $method = "set" . ucfirst( $name );
             return call_user_func_array( [$this, $method ], $arguments );
@@ -372,6 +372,13 @@ class Route implements QueryRouteInterface {
             throw new \InvalidArgumentException;
         }
         return $this->set( 'template', $template );
+    }
+
+    public function setTemplateUnfiltered( $template = '' ) {
+        if ( ! is_string( $template ) || empty( $template ) ) {
+            throw new \InvalidArgumentException;
+        }
+        return $this->set( 'template', $template )->set( 'template_unfiltered', TRUE );
     }
 
     private function check() {
