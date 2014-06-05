@@ -75,16 +75,16 @@ class API {
      * @param string $path          Path to match
      * @param string|\Closure $to   Path to redirect or a closure that generate it
      * @param int $status           HTTP status for redirect
-     * @param array $options        Options for the route. See add() method for keys and defaults.
      * @param bool $external        Allow external redirect or not
+     * @param array $options        Options for the route. See add() method for keys and defaults.
      * @param string $id            Id for the route object
      * @param int $priority         Priority for the route
      * @return \Brain\Cortex\RouteInterface
      * @see Brain\Cortex\Api::create()
      * @since 0.1
      */
-    function createRedirect( $path = '', $to = '', $status = 301, Array $options = [ ],
-                             $external = FALSE, $id = NULL, $priority = NULL ) {
+    function createRedirect( $path = '', $to = '', $status = 301, $external = FALSE,
+                             Array $options = [ ], $id = NULL, $priority = NULL ) {
         if ( ! isset( $options['methods'] ) ) {
             $options['methods'] = [ 'GET' ];
         }
@@ -104,16 +104,16 @@ class API {
      * @param string $path          Path to match
      * @param string|\Closure $to   Path to redirect or a closure that generate it
      * @param int $status           HTTP status for redirect
-     * @param array $options        Options for the route. See add() method for keys and defaults.
      * @param bool $external        Allow external redirect or not
+     * @param array $options        Options for the route. See add() method for keys and defaults.
      * @param string $id            Id for the route object
      * @param int $priority         Priority for the route
      * @return \Brain\Cortex\RouteInterface
      * @since 0.1
      */
-    function redirect( $path = '', $to = '', $status = 301, Array $options = [ ], $external = FALSE,
+    function redirect( $path = '', $to = '', $status = 301, $external = FALSE, Array $options = [ ],
                        $id = NULL, $priority = NULL ) {
-        return $this->createRedirect( $path, $to, $status, $options, $external, $id, $priority )->add();
+        return $this->createRedirect( $path, $to, $status, $external, $options, $id, $priority )->add();
     }
 
     /**
