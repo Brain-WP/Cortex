@@ -70,7 +70,7 @@ class APITest extends TestCaseFunctional {
 
     function testCreateRedirect() {
         $api = new API;
-        $route = $api->createRedirect( '/foo', '/foo/bar/baz', 301, [ ], TRUE );
+        $route = $api->createRedirect( '/foo', '/foo/bar/baz', 301, TRUE );
         assertEquals( [ 'GET' ], $route->getMethods() );
         assertEquals( 'cortex.redirector', $route->getBinding() );
         assertEquals( '/foo/bar/baz', $route->getRedirectTo() );
