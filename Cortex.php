@@ -7,7 +7,7 @@ class Cortex {
             return;
         }
         add_action( 'brain_init', function( $brain ) {
-            $brain->addModule( new Brain\Cortex\BrainModule );
+            $brain->addModule( new Cortex\BrainModule );
         } );
     }
 
