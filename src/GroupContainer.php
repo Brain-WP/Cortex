@@ -39,9 +39,7 @@ class GroupContainer implements GroupContainerInterface {
                 $group = array_merge( $group, $this->getGroupData( $group_id ) );
             }
         }
-        $filtered = ! empty( $group ) ?
-            \Brain\stringKeyed( array_unique( array_filter( $group ) ) ) :
-            FALSE;
+        $filtered = ! empty( $group ) ? \Brain\stringKeyed( $group ) : FALSE;
         if ( ! empty( $filtered ) ) {
             foreach ( $filtered as $key => $value ) {
                 $key = strtolower( $key );
