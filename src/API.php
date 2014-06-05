@@ -141,7 +141,7 @@ class API {
      * @param \Closure $condition
      * @param int $min_pieces
      * @param bool $exact
-     * @return void
+     * @return \Brain\Cortex\Controllers\Router
      * @since 0.1
      */
     function useFallback( $bind = '', Controllers\FallbackController $object = NULL,
@@ -170,12 +170,12 @@ class API {
      * @param \Closure $condition
      * @param int $min_pieces
      * @param boolean $exact
-     * @return void
+     * @return  \Brain\Cortex\Controllers\Router
      * @since 0.1
      */
     function useQueryFallback( $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
         $bind = 'cortex.fallback_query_builder';
-        return $this->registerFallback( $bind, NULL, $condition, $min_pieces, $exact );
+        return $this->useFallback( $bind, NULL, $condition, $min_pieces, $exact );
     }
 
     /**
@@ -197,7 +197,7 @@ class API {
      * Register a Controller factory closure in the container
      *
      * @param type $id Controller id
-     * @return \Brain\Controller
+     * @return \Brain\Container
      * @since 0.1
      */
     function registerController( $id = '', \Closure $factory = NULL ) {
