@@ -108,9 +108,8 @@ class FallbackQueryBuilder extends FallbackController implements QueryBuilderInt
     public function autoCustomVars( $set = NULL ) {
         if ( ! is_null( $set ) ) {
             $this->auto_custom_vars = (bool) $set;
-            return $this->auto_custom_vars;
         }
-        return $this;
+        return $this->auto_custom_vars;
     }
 
     /**
