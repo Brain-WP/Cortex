@@ -79,7 +79,7 @@ class Redirector extends RoutableBase {
         } elseif ( is_string( $to ) ) {
             $matches = [ ];
             preg_match_all( "|\{[\w]+\}|i", $to, $matches, PREG_PATTERN_ORDER, 0 );
-            if ( isset( $matches[0] ) || empty( $matches[0] ) ) {
+            if ( isset( $matches[0] ) && ! empty( $matches[0] ) ) {
                 $to = $this->getToDynamic( $to, $args, $matches );
             }
         }
