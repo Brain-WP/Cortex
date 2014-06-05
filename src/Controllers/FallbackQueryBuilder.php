@@ -68,8 +68,9 @@ class FallbackQueryBuilder extends FallbackController implements QueryBuilderInt
             $this->query_args = $vars;
             $this->getHooks()->trigger( 'cortex.query_vars', $this );
             $template = $this->getHooks()->filter( 'cortex.fallback_template', NULL, $this );
+            $unfiltered = $this->getHooks()->filter( 'cortex.fallback_template_unfiltered', FALSE );
             if ( is_string( $template ) && ! empty( $template ) ) {
-                $this->getTemplateLoader()->load( $template );
+                $this->getTemplateLoader()->load( $template, $unfiltered );
             }
             return TRUE;
         }

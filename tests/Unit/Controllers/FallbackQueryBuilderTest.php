@@ -39,7 +39,7 @@ class FallbackQueryBuilderTest extends TestCase {
     function testRunTemplate() {
         $ctrl = $this->get( [ 'foo' => 'bar' ], 'foo' );
         $loader = \Mockery::mock( 'Brain\Cortex\TemplateLoader' );
-        $loader->shouldReceive( 'load' )->with( 'foo' )->once()->andReturnNull();
+        $loader->shouldReceive( 'load' )->with( 'foo', FALSE )->once()->andReturnNull();
         $ctrl->shouldReceive( 'getTemplateLoader' )->withNoArgs()->andReturn( $loader );
         assertTrue( $ctrl->run() );
         assertEquals( [ 'foo' => 'bar' ], $ctrl->getQueryArgs() );
