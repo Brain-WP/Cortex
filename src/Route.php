@@ -345,8 +345,8 @@ class Route implements QueryRouteInterface {
 
     public function clonePaged( $var = 'paged' ) {
         $id = $this->getId() . '-paged';
-        $base = $GLOBALS['wp_rewrite']->pagination_base;
-        $path = trailingslashit( $this->getPath() ) . $base . '/{' . $var . '}';
+        $base = $var === 'paged' ? trailingslashit( $GLOBALS['wp_rewrite']->pagination_base ) : '';
+        $path = trailingslashit( $this->getPath() ) . $base . '{' . $var . '}';
         $requirements = $this->getRequirements() ? : [ ];
         $requirements[$var] = '[0-9]+';
         $defaults = $this->getDefaults() ? : [ ];
