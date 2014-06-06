@@ -221,7 +221,7 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
         }
         $method = strtoupper( filter_input( INPUT_SERVER, 'REQUEST_METHOD' ) );
         if ( 'HEAD' === $method && apply_filters( 'exit_on_http_head', TRUE ) ) {
-            $this->doneAndExit();
+            $this->doneAndExit( 'on_http_head' );
         }
         if ( is_robots() ) {
             do_action( 'do_robots' );
