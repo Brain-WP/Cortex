@@ -38,7 +38,7 @@ abstract class ActionRoutable extends RoutableBase {
         $var = $this->getActionVar();
         $action = isset( $args[$var] ) ? $args[$var] : FALSE;
         if ( is_string( $action ) && method_exists( $this, $action ) ) {
-            return call_user_func_array( [ $this, $action ], func_get_args() );
+            return call_user_func_array( [ $this, $action ], $args );
         }
     }
 
