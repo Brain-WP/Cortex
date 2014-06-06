@@ -102,7 +102,7 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
     private function build( FrontendRouteInterface $route, Array $matches = [ ] ) {
         $query_vars = $this->buildQueryVars( $matches );
         if ( ! empty( $query_vars ) && is_array( $query_vars ) ) {
-            $this->getHooks()->trigger( 'cortex.query_vars', $query_vars );
+            $this->getHooks()->trigger( 'cortex.query_vars', $this );
             $this->query_args = $query_vars;
             $template = $this->getHooks()->filter(
                 'cortex.route_template', $route->get( 'template' ), $route
