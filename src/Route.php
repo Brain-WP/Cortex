@@ -229,7 +229,7 @@ class Route implements QueryRouteInterface {
         if ( ! is_string( $host ) ) {
             throw new \InvalidArgumentException;
         }
-        $this->set( 'host', $host );
+        return $this->set( 'host', $host );
     }
 
     /**
