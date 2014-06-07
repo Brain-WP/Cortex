@@ -264,6 +264,7 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
         $https_port = $request->isSecure() ? $request->port() : 443;
         $context->setHttpPort( $http_port );
         $context->setHttpsPort( $https_port );
+        $context->setHost( $request->host() );
         $context->setQueryString( $request->server( 'QUERY_STRING' ) );
         return $context;
     }
