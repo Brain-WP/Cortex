@@ -368,14 +368,14 @@ class Route implements QueryRouteInterface {
     }
 
     public function setTemplate( $template = '' ) {
-        if ( ! is_string( $template ) || empty( $template ) ) {
+        if ( ( ! is_string( $template ) && ! is_array( $template ) ) || empty( $template ) ) {
             throw new \InvalidArgumentException;
         }
         return $this->set( 'template', $template );
     }
 
     public function setTemplateUnfiltered( $template = '' ) {
-        if ( ! is_string( $template ) || empty( $template ) ) {
+        if ( ( ! is_string( $template ) && ! is_array( $template ) ) || empty( $template ) ) {
             throw new \InvalidArgumentException;
         }
         return $this->set( 'template', $template )->set( 'template_unfiltered', TRUE );

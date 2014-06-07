@@ -38,7 +38,7 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
      */
     public function load( $template = NULL, $unfiltered = FALSE ) {
         $this->unfiltered = $unfiltered;
-        if ( ! did_action( 'template_redirect' ) && is_string( $template ) && $template !== '' ) {
+        if ( ! did_action( 'template_redirect' ) && ! empty( $template ) ) {
             $this->template = $template;
             $this->getHooks()->addAction(
                 'cortex.template_load', 'template_redirect', [ $this, 'loadTemplate' ], 50
@@ -69,7 +69,7 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
      * @return boolean
      */
     public function loadFile( $template = '', $main_template = FALSE ) {
-        if ( ! is_string( $template ) || $template === '' ) {
+        if ( ( ! is_string( $template ) && ! is_array( $template ) ) || empty( $template ) ) {
             return FALSE;
         }
         $this->setDirectories( $main_template );

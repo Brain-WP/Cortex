@@ -25,9 +25,9 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
 
     protected $query_args = [ ];
 
-    function __construct( Filter $filter, Loader $template_loader, Request $request, Hooks $hooks ) {
+    function __construct( Filter $filter, Loader $tmplt_loader, Request $request, Hooks $hooks ) {
         $this->filter = $filter;
-        $this->template_loader = $template_loader;
+        $this->template_loader = $tmplt_loader;
         $this->request = $request;
         $this->hooks = $hooks;
     }
@@ -107,7 +107,7 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
             $template = $this->getHooks()->filter(
                 'cortex.route_template', $route->get( 'template' ), $route
             );
-            if ( is_string( $template ) && ! empty( $template ) ) {
+            if ( ( is_string( $template ) || is_array( $template ) ) && ! empty( $template ) ) {
                 $unfiltered = (bool) $route->get( 'template_unfiltered' );
                 $this->getTemplateLoader()->load( $template, $unfiltered );
             }
