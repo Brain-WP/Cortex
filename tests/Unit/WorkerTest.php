@@ -95,8 +95,8 @@ class WorkerTest extends TestCase {
     function testWorkMatched() {
         $args = [ 'foo' => 'bar' ];
         $route = \Mockery::mock( 'Brain\Cortex\RouteInterface' );
-        $route->shouldReceive( 'runBefore' )->withNoArgs()->once()->andReturnNull();
-        $route->shouldReceive( 'runAfter' )->withNoArgs()->once()->andReturnNull();
+        $route->shouldReceive( 'runBefore' )->with( $args )->once()->andReturnNull();
+        $route->shouldReceive( 'runAfter' )->with( $args )->once()->andReturnNull();
         $routable = \Mockery::mock( 'Brain\Cortex\Controllers\RoutableInterface' );
         $routable->shouldReceive( 'run' )->once()->withNoArgs()->andReturn( 'Routable!' );
         $routable->shouldReceive( 'setRoute' )->with( $route )->once()->andReturnNull();

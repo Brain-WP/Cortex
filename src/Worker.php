@@ -164,13 +164,13 @@ class Worker implements HooksableInterface, RequestableInterface {
             $route = $this->getMatched();
             $controller->setRoute( $route );
             $controller->setMatchedArgs( $args );
-            $route->runBefore();
+            $route->runBefore( $args );
         }
         $this->getHooks()->trigger( 'cortex.pre_contoller_run', $controller, $args );
         $result = $controller->run();
         $this->getHooks()->trigger( 'cortex.after_controller_run', $controller, $args );
         if ( $this->getStatus() === 'matched' ) {
-            $this->getMatched()->runAfter();
+            $this->getMatched()->runAfter( $args );
         }
         return $this->maybeQuery( $controller, $result );
     }
