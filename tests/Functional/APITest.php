@@ -41,7 +41,7 @@ class APITest extends TestCaseFunctional {
         assertEquals( 10, $route->getPriority() );
         assertEquals( [ 'foo' => 'bar', 'bar' => 1 ], $route->getDefaults() );
         assertEquals( [ 'foo' => '[a-z]{3}', 'bar' => 'd+' ], $route->getRequirements() );
-        assertEquals( $query, $route->getQueryCallback() );
+        assertEquals( $query, $route->getQuery() );
         assertEquals( 'foo.php', $route->getTemplate() );
         assertEquals( $before, $route->getBefore() );
         assertEquals( 'cortex.closure_routable', $route->getBinding() );

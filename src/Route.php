@@ -364,7 +364,7 @@ class Route implements QueryRouteInterface {
         if ( ! is_callable( $callback ) ) {
             throw new \InvalidArgumentException;
         }
-        return $this->set( 'querycallback', $callback );
+        return $this->set( 'query', $callback );
     }
 
     public function setTemplate( $template = '' ) {

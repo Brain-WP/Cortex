@@ -116,7 +116,7 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
     }
 
     private function runQueryCallback( FrontendRouteInterface $route, Array $matches = [ ] ) {
-        $query_cb = $route->get( 'querycallback' );
+        $query_cb = $route->get( 'query' );
         if ( is_callable( $query_cb ) ) {
             $result = call_user_func( $query_cb, $matches );
             if ( is_array( $result ) ) {
