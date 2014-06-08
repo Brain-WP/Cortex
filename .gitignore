@@ -5,6 +5,5 @@ $RECYCLE.BIN/
 .DS_Store
 .coverage
 .tox
-pages-generator/
 vendor/
 composer.lock
