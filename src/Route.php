@@ -186,7 +186,7 @@ class Route implements QueryRouteInterface {
         if ( ( is_object( $ctrl ) || is_string( $ctrl ) ) && method_exists( $ctrl, $method ) ) {
             $closure = function( $matches, $route, $request ) use( $ctrl, $method, $static ) {
                 $object = is_string( $ctrl ) && ! $static ? new $ctrl : $ctrl;
-                return call_user_func( [$object, $method ], $matches, $route, $request );
+                return call_user_func( [ $object, $method ], $matches, $route, $request );
             };
             return $this->bindToClosure( $closure );
         }
