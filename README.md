@@ -5,7 +5,7 @@ Cortex
 
 **Cortex is routing system for WordPress** based on the well-known and affordable [Symfony Routing Component][2].
 
-It is part of a [The Brain WP Project][3].
+It is part of a the [Brain Project][3].
 
 Requirements, installation and **full documentation** available [here][4].
 
