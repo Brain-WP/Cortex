@@ -42,7 +42,7 @@ class GroupContainer implements GroupContainerInterface {
         $filtered = ! empty( $group ) ? \Brain\stringKeyed( $group ) : FALSE;
         if ( ! empty( $filtered ) ) {
             foreach ( $filtered as $key => $value ) {
-                $key = strtolower( $key );
+                $key = strtolower( $key ) !== 'bindtoclosure' ? strtolower( $key ) : 'binded_closure';
                 if ( is_null( $route->get( $key ) ) ) {
                     $route->set( $key, $value );
                 }

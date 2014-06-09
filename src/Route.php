@@ -113,6 +113,9 @@ class Route implements QueryRouteInterface {
     }
 
     public function set( $index = NULL, $value = NULL ) {
+        if ( $index === 'binded_closure' && $value instanceof \Closure ) {
+            $this->setContext( 'context', 'bindto', 'cortex.closure_routable' );
+        }
         return $this->setContext( 'context', $index, $value );
     }
 
@@ -128,7 +131,7 @@ class Route implements QueryRouteInterface {
         if ( ! is_string( $bind ) || empty( $bind ) ) {
             throw new \InvalidArgumentException;
         }
-        return $this->set( 'bind_to', $bind );
+        return $this->set( 'bindto', $bind );
     }
 
     /**
@@ -140,7 +143,7 @@ class Route implements QueryRouteInterface {
      * @see \Brain\Cortex\Route::bindTo()
      */
     public function bindToClosure( \Closure $closure ) {
-        return $this->bindTo( 'cortex.closure_routable' )->set( 'binded_closure', $closure );
+        return $this->set( 'binded_closure', $closure );
     }
 
     /**
@@ -193,7 +196,7 @@ class Route implements QueryRouteInterface {
     }
 
     public function getBinding() {
-        return $this->get( 'bind_to' );
+        return $this->get( 'bindto' );
     }
 
     public function getRoutable() {
