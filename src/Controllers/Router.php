@@ -180,13 +180,14 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
 
     public function parseRoutes() {
         $matched = FALSE;
-        if ( $this->getRoutes()->count() >= 1 ) {
-            if ( $this->match() ) {
-                $matched = TRUE;
-                $this->route();
-            } else {
-                $this->getHooks()->trigger( 'cortex.not_matched', $this );
-            }
+        $collection = $this->getCollection()->getCollection();
+        $count = $collection instanceof SymfonyCollection ? $collection->count() : 0;
+        if ( $count >= 1 && $this->match() ) {
+            $matched = TRUE;
+            $this->route();
+        }
+        if ( $count >= 1 && ! $matched ) {
+            $this->getHooks()->trigger( 'cortex.not_matched', $this );
         }
         $this->matcher = NULL;
         $this->collection = NULL;
@@ -223,8 +224,9 @@ class Router implements RouterInterface, RequestableInterface, HooksableInterfac
         try {
             $this->setupContext();
             $args = $this->getMatcher()->match( $this->getRequest()->path() );
-            $this->setMatched( $this->getRoutes()->offsetGet( $args['_route'] ) );
-            unset( $args['_route'] );
+            $this->getHooks()->trigger( 'cortex.matcher_result_args', $args, $this );
+            $this->setMatched( $this->getRoutes()->offsetGet( $args[ '_route' ] ) );
+            unset( $args[ '_route' ] );
             $this->setMatchedArgs( $args );
             return TRUE;
         } catch ( \Exception $e ) {

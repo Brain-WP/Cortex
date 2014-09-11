@@ -97,21 +97,23 @@ class RouterTest extends TestCase {
         $router->shouldReceive( 'getCollection' )->withNoArgs()->andReturn( $collection );
         $router->shouldReceive( 'getRoutes' )->withNoArgs()->andReturn( $routes );
         assertEquals( $route, $router->addRoute( $route ) );
-        assertEquals( $route, $routes['added_route_id'] );
+        assertEquals( $route, $routes[ 'added_route_id' ] );
     }
 
     function testParseRoutesEmpty() {
-        $router = $this->get();
-        $router->shouldReceive( 'getRoutes' )->withNoArgs()->andReturn( new \ArrayObject );
+        $router = $this->get( '/foo/bar' );
+        $s_collection = \Mockery::mock( 'Symfony\Component\Routing\RouteCollection' );
+        $s_collection->shouldReceive( 'count' )->withNoArgs()->andReturn( 0 );
+        $collection = \Mockery::mock( 'Brain\Cortex\RouteCollection' );
+        $collection->shouldReceive( 'getCollection' )->withNoArgs()->andReturn( $s_collection );
+        $router->shouldReceive( 'getCollection' )->withNoArgs()->andReturn( $collection );
         assertFalse( $router->parseRoutes() );
     }
 
     function testParseRoutesNoValidRoutes() {
-        $routes = new \ArrayObject( [ 'foo' => 'bar' ] );
         $collection = \Mockery::mock( 'Brain\Cortex\RouteCollection' );
         $collection->shouldReceive( 'getCollection' )->withNoArgs()->andReturn( FALSE );
         $router = $this->get();
-        $router->shouldReceive( 'getRoutes' )->withNoArgs()->andReturn( $routes );
         $router->shouldReceive( 'getCollection' )->withNoArgs()->andReturn( $collection );
         assertFalse( $router->parseRoutes() );
     }
@@ -123,12 +125,12 @@ class RouterTest extends TestCase {
         $route2 = \Mockery::mock( 'Brain\Cortex\FrontendRouteInterface' );
         $route2->shouldReceive( 'getId' )->andReturn( 'route_2' );
         $s_collection = \Mockery::mock( 'Symfony\Component\Routing\RouteCollection' );
+        $s_collection->shouldReceive( 'count' )->withNoArgs()->andReturn( 2 );
         $collection = \Mockery::mock( 'Brain\Cortex\RouteCollection' );
         $collection->shouldReceive( 'getCollection' )->withNoArgs()->andReturn( $s_collection );
-        $s_collection->shouldReceive( 'count' )->withNoArgs()->andReturn( 2 );
         $routes = new \ArrayObject;
-        $routes['route_1'] = $route1;
-        $routes['route_2'] = $route2;
+        $routes[ 'route_1' ] = $route1;
+        $routes[ 'route_2' ] = $route2;
         $context = \Mockery::mock( 'Symfony\Component\Routing\RequestContext' );
         $s_matcher = \Mockery::mock( 'Symfony\Component\Routing\Matcher' );
         $s_matcher->shouldReceive( 'match' )
