@@ -87,7 +87,7 @@ class TemplateLoaderTest extends TestCase {
     }
 
     function testLoadFileMain() {
-        $GLOBALS['wp_query'] = FALSE;
+        $GLOBALS[ 'wp_query' ] = FALSE;
         $loader = $this->get();
         $hooks = $loader->getHooks();
         $hooks->mock( 'index_template', '/path/to/foo/filter', function( $path ) {
@@ -116,7 +116,7 @@ class TemplateLoaderTest extends TestCase {
 
     function testLoadFileMainUnfiltered() {
         \WP_Mock::wpFunction( 'did_action', [ 'return' => TRUE ] );
-        $GLOBALS['wp_query'] = FALSE;
+        $GLOBALS[ 'wp_query' ] = FALSE;
         $loader = $this->get();
         $loader->load( NULL, TRUE );
         $hooks = $loader->getHooks();
@@ -222,7 +222,7 @@ class TemplateLoaderTest extends TestCase {
     function testGetTemplateFullPath() {
         \WP_Mock::wpFunction( 'trailingslashit', [ 'return' => function( $path ) {
             $path = rtrim( $path, '\\/ ' );
-            return $path . '/';
+            return $path . DIRECTORY_SEPARATOR;
         } ] );
         $dirs = [ '/srv/www', '/srv', __DIR__ ];
         $loader = $this->get();

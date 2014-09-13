@@ -2,10 +2,13 @@
 
 use Brain\Cortex\Tests\TestCaseFunctional;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class BrainModuleTest extends TestCaseFunctional {
 
     function testWP() {
-        assertInstanceOf( '\Brain\Cortex\WP', $GLOBALS['wp'] );
+        assertInstanceOf( '\Brain\Cortex\WP', $GLOBALS[ 'wp' ] );
     }
 
     function testBindRoute() {

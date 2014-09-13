@@ -3,6 +3,9 @@
 use Brain\Cortex\Tests\TestCaseFunctional;
 use Brain\Cortex\API;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class MatchingTest extends TestCaseFunctional {
 
     public function doSomething() {
@@ -27,15 +30,15 @@ class MatchingTest extends TestCaseFunctional {
             ->defaults( [ 'type' => 'product' ] )
             ->query( function( $matches ) {
                 return [
-                    'post_type'     => $matches['type'],
-                    'paged'         => $matches['bar'],
-                    $matches['foo'] => $matches['baz'],
+                    'post_type'     => $matches[ 'type' ],
+                    'paged'         => $matches[ 'bar' ],
+                    $matches[ 'foo' ] => $matches[ 'baz' ],
                     'tax_query'     => [
                         'taxonomy' => 'foo',
-                        'terms'    => [ 'a', 'b', $matches['foo'] ]
+                        'terms'    => [ 'a', 'b', $matches[ 'foo' ] ]
                     ],
                     'meta_query'    => [
-                        'key' => $matches['baz']
+                        'key' => $matches[ 'baz' ]
                     ]
                 ];
             } );
@@ -46,7 +49,7 @@ class MatchingTest extends TestCaseFunctional {
         $api->add( '/hello/{foo}/{bar}', '6' )
             ->methods( [ 'POST' ] )
             ->bindToClosure( function( $matches ) {
-                return 'Foo is ' . $matches['foo'] . ', Bar is ' . $matches['bar'];
+                return 'Foo is ' . $matches[ 'foo' ] . ', Bar is ' . $matches[ 'bar' ];
             } );
 
         $api->add( '/goodbye/{foo}/{bar}', '7' )

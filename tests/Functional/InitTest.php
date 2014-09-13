@@ -2,20 +2,23 @@
 
 use Brain\Cortex\Tests\TestCaseFunctional;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class InitTest extends TestCaseFunctional {
 
     function testBindRoute() {
         $hook = \Brain\Hooks::getHook( 'cortex.matched', 'cortex.route_bind' );
-        assertTrue( is_array( $hook['callback'] ) );
-        assertInstanceOf( 'Brain\Cortex\BrainModule', $hook['callback'][0] );
-        assertEquals( 'bindRoute', $hook['callback'][1] );
+        assertTrue( is_array( $hook[ 'callback' ] ) );
+        assertInstanceOf( 'Brain\Cortex\BrainModule', $hook[ 'callback' ][ 0 ] );
+        assertEquals( 'bindRoute', $hook[ 'callback' ][ 1 ] );
     }
 
     function testBindFallback() {
         $hook = \Brain\Hooks::getHook( 'cortex.not_matched', 'cortex.fallback_bind' );
-        assertTrue( is_array( $hook['callback'] ) );
-        assertInstanceOf( 'Brain\Cortex\BrainModule', $hook['callback'][0] );
-        assertEquals( 'bindFallback', $hook['callback'][1] );
+        assertTrue( is_array( $hook[ 'callback' ] ) );
+        assertInstanceOf( 'Brain\Cortex\BrainModule', $hook[ 'callback' ][ 0 ] );
+        assertEquals( 'bindFallback', $hook[ 'callback' ][ 1 ] );
     }
 
     function testApiReady() {

@@ -16,8 +16,10 @@ use Symfony\Component\Routing as Symfony;
  */
 class BrainModule implements \Brain\Module {
 
+    static $booted = FALSE;
+
     public function boot( Brain $brain ) {
-        if ( ! is_admin() ) {
+        if ( ! is_admin() && ! self::$booted ) {
             add_action( 'brain_loaded', function( $brain ) {
                 $this->bootFrontend( $brain );
             } );
@@ -26,89 +28,89 @@ class BrainModule implements \Brain\Module {
 
     public function getBindings( Brain $brain ) {
 
-        $brain['cortex.template_loader'] = function( ) {
+        $brain[ 'cortex.template_loader' ] = function( ) {
             return new TemplateLoader( new Hooks );
         };
 
-        $brain['cortex.groups'] = function() {
+        $brain[ 'cortex.groups' ] = function() {
             return new GroupContainer;
         };
 
-        $brain['cortex.queryvars_filter'] = function() {
+        $brain[ 'cortex.queryvars_filter' ] = function() {
             return new QueryVarsFilter( new Request );
         };
 
-        $brain['cortex.query_builder'] = function( $c ) {
+        $brain[ 'cortex.query_builder' ] = function( $c ) {
             return new Controllers\QueryBuilder(
-                $c['cortex.queryvars_filter'], $c['cortex.template_loader'], new Request, new Hooks
+                $c[ 'cortex.queryvars_filter' ], $c[ 'cortex.template_loader' ], new Request, new Hooks
             );
         };
 
-        $brain['cortex.fallback_query_builder'] = function( $c ) {
+        $brain[ 'cortex.fallback_query_builder' ] = function( $c ) {
             return new Controllers\FallbackQueryBuilder(
-                $c['cortex.queryvars_filter'], $c['cortex.template_loader'], new Hooks
+                $c[ 'cortex.queryvars_filter' ], $c[ 'cortex.template_loader' ], new Hooks
             );
         };
 
-        $brain['cortex.redirector'] = function() {
+        $brain[ 'cortex.redirector' ] = function() {
             return new Controllers\Redirector( new Request, new Hooks );
         };
 
-        $brain['cortex.closure_routable'] = function() {
+        $brain[ 'cortex.closure_routable' ] = function() {
             return new Controllers\ClosureRoutable( new Request, new Hooks );
         };
 
-        $brain['symfony.route'] = $brain->factory( function() {
+        $brain[ 'symfony.route' ] = $brain->factory( function() {
             return new Symfony\Route( '/' );
         } );
 
-        $brain['symfony.routes'] = function() {
+        $brain[ 'symfony.routes' ] = function() {
             return new Symfony\RouteCollection;
         };
 
-        $brain['symfony.context'] = function() {
+        $brain[ 'symfony.context' ] = function() {
             return new Symfony\RequestContext;
         };
 
-        $brain['symfony.matcher'] = function( $c ) {
-            return new Symfony\Matcher\UrlMatcher( $c["symfony.routes"], $c["symfony.context"] );
+        $brain[ 'symfony.matcher' ] = function( $c ) {
+            return new Symfony\Matcher\UrlMatcher( $c[ "symfony.routes" ], $c[ "symfony.context" ] );
         };
 
-        $brain['symfony.generator'] = function( $c ) {
-            return new Symfony\Generator\UrlGenerator( $c["symfony.routes"], $c["symfony.context"] );
+        $brain[ 'symfony.generator' ] = function( $c ) {
+            return new Symfony\Generator\UrlGenerator( $c[ "symfony.routes" ], $c[ "symfony.context" ] );
         };
 
-        $brain['cortex.route'] = $brain->factory( function( $c ) {
-            return new Route( $c["symfony.route"] );
+        $brain[ 'cortex.route' ] = $brain->factory( function( $c ) {
+            return new Route( $c[ "symfony.route" ] );
         } );
 
-        $brain['cortex.routes'] = function( $c ) {
-            return new RouteCollection( $c['symfony.routes'] );
+        $brain[ 'cortex.routes' ] = function( $c ) {
+            return new RouteCollection( $c[ 'symfony.routes' ] );
         };
 
-        $brain['cortex.router'] = function( $b ) {
+        $brain[ 'cortex.router' ] = function( $b ) {
             $s = 'symfony.';
             $c = 'cortex.';
             $r = new Controllers\Router(
-                $b["{$s}matcher"], $b["{$s}context"], $b["{$c}routes"], $b["{$c}groups"]
+                $b[ "{$s}matcher" ], $b[ "{$s}context" ], $b[ "{$c}routes" ], $b[ "{$c}groups" ]
             );
             return $r->setRequest( new Request )
                     ->setHooks( new Hooks )
-                    ->setRoutable( $b["{$c}query_builder"] );
+                    ->setRoutable( $b[ "{$c}query_builder" ] );
         };
 
-        $brain['cortex.worker'] = function( $c ) {
-            return new Worker( $c['cortex.router'], new Request, new Hooks );
+        $brain[ 'cortex.worker' ] = function( $c ) {
+            return new Worker( $c[ 'cortex.router' ], new Request, new Hooks );
         };
 
-        $brain['cortex.wp'] = function( $c ) {
+        $brain[ 'cortex.wp' ] = function( $c ) {
             global $wp;
             if ( is_object( $wp ) && ( get_class( $wp ) === 'WP' ) ) {
-                return new WP( $c['cortex.worker'], get_object_vars( $wp ) );
+                return new WP( $c[ 'cortex.worker' ], get_object_vars( $wp ) );
             }
         };
 
-        $brain['cortex.api'] = function() {
+        $brain[ 'cortex.api' ] = function() {
             return new API;
         };
     }
@@ -128,9 +130,13 @@ class BrainModule implements \Brain\Module {
      * @return null
      */
     public function bootFrontend( Brain $brain ) {
+        if ( self::$booted ) {
+            return;
+        }
+        self::$booted = TRUE;
         $wp = $brain->get( 'cortex.wp' );
         if ( $wp instanceof \WP ) {
-            $GLOBALS['wp'] = $wp;
+            $GLOBALS[ 'wp' ] = $wp;
         }
         Hooks::addAction(
             'cortex.route_bind', 'cortex.matched', [ $this, 'bindRoute' ], 10, 1, 1
@@ -165,10 +171,10 @@ class BrainModule implements \Brain\Module {
             $defaults = [ 'min_pieces' => 0, 'exact' => FALSE, 'condition' => NULL ];
             $binded_args = isset( $bind->args ) && is_array( $bind->args ) ? $bind->args : [ ];
             $args = wp_parse_args( $binded_args, $defaults );
-            $fallback->setMinPieces( (int) $args['min_pieces'] );
-            $fallback->isExact( (bool) $args['exact'] );
-            if ( is_callable( $args['condition'] ) ) {
-                $fallback->setCondition( $args['condition'] );
+            $fallback->setMinPieces( (int) $args[ 'min_pieces' ] );
+            $fallback->isExact( (bool) $args[ 'exact' ] );
+            if ( is_callable( $args[ 'condition' ] ) ) {
+                $fallback->setCondition( $args[ 'condition' ] );
             }
             $router->setFallback( $fallback );
         }
