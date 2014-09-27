@@ -14,13 +14,9 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
     use Hooksable;
 
     private $hooks;
-
     private $directories;
-
     private $function = 'require_once';
-
     private $template;
-
     private $unfiltered = FALSE;
 
     public function __construct( \Brain\Hooks $hooks ) {
@@ -87,7 +83,12 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
                 );
             }
         }
-        if ( empty( $path ) ) return FALSE;
+        if ( empty( $path ) ) {
+            if ( $main_template ) {
+                return $this->doneAndExit( 'no_template_to_load' );
+            }
+            return FALSE;
+        }
         $function = $this->getFunction();
         if ( is_callable( $function ) ) {
             $function( $path );
