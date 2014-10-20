@@ -9,14 +9,14 @@ class TestCaseFunctional extends TestCase {
             define( 'CORTEXBASEPATH', dirname( dirname( dirname( __FILE__ ) ) ) );
         }
         \WP_Mock::setUp();
-        $brain = Brain::boot( new \Pimple, FALSE );
+        $brain = Brain::boot( new \Pimple\Container, FALSE );
         \WP_Mock::wpFunction( 'is_admin', [ 'return' => FALSE ] );
         \WP_Mock::wpFunction( 'wp_parse_args', [ 'return' => function( $args, $defaults = [ ] ) {
             return array_merge( (array) $defaults, (array) $args );
         } ] );
         \WP_Mock::wpFunction( 'home_url', [ 'return' => function( $relative = '' ) {
-            return 'http://www.example.com/' . ltrim( $relative, '/\\ ' );
-        } ] );
+                return 'http://www.example.com/' . ltrim( $relative, '/\\ ' );
+            } ] );
         global $wp;
         $wp = new \WP;
         $amygdala = new \Brain\Amygdala\BrainModule;

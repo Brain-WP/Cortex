@@ -6,7 +6,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
     public function setUp() {
         \WP_Mock::setUp();
-        Brain::boot( new \Pimple, FALSE );
+        Brain::boot( new \Pimple\Container, FALSE );
     }
 
     public function tearDown() {
