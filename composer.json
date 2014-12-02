@@ -40,6 +40,8 @@
             "Brain\\Cortex\\Tests\\": "tests/src/"
         }
     },
+    "minimum-stability" : "dev",
+    "prefer-stable": true,
     "config": {
         "optimize-autoloader": true
     }
