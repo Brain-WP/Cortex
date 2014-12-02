@@ -6,12 +6,13 @@
  * @author Giuseppe Mazzapica
  * @package Brain\Cortex
  */
-interface FrontendRouteInterface extends RouteInterface {
+interface FrontendRouteInterface extends RouteInterface
+{
 
     /**
      * Set the route id
      */
-    function setId( $id = '' );
+    function setId($id);
 
     /**
      * Get the route id
@@ -27,7 +28,7 @@ interface FrontendRouteInterface extends RouteInterface {
      * @param array $requirements
      * @return \Brain\Cortex\FrontendRouteInterface Self
      */
-    function setPath( $path = '', Array $requirements = [ ] );
+    function setPath($path = '', Array $requirements = []);
 
     /**
      * Get route path
