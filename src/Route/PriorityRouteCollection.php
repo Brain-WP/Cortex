@@ -47,6 +47,9 @@ final class PriorityRouteCollection implements RouteCollectionInterface
         $i = is_int($route['priority']) ? $route['priority'] : max($this->priorities) + 1;
         in_array($i, $this->priorities, true) or $this->priorities[] = $i;
 
+        empty($route['method']) and $route['method'] = 'GET';
+        empty($route['path']) and $route['path'] = '/';
+
         if ($route['paged']) {
             $paged = clone $route;
             $paged['id'] .= '_paged';
