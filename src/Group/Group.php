@@ -31,9 +31,15 @@ final class Group implements GroupInterface
      */
     public function __construct(array $data)
     {
+        array_change_key_case($data, CASE_LOWER);
         if (isset($data['group'])) {
             unset($data['group']);
         }
+
+        $data['id'] = ! empty($data['id']) && is_string($data['id'])
+            ? $data['id']
+            : 'group_'.spl_object_hash($this);
+
         $this->route = new Route($data);
     }
 
