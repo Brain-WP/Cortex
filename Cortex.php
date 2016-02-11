@@ -62,7 +62,7 @@ class Cortex
             do_action('cortex.fail', $exception);
         }
 
-        add_filter('do_parse_request', function ($do, \WP $wp) use ($psrUri) {
+        self::$booted = add_filter('do_parse_request', function ($do, \WP $wp) use ($psrUri) {
 
             self::$late = true;
 
@@ -90,8 +90,6 @@ class Cortex
             }
 
         }, 100, 2);
-
-        self::$booted = true;
 
         return true;
     }
