@@ -27,7 +27,6 @@ final class Route implements RouteInterface
         'priority'           => null,
         'group'              => null,
         'merge_query_string' => null,
-        'skip_vars'          => null,
         'paged'              => null,
         'method'             => null,
         'scheme'             => null,
