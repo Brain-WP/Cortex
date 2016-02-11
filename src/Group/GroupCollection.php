@@ -39,7 +39,7 @@ final class GroupCollection implements GroupCollectionInterface
      */
     public function mergeGroup(RouteInterface $route)
     {
-        $groups = $route['group'];
+        $groups = $route->offsetGet('group');
         if (empty($groups)) {
             return $route;
         }
@@ -56,7 +56,7 @@ final class GroupCollection implements GroupCollectionInterface
 
         $clone = clone $route;
         array_walk($data, function ($value, $key) use (&$clone) {
-            ($key === 'id' || $clone->offsetExists($key)) or $clone[$key] = $value;
+            ($key === 'id' || $clone->offsetExists($key)) or $clone->offsetSet($key, $value);
         });
 
         return $clone;
