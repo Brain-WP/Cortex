@@ -14,7 +14,7 @@ use Brain\Cortex\Controller\ControllerInterface;
 use Brain\Cortex\Group\GroupCollectionInterface;
 use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Route\RouteInterface;
-use Brain\Cortex\Uri\WordPressUri;
+use Brain\Cortex\Uri\UriInterface;
 use FastRoute\DataGenerator\GroupCountBased as DefDataGenerator;
 use FastRoute\Dispatcher;
 use FastRoute\Dispatcher\GroupCountBased as DefDispatcher;
@@ -83,7 +83,7 @@ final class Router implements RouterInterface
     /**
      * @inheritdoc
      */
-    public function match(WordPressUri $uri)
+    public function match(UriInterface $uri)
     {
         if ($this->results instanceof MatchingResult) {
             return $this->results;
@@ -100,7 +100,7 @@ final class Router implements RouterInterface
 
         $method = empty($_SERVER['REQUEST_METHOD']) ? 'GET' : strtoupper($_SERVER['REQUEST_METHOD']);
 
-        $uriPath = rtrim($uri->path(), '/');
+        $uriPath = '/'.trim($uri->path(), '/');
         $routeInfo = $dispatcher->dispatch($method, $uriPath ? : '/');
         if ($routeInfo[0] === Dispatcher::FOUND) {
             $route = $this->parsedRoutes[$routeInfo[1]];
@@ -117,13 +117,14 @@ final class Router implements RouterInterface
     }
 
     /**
-     * @param \Brain\Cortex\Uri\WordPressUri $uri
+     * @param \Brain\Cortex\Uri\UriInterface $uri
      * @return int
      */
-    private function parseRoutes(WordPressUri $uri)
+    private function parseRoutes(UriInterface $uri)
     {
         $iterator = new RouteFilterIterator($this->routes, $uri);
         $parsed = 0;
+        $iterator->rewind();
         while ($iterator->valid()) {
             /** @var \Brain\Cortex\Route\RouteInterface $route */
             $route = $this->groups->mergeGroup($iterator->current());
@@ -168,7 +169,7 @@ final class Router implements RouterInterface
             && $id
             && filter_var($path, FILTER_SANITIZE_URL) === $path
             && in_array(strtoupper((string)$method), $methods, true)
-            && (is_null($handler) || is_callable($handler) || $handler instanceof ControllerInterface);
+            && (is_callable($handler) || $handler instanceof ControllerInterface);
     }
 
     /**
@@ -191,16 +192,22 @@ final class Router implements RouterInterface
     /**
      * @param \Brain\Cortex\Route\RouteInterface $route
      * @param array                              $vars
-     * @param \Brain\Cortex\Uri\WordPressUri     $uri
+     * @param \Brain\Cortex\Uri\UriInterface     $uri
      * @return \Brain\Cortex\Router\MatchingResult
      */
-    private function finalizeRoute(RouteInterface $route, array $vars, WordPressUri $uri)
+    private function finalizeRoute(RouteInterface $route, array $vars, UriInterface $uri)
     {
         is_null($route['merge_query_string']) and $route['merge_query_string'] = true;
-        $route['merge_query_string'] and $vars = array_merge($vars, $uri->vars());
-        $routeVars = is_array($route['vars']) ? $route['vars'] : [];
-        foreach ($routeVars as $key => $value) {
-            isset($vars[$key]) or $vars[$key] = $value;
+        $merge = filter_var($route['merge_query_string'], FILTER_VALIDATE_BOOLEAN);
+        $merge and $vars = array_merge($vars, $uri->vars());
+        if (is_callable($route['vars'])) {
+            $cb = $route['vars'];
+            $routeVars = $cb($vars);
+            is_array($routeVars) and $vars = $routeVars;
+        } elseif(is_array($route['vars'])) {
+            foreach ($route['vars'] as $key => $value) {
+                isset($vars[$key]) or $vars[$key] = $value;
+            }
         }
 
         return new MatchingResult([

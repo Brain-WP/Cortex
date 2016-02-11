@@ -12,7 +12,7 @@ namespace Brain\Cortex\Router;
 
 use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Route\RouteInterface;
-use Brain\Cortex\Uri\WordPressUri;
+use Brain\Cortex\Uri\UriInterface;
 
 
 /**
@@ -32,9 +32,9 @@ final class RouteFilterIterator extends \FilterIterator
      * RouteFilterIterator constructor.
      *
      * @param \Brain\Cortex\Route\RouteCollectionInterface $routes
-     * @param \Brain\Cortex\Uri\WordPressUri               $uri
+     * @param \Brain\Cortex\Uri\UriInterface               $uri
      */
-    public function __construct(RouteCollectionInterface $routes, WordPressUri $uri)
+    public function __construct(RouteCollectionInterface $routes, UriInterface $uri)
     {
         parent::__construct($routes);
         $this->uri = $uri;
@@ -47,18 +47,18 @@ final class RouteFilterIterator extends \FilterIterator
     {
         /** @var RouteInterface $route */
         $route = $this->getInnerIterator()->current();
-        if (! $route instanceof RouteInterface) {
+        if ( ! $route instanceof RouteInterface) {
             return false;
         }
 
         $scheme = strtolower((string)$route['scheme']);
         in_array($scheme, ['http', 'https']) or $scheme = '';
-        if (! empty($scheme) && $scheme !== $this->uri->scheme()) {
+        if ( ! empty($scheme) && $scheme !== $this->uri->scheme()) {
             return false;
         }
 
         $host = filter_var(strtolower((string)$route['host']), FILTER_SANITIZE_URL);
-        if (! empty($host) && $host !== $this->uri->host()) {
+        if ( ! empty($host) && $host !== $this->uri->host()) {
             return false;
         }
 

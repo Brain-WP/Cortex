@@ -10,7 +10,7 @@
 
 namespace Brain\Cortex\Router;
 
-use Brain\Cortex\Uri\WordPressUri;
+use Brain\Cortex\Uri\UriInterface;
 
 
 /**
@@ -22,8 +22,8 @@ interface RouterInterface
 {
 
     /**
-     * @param \Brain\Cortex\Uri\WordPressUri $uri
+     * @param \Brain\Cortex\Uri\UriInterface $uri
      * @return \Brain\Cortex\Router\MatchingResult
      */
-    public function match(WordPressUri $uri);
+    public function match(UriInterface $uri);
 }
