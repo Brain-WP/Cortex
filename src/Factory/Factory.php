@@ -82,7 +82,7 @@ class Factory
      */
     public static function factoryGroup(array $data, GroupInterface $base = null, $class = null)
     {
-        $class = apply_filters("cortex.route.class", $class);
+        $class = apply_filters("cortex.group.class", $class);
         if ( ! is_string($class) || ! is_subclass_of($class, GroupInterface::class, true)) {
             $class = Group::class;
         }
