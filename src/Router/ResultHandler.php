@@ -11,7 +11,6 @@
 namespace Brain\Cortex\Router;
 
 use Brain\Cortex\Controller\ControllerInterface;
-use Brain\Cortex\Controller\QueryVarsController;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -29,18 +28,17 @@ final class ResultHandler implements ResultHandlerInterface
             do_action('cortex.matched', $result);
 
             $handler = $this->buildCallback($result->handler());
-            is_null($handler) and $handler = $this->buildCallback(new QueryVarsController());
             $before = $this->buildCallback($result->beforeHandler());
             $after = $this->buildCallback($result->afterHandler());
             $template = $result->template();
             $vars = $result->vars();
 
             is_callable($before) and $before($vars, $wp);
-            $doParseRequest = $handler($vars, $wp);
-            is_callable($after) and $after($vars, $wp, $doParseRequest);
+            is_callable($handler) and $doParseRequest = $handler($vars, $wp);
+            is_callable($after) and $after($vars, $wp);
             is_string($template) and $this->setTemplate($template);
 
-            remove_filter('template_redirect', 'redirect_canonical');
+            $doParseRequest or remove_filter('template_redirect', 'redirect_canonical');
         }
 
         return $doParseRequest;
@@ -72,7 +70,7 @@ final class ResultHandler implements ResultHandlerInterface
     {
         pathinfo($template, PATHINFO_EXTENSION) or $template .= '.php';
         $template = is_file($template) ? $template : locate_template([$template], false);
-        if (!$template) {
+        if (! $template) {
             return;
         }
 
