@@ -10,6 +10,8 @@
 
 namespace Brain\Cortex\Router;
 
+use Brain\Cortex\Controller\ControllerInterface;
+
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -41,7 +43,9 @@ class MatchingResult
         $data = array_merge($defaults, array_change_key_case($data, CASE_LOWER));
         is_array($data['vars']) or $data['vars'] = [];
         $data['matched'] = (bool) filter_var($data['matched'], FILTER_VALIDATE_BOOLEAN);
-        is_callable($data['handler']) or $data['handler'] = null;
+        if (!is_callable($data['handler']) && ! $data['handler'] instanceof ControllerInterface) {
+            $data['handler'] = null;
+        }
         is_callable($data['before']) or $data['before'] = null;
         is_callable($data['after']) or $data['after'] = null;
         is_string($data['template']) or $data['template'] = null;
