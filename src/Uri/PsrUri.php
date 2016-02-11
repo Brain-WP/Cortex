@@ -10,14 +10,14 @@
 
 namespace Brain\Cortex\Uri;
 
-use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\UriInterface as PsrUriInterface;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
  * @package Cortex
  */
-final class PsrUri implements UriInterface
+final class PsrUri implements PsrUriInterface
 {
     /**
      * @var array
