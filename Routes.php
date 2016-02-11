@@ -10,6 +10,7 @@
 
 namespace Brain;
 
+use Brain\Cortex\Factory\Factory;
 use Brain\Cortex\Group\Group;
 use Brain\Cortex\Group\GroupCollection;
 use Brain\Cortex\Group\GroupCollectionInterface;
@@ -23,9 +24,8 @@ use Brain\Cortex\Router\Router;
 use Brain\Cortex\Router\RouterInterface;
 use Brain\Cortex\Uri\PsrUri;
 use Brain\Cortex\Uri\WordPressUri;
-use Brain\Cortex\Factory\Factory;
-use Psr\Http\Message\UriInterface as PsrUriInterface;
 use Brain\Cortex\Uri\UriInterface;
+use Psr\Http\Message\UriInterface as PsrUriInterface;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
