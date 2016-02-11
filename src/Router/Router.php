@@ -10,6 +10,7 @@
 
 namespace Brain\Cortex\Router;
 
+use Brain\Cortex\Controller\ControllerInterface;
 use Brain\Cortex\Group\GroupCollectionInterface;
 use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Route\RouteInterface;
@@ -126,11 +127,11 @@ final class Router implements RouterInterface
         while ($iterator->valid()) {
             /** @var \Brain\Cortex\Route\RouteInterface $route */
             $route = $this->groups->mergeGroup($iterator->current());
-            if ($route instanceof RouteInterface) {
+            if ($route instanceof RouteInterface && $this->validate($route)) {
                 $id = $route->id();
                 $this->parsedRoutes[$id] = $route;
                 $path = '/'.trim($route['path'], '/');
-                $this->collector->addRoute($route['method'], $path, $id);
+                $this->collector->addRoute(strtoupper($route['method']), $path, $id);
                 $parsed++;
             }
             $iterator->next();
@@ -139,6 +140,35 @@ final class Router implements RouterInterface
         unset($this->routes, $this->groups);
 
         return $parsed;
+    }
+
+    /**
+     * @param \Brain\Cortex\Route\RouteInterface $route
+     * @return bool
+     */
+    private function validate(RouteInterface $route)
+    {
+        $id = $route->id();
+        $path = $route['path'];
+        $method = $route['method'];
+        $handler = $route['handler'];
+        $methods = [
+            'GET',
+            'POST',
+            'PUT',
+            'OPTIONS',
+            'HEAD',
+            'DELETE',
+            'TRACE',
+            'CONNECT'
+        ];
+
+        return
+            is_string($id)
+            && $id
+            && filter_var($path, FILTER_SANITIZE_URL) === $path
+            && in_array(strtoupper((string)$method), $methods, true)
+            && (is_null($handler) || is_callable($handler) || $handler instanceof ControllerInterface);
     }
 
     /**
@@ -171,11 +201,6 @@ final class Router implements RouterInterface
         if (is_array($route['defaults'])) {
             foreach ($route['defaults'] as $key => $value) {
                 isset($vars[$key]) or $vars[$key] = $value;
-            }
-        }
-        if (is_array($route['skip_vars'])) {
-            foreach ($route['skip_vars'] as $key => $value) {
-                unset($vars[$key]);
             }
         }
 
