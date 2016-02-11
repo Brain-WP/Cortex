@@ -10,7 +10,6 @@
 
 namespace Brain\Cortex\Router;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -18,11 +17,10 @@ namespace Brain\Cortex\Router;
  */
 interface ResultHandlerInterface
 {
-
     /**
-     * @param \Brain\Cortex\Router\MatchingResult $result
-     * @param \WP                                 $wp
-     * @param  bool                               $doParseRequest
+     * @param  \Brain\Cortex\Router\MatchingResult $result
+     * @param  \WP                                 $wp
+     * @param  bool                                $doParseRequest
      * @return bool
      */
     public function handle(MatchingResult $result, \WP $wp, $doParseRequest);

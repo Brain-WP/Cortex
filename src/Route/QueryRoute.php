@@ -19,7 +19,6 @@ use Brain\Cortex\Controller\QueryVarsController;
  */
 final class QueryRoute implements RouteInterface
 {
-
     use DerivativeRouteTrait;
 
     /**
@@ -42,6 +41,4 @@ final class QueryRoute implements RouteInterface
 
         $this->route = new Route($options);
     }
-
-
 }

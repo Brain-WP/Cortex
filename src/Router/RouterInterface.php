@@ -12,7 +12,6 @@ namespace Brain\Cortex\Router;
 
 use Brain\Cortex\Uri\UriInterface;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -20,9 +19,8 @@ use Brain\Cortex\Uri\UriInterface;
  */
 interface RouterInterface
 {
-
     /**
-     * @param \Brain\Cortex\Uri\UriInterface $uri
+     * @param  \Brain\Cortex\Uri\UriInterface      $uri
      * @return \Brain\Cortex\Router\MatchingResult
      */
     public function match(UriInterface $uri);

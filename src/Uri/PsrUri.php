@@ -12,7 +12,6 @@ namespace Brain\Cortex\Uri;
 
 use Psr\Http\Message\UriInterface;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -20,7 +19,6 @@ use Psr\Http\Message\UriInterface;
  */
 final class PsrUri implements UriInterface
 {
-
     /**
      * @var array
      */
@@ -48,7 +46,7 @@ final class PsrUri implements UriInterface
      */
     public function __construct(array $server = [])
     {
-        $this->server = $server ? : $_SERVER;
+        $this->server = $server ?: $_SERVER;
     }
 
     /**
@@ -98,7 +96,7 @@ final class PsrUri implements UriInterface
      */
     public function getPort()
     {
-        return null;
+        return;
     }
 
     /**
@@ -223,7 +221,7 @@ final class PsrUri implements UriInterface
     {
         $scheme = is_ssl() ? 'https' : 'http';
 
-        $host = $this->marshallHostFromServer() ? : parse_url(home_url(), PHP_URL_HOST);
+        $host = $this->marshallHostFromServer() ?: parse_url(home_url(), PHP_URL_HOST);
         $host = trim($host, '/');
 
         $pathArray = explode('?', $this->marshallPathFromServer(), 2);

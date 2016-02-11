@@ -22,9 +22,8 @@ use Brain\Cortex\Route\RouteInterface;
  */
 interface GroupCollectionInterface
 {
-
     /**
-     * @param \Brain\Cortex\Group\GroupInterface $group
+     * @param  \Brain\Cortex\Group\GroupInterface           $group
      * @return \Brain\Cortex\Group\GroupCollectionInterface
      */
     public function addGroup(GroupInterface $group);
@@ -32,7 +31,7 @@ interface GroupCollectionInterface
     /**
      * Merge group settings into a given route
      *
-     * @param \Brain\Cortex\Route\RouteInterface $route
+     * @param  \Brain\Cortex\Route\RouteInterface $route
      * @return \Brain\Cortex\Route\RouteInterface Edited route
      */
     public function mergeGroup(RouteInterface $route);

@@ -17,7 +17,6 @@ namespace Brain\Cortex\Route;
  */
 final class PriorityRouteCollection implements RouteCollectionInterface
 {
-
     /**
      * @var \SplPriorityQueue
      */
@@ -39,7 +38,7 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param \Brain\Cortex\Route\RouteInterface $route
+     * @param  \Brain\Cortex\Route\RouteInterface           $route
      * @return \Brain\Cortex\Route\RouteCollectionInterface
      */
     public function addRoute(RouteInterface $route)

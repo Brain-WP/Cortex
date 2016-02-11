@@ -12,7 +12,6 @@ namespace Brain\Cortex\Group;
 
 use Brain\Cortex\Route\Route;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -20,7 +19,6 @@ use Brain\Cortex\Route\Route;
  */
 final class Group implements GroupInterface
 {
-
     /**
      * @var \Brain\Cortex\Route\Route
      */
@@ -86,5 +84,4 @@ final class Group implements GroupInterface
     {
         $this->route->offsetUnset($offset);
     }
-
 }

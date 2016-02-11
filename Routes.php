@@ -34,7 +34,6 @@ use Psr\Http\Message\UriInterface as PsrUriInterface;
  */
 class Routes
 {
-
     /**
      * @var bool
      */
@@ -46,7 +45,7 @@ class Routes
     private static $late = false;
 
     /**
-     * @param \Psr\Http\Message\UriInterface|null $psrUri
+     * @param  \Psr\Http\Message\UriInterface|null $psrUri
      * @return bool
      */
     public static function boot(PsrUriInterface $psrUri = null)
@@ -57,12 +56,11 @@ class Routes
 
         self::checkTiming(__METHOD__);
 
-        add_filter('do_parse_request', function ($do, \WP $wp) use($psrUri) {
+        add_filter('do_parse_request', function ($do, \WP $wp) use ($psrUri) {
 
             self::$late = true;
 
             try {
-
                 /** @var \Brain\Cortex\Group\GroupCollectionInterface $groups */
                 $groups = Factory::factoryByHook(
                     'group-collection',
@@ -115,9 +113,7 @@ class Routes
                 );
 
                 return $handler->handle($router->match($uri), $wp, $do);
-
             } catch (\Exception $e) {
-
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     throw $e;
                 }
@@ -139,7 +135,7 @@ class Routes
      */
     private static function checkTiming($method)
     {
-        if ( ! self::$late && ! did_action('parse_request')) {
+        if (! self::$late && ! did_action('parse_request')) {
             return;
         }
 
@@ -155,9 +151,9 @@ class Routes
     }
 
     /**
-     * @param string $path
-     * @param array  $query
-     * @param array  $options
+     * @param  string                             $path
+     * @param  array                              $query
+     * @param  array                              $options
      * @return \Brain\Cortex\Route\RouteInterface
      */
     public static function add($path, $query, $options = [])
@@ -177,10 +173,10 @@ class Routes
     }
 
     /**
-     * @param string $path
-     * @param string $to
-     * @param int    $status
-     * @param bool   $allowExternal
+     * @param  string                            $path
+     * @param  string                            $to
+     * @param  int                               $status
+     * @param  bool                              $allowExternal
      * @return \Brain\Cortex\Route\RedirectRoute
      */
     public static function redirect($path, $to, $status = 301, $allowExternal = false)
@@ -191,7 +187,7 @@ class Routes
             'path'              => $path,
             'redirect_to'       => $to,
             'redirect_status'   => $status,
-            'redirect_external' => $allowExternal
+            'redirect_external' => $allowExternal,
         ]);
 
         add_action(
@@ -205,8 +201,8 @@ class Routes
     }
 
     /**
-     * @param string $id
-     * @param array  $group
+     * @param  string                             $id
+     * @param  array                              $group
      * @return \Brain\Cortex\Group\GroupInterface
      */
     public static function group($id, array $group)
@@ -225,5 +221,4 @@ class Routes
 
         return $groupObj;
     }
-
 }

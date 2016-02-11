@@ -21,7 +21,6 @@ use FastRoute\Dispatcher\GroupCountBased as DefDispatcher;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser\Std;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -29,7 +28,6 @@ use FastRoute\RouteParser\Std;
  */
 final class Router implements RouterInterface
 {
-
     /**
      * @var \Brain\Cortex\Group\GroupCollectionInterface
      */
@@ -76,7 +74,7 @@ final class Router implements RouterInterface
     ) {
         $this->groups = $groups;
         $this->routes = $routes;
-        $this->collector = $collector ? : new RouteCollector(new Std(), new DefDataGenerator());
+        $this->collector = $collector ?: new RouteCollector(new Std(), new DefDataGenerator());
         $this->dispatcherFactory = $dispatcherFactory;
     }
 
@@ -89,7 +87,7 @@ final class Router implements RouterInterface
             return $this->results;
         }
 
-        if ( ! count($this->routes) || ! $this->parseRoutes($uri)) {
+        if (! count($this->routes) || ! $this->parseRoutes($uri)) {
             $this->results = new MatchingResult(['matched' => false]);
 
             return $this->results;
@@ -101,7 +99,7 @@ final class Router implements RouterInterface
         $method = empty($_SERVER['REQUEST_METHOD']) ? 'GET' : strtoupper($_SERVER['REQUEST_METHOD']);
 
         $uriPath = '/'.trim($uri->path(), '/');
-        $routeInfo = $dispatcher->dispatch($method, $uriPath ? : '/');
+        $routeInfo = $dispatcher->dispatch($method, $uriPath ?: '/');
         if ($routeInfo[0] === Dispatcher::FOUND) {
             $route = $this->parsedRoutes[$routeInfo[1]];
             $vars = $routeInfo[2];
@@ -117,7 +115,7 @@ final class Router implements RouterInterface
     }
 
     /**
-     * @param \Brain\Cortex\Uri\UriInterface $uri
+     * @param  \Brain\Cortex\Uri\UriInterface $uri
      * @return int
      */
     private function parseRoutes(UriInterface $uri)
@@ -144,7 +142,7 @@ final class Router implements RouterInterface
     }
 
     /**
-     * @param \Brain\Cortex\Route\RouteInterface $route
+     * @param  \Brain\Cortex\Route\RouteInterface $route
      * @return bool
      */
     private function validate(RouteInterface $route)
@@ -161,19 +159,19 @@ final class Router implements RouterInterface
             'HEAD',
             'DELETE',
             'TRACE',
-            'CONNECT'
+            'CONNECT',
         ];
 
         return
             is_string($id)
             && $id
             && filter_var($path, FILTER_SANITIZE_URL) === $path
-            && in_array(strtoupper((string)$method), $methods, true)
+            && in_array(strtoupper((string) $method), $methods, true)
             && (is_callable($handler) || $handler instanceof ControllerInterface);
     }
 
     /**
-     * @param array $data
+     * @param  array                 $data
      * @return \FastRoute\Dispatcher
      */
     private function buildDispatcher(array $data)
@@ -190,9 +188,9 @@ final class Router implements RouterInterface
     }
 
     /**
-     * @param \Brain\Cortex\Route\RouteInterface $route
-     * @param array                              $vars
-     * @param \Brain\Cortex\Uri\UriInterface     $uri
+     * @param  \Brain\Cortex\Route\RouteInterface  $route
+     * @param  array                               $vars
+     * @param  \Brain\Cortex\Uri\UriInterface      $uri
      * @return \Brain\Cortex\Router\MatchingResult
      */
     private function finalizeRoute(RouteInterface $route, array $vars, UriInterface $uri)
@@ -204,7 +202,7 @@ final class Router implements RouterInterface
             $cb = $route['vars'];
             $routeVars = $cb($vars);
             is_array($routeVars) and $vars = $routeVars;
-        } elseif(is_array($route['vars'])) {
+        } elseif (is_array($route['vars'])) {
             foreach ($route['vars'] as $key => $value) {
                 isset($vars[$key]) or $vars[$key] = $value;
             }
@@ -216,7 +214,7 @@ final class Router implements RouterInterface
             'handler'  => $route['handler'],
             'before'   => $route['before'],
             'after'    => $route['after'],
-            'template' => $route['template']
+            'template' => $route['template'],
         ]);
     }
 }

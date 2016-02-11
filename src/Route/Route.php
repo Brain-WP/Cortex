@@ -17,7 +17,6 @@ namespace Brain\Cortex\Route;
  */
 final class Route implements RouteInterface
 {
-
     /**
      * @var array
      */
@@ -34,7 +33,7 @@ final class Route implements RouteInterface
         'after'              => null,
         'template'           => null,
         'path'               => null,
-        'handler'            => null
+        'handler'            => null,
     ];
 
     /**

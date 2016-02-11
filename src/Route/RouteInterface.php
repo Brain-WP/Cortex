@@ -17,7 +17,6 @@ namespace Brain\Cortex\Route;
  */
 interface RouteInterface extends \ArrayAccess
 {
-
     /**
      * @return string
      */

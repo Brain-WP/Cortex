@@ -17,7 +17,6 @@ namespace Brain\Cortex\Group;
  */
 interface GroupInterface extends \ArrayAccess
 {
-
     /**
      * @return string
      */

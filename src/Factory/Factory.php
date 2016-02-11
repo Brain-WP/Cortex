@@ -10,7 +10,6 @@
 
 namespace Brain\Cortex\Factory;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -18,16 +17,15 @@ namespace Brain\Cortex\Factory;
  */
 class Factory
 {
-
     /**
-     * @param string        $name
-     * @param string|null   $abstract
-     * @param callable|null $default
+     * @param  string        $name
+     * @param  string|null   $abstract
+     * @param  callable|null $default
      * @return object
      */
     public static function factoryByHook($name, $abstract = null, callable $default = null)
     {
-        if ( ! is_string($name)) {
+        if (! is_string($name)) {
             throw new \InvalidArgumentException('Name of object to factory must be in a string.');
         }
 
@@ -40,11 +38,10 @@ class Factory
             $thing = is_callable($default) ? $default() : null;
         }
 
-        if ( ! is_object($thing)) {
+        if (! is_object($thing)) {
             throw new \RuntimeException(sprintf('Impossible to factory "%s".', $name));
         }
 
         return $thing;
     }
-
 }

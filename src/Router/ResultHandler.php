@@ -13,7 +13,6 @@ namespace Brain\Cortex\Router;
 use Brain\Cortex\Controller\ControllerInterface;
 use Brain\Cortex\Controller\QueryVarsController;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -21,14 +20,12 @@ use Brain\Cortex\Controller\QueryVarsController;
  */
 final class ResultHandler implements ResultHandlerInterface
 {
-
     /**
      * @inheritdoc
      */
     public function handle(MatchingResult $result, \WP $wp, $doParseRequest)
     {
         if ($result->matched()) {
-
             do_action('cortex.matched', $result);
 
             $handler = $this->buildCallback($result->handler());
@@ -50,7 +47,7 @@ final class ResultHandler implements ResultHandlerInterface
     }
 
     /**
-     * @param mixed $handler
+     * @param  mixed         $handler
      * @return callable|null
      */
     private function buildCallback($handler)
@@ -65,7 +62,7 @@ final class ResultHandler implements ResultHandlerInterface
             };
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -79,7 +76,7 @@ final class ResultHandler implements ResultHandlerInterface
             return;
         }
 
-        $setter = function() use($template) {
+        $setter = function () use ($template) {
             return $template;
         };
 
@@ -99,14 +96,14 @@ final class ResultHandler implements ResultHandlerInterface
             'author',
             'date',
             'paged',
-            'index'
+            'index',
         ];
 
-        array_walk($types, function($type) use($setter) {
+        array_walk($types, function ($type) use ($setter) {
             add_filter("{$type}_template", $setter);
         });
 
-        add_filter('template_include', function() {
+        add_filter('template_include', function () {
             remove_all_filters('template_include');
         }, -1);
     }

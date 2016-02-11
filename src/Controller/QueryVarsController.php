@@ -17,7 +17,6 @@ namespace Brain\Cortex\Controller;
  */
 final class QueryVarsController implements ControllerInterface
 {
-
     /**
      * @inheritdoc
      */

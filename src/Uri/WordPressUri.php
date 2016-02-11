@@ -12,7 +12,6 @@ namespace Brain\Cortex\Uri;
 
 use Psr\Http\Message\UriInterface as PsrUriInterface;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -20,7 +19,6 @@ use Psr\Http\Message\UriInterface as PsrUriInterface;
  */
 final class WordPressUri implements UriInterface
 {
-
     /**
      * @var \Psr\Http\Message\UriInterface
      */

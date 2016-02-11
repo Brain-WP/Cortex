@@ -20,7 +20,6 @@ use Brain\Cortex\Controller\RedirectController;
  */
 final class RedirectRoute implements RouteInterface
 {
-
     use DerivativeRouteTrait;
 
     /**
@@ -43,7 +42,7 @@ final class RedirectRoute implements RouteInterface
                 'redirect_status'   => empty($data['redirect_status']) ? 301 : $data['redirect_status'],
                 'redirect_external' => empty($data['redirect_external']) ? false : $data['redirect_external'],
             ],
-            'handler' => $controller ? : new RedirectController()
+            'handler' => $controller ?: new RedirectController(),
         ];
 
         isset($data['id']) and $args['id'] = $data['id'];

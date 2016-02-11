@@ -17,9 +17,8 @@ namespace Brain\Cortex\Route;
  */
 interface RouteCollectionInterface extends \Iterator, \Countable
 {
-
     /**
-     * @param \Brain\Cortex\Route\RouteInterface $route
+     * @param  \Brain\Cortex\Route\RouteInterface           $route
      * @return \Brain\Cortex\Route\RouteCollectionInterface
      */
     public function addRoute(RouteInterface $route);

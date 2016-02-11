@@ -19,7 +19,6 @@ use Brain\Cortex\Route\RouteInterface;
  */
 final class GroupCollection implements GroupCollectionInterface
 {
-
     /**
      * @var array
      */
@@ -45,7 +44,7 @@ final class GroupCollection implements GroupCollectionInterface
             return $route;
         }
 
-        $data = array_reduce((array)$groups, function(array $data, $group) {
+        $data = array_reduce((array) $groups, function (array $data, $group) {
             if (is_string($group) && array_key_exists($group, $this->groups)) {
                 /** @var \Brain\Cortex\Group\GroupInterface $groupObj */
                 $groupObj = $this->groups[$group];
@@ -56,7 +55,7 @@ final class GroupCollection implements GroupCollectionInterface
         }, []);
 
         $clone = clone $route;
-        array_walk($data, function($value, $key) use(&$clone) {
+        array_walk($data, function ($value, $key) use (&$clone) {
             ($key === 'id' || $clone->offsetExists($key)) or $clone[$key] = $value;
         });
 

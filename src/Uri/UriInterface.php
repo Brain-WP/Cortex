@@ -10,7 +10,6 @@
 
 namespace Brain\Cortex\Uri;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -18,7 +17,6 @@ namespace Brain\Cortex\Uri;
  */
 interface UriInterface
 {
-
     /**
      * @return string
      */

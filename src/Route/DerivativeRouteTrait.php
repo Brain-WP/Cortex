@@ -10,7 +10,6 @@
 
 namespace Brain\Cortex\Route;
 
-
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
  * @license http://opensource.org/licenses/MIT MIT
@@ -20,7 +19,6 @@ namespace Brain\Cortex\Route;
  */
 trait DerivativeRouteTrait
 {
-
     /**
      * @see RouteInterface::id()
      */
@@ -39,7 +37,7 @@ trait DerivativeRouteTrait
 
     /**
      * @see RouteInterface::offsetExists()
-     * @param string $offset
+     * @param  string $offset
      * @return bool
      */
     public function offsetExists($offset)
@@ -49,7 +47,7 @@ trait DerivativeRouteTrait
 
     /**
      * @see RouteInterface::offsetGet()
-     * @param string $offset
+     * @param  string $offset
      * @return mixed
      */
     public function offsetGet($offset)
@@ -60,7 +58,7 @@ trait DerivativeRouteTrait
     /**
      * @see RouteInterface::offsetSet()
      * @param string $offset
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function offsetSet($offset, $value)
     {
