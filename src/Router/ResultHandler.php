@@ -102,12 +102,12 @@ final class ResultHandler implements ResultHandlerInterface
             'index'
         ];
 
-        array_walk($types, function($type, $i, $setter) {
+        array_walk($types, function($type) use($setter) {
             add_filter("{$type}_template", $setter);
-        }, $setter);
+        });
 
         add_filter('template_include', function() {
             remove_all_filters('template_include');
-        }, -999);
+        }, -1);
     }
 }
