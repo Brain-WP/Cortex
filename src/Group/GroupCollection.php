@@ -47,7 +47,9 @@ final class GroupCollection implements GroupCollectionInterface
 
         $data = array_reduce((array)$groups, function(array $data, $group) {
             if (is_string($group) && array_key_exists($group, $this->groups)) {
-                $data = array_merge($data, $group->toArray());
+                /** @var \Brain\Cortex\Group\GroupInterface $groupObj */
+                $groupObj = $this->groups[$group];
+                $data = array_merge($data, $groupObj->toArray());
             }
 
             return $data;
