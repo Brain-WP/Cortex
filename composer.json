@@ -1,48 +1,45 @@
 {
-    "name": "brain/cortex",
-    "description": "Cortex is a package that implements a routing system in WordPress.",
-    "keywords": ["wordpress"],
-    "homepage": "https://github.com/Giuseppe-Mazzapica/Cortex",
-    "license": "GPL-2.0+",
-    "authors": [
+    "name":              "brain/cortex",
+    "description":       "Cortex is a package that implements a routing system in WordPress.",
+    "keywords":          [
+        "wordpress"
+    ],
+    "homepage":          "https://github.com/Giuseppe-Mazzapica/Cortex",
+    "license":           "GPL-2.0+",
+    "authors":           [
         {
-            "name": "Giuseppe Mazzapica",
-            "email": "giuseppe.mazzapica@gmail.com",
+            "name":     "Giuseppe Mazzapica",
+            "email":    "giuseppe.mazzapica@gmail.com",
             "homepage": "http://gm.zoomlab.it",
-            "role": "Developer"
+            "role":     "Developer"
         }
     ],
-    "support": {
+    "support":           {
         "issues": "https://github.com/Giuseppe-Mazzapica/Cortex/issues",
         "source": "https://github.com/Giuseppe-Mazzapica/Cortex"
     },
-    "require": {
+    "require":           {
         "php": ">=5.4",
-        "brain/brain": "dev-master",
-        "brain/support": "dev-master",
-        "brain/amygdala": "dev-master",
-        "brain/striatum": "dev-master",
-        "symfony/routing": "~2.0"
+        "nikic/fast-route": "~0.7.0"
     },
-    "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "mockery/mockery": "dev-master",
-        "10up/wp_mock": "dev-master"
+    "require-dev":       {
+        "phpunit/phpunit": "4.8.*",
+        "mockery/mockery": "0.9.3",
+        "brain/monkey":    "~1.2.0"
     },
-    "autoload": {
+    "autoload":          {
         "psr-4": {
             "Brain\\Cortex\\": "src/"
-        },
-        "classmap": ["Cortex.php", "Routes.php"]
+        }
     },
-    "autoload-dev": {
+    "autoload-dev":      {
         "psr-4": {
             "Brain\\Cortex\\Tests\\": "tests/src/"
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "config": {
+    "prefer-stable":     true,
+    "config":            {
         "optimize-autoloader": true
     }
 }
