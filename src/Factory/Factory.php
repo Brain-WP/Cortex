@@ -10,11 +10,6 @@
 
 namespace Brain\Cortex\Factory;
 
-use Brain\Cortex\Group\Group;
-use Brain\Cortex\Group\GroupInterface;
-use Brain\Cortex\Route\Route;
-use Brain\Cortex\Route\RouteInterface;
-
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -50,50 +45,6 @@ class Factory
         }
 
         return $thing;
-    }
-
-    /**
-     * @param array                                   $data
-     * @param \Brain\Cortex\Route\RouteInterface|null $base
-     * @param string|null                             $class
-     * @return \Brain\Cortex\Route\RouteInterface
-     */
-    public static function factoryRoute(array $data, RouteInterface $base = null, $class = null)
-    {
-        $class = apply_filters("cortex.route.class", $class);
-        if ( ! is_string($class) || ! is_subclass_of($class, RouteInterface::class, true)) {
-            $class = Route::class;
-        }
-
-        $data = is_null($base) ? $data : array_merge($base->toArray(), $data);
-
-        $route = new $class($data);
-        $filtered = apply_filters("cortex.route.created", $route);
-        $filtered instanceof RouteInterface and $route = $filtered;
-
-        return $route;
-    }
-
-    /**
-     * @param array                                   $data
-     * @param \Brain\Cortex\Group\GroupInterface|null $base
-     * @param string|null                             $class
-     * @return \Brain\Cortex\Group\GroupInterface
-     */
-    public static function factoryGroup(array $data, GroupInterface $base = null, $class = null)
-    {
-        $class = apply_filters("cortex.group.class", $class);
-        if ( ! is_string($class) || ! is_subclass_of($class, GroupInterface::class, true)) {
-            $class = Group::class;
-        }
-
-        $data = is_null($base) ? $data : array_merge($base->toArray(), $data);
-
-        $group = new $class($data);
-        $filtered = apply_filters("cortex.group.created", $group);
-        $filtered instanceof RouteInterface and $group = $filtered;
-
-        return $group;
     }
 
 }

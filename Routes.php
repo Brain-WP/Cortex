@@ -10,16 +10,22 @@
 
 namespace Brain;
 
+use Brain\Cortex\Group\Group;
 use Brain\Cortex\Group\GroupCollection;
 use Brain\Cortex\Group\GroupCollectionInterface;
 use Brain\Cortex\Route\PriorityRouteCollection;
+use Brain\Cortex\Route\QueryRoute;
+use Brain\Cortex\Route\RedirectRoute;
 use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Router\ResultHandler;
 use Brain\Cortex\Router\ResultHandlerInterface;
 use Brain\Cortex\Router\Router;
 use Brain\Cortex\Router\RouterInterface;
+use Brain\Cortex\Uri\PsrUri;
 use Brain\Cortex\Uri\WordPressUri;
 use Brain\Cortex\Factory\Factory;
+use Psr\Http\Message\UriInterface as PsrUriInterface;
+use Brain\Cortex\Uri\UriInterface;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -40,9 +46,10 @@ class Routes
     private static $late = false;
 
     /**
+     * @param \Psr\Http\Message\UriInterface|null $psrUri
      * @return bool
      */
-    public static function boot()
+    public static function boot(PsrUriInterface $psrUri = null)
     {
         if (self::$booted) {
             return false;
@@ -50,7 +57,7 @@ class Routes
 
         self::checkTiming(__METHOD__);
 
-        add_filter('do_parse_request', function ($do, \WP $wp) {
+        add_filter('do_parse_request', function ($do, \WP $wp) use($psrUri) {
 
             self::$late = true;
 
@@ -96,7 +103,18 @@ class Routes
                     }
                 );
 
-                return $handler->handle($router->match(new WordPressUri()), $wp, $do);
+                /** @var UriInterface $uri */
+                $uri = Factory::factoryByHook(
+                    'result-handler',
+                    UriInterface::class,
+                    function () use ($psrUri) {
+                        $psrUri instanceof PsrUriInterface or $psrUri = new PsrUri();
+
+                        return new WordPressUri($psrUri);
+                    }
+                );
+
+                return $handler->handle($router->match($uri), $wp, $do);
 
             } catch (\Exception $e) {
 
@@ -137,14 +155,16 @@ class Routes
     }
 
     /**
-     * @param array $route
+     * @param string $path
+     * @param array  $query
+     * @param array  $options
      * @return \Brain\Cortex\Route\RouteInterface
      */
-    public static function add(array $route)
+    public static function add($path, $query, $options = [])
     {
         self::checkTiming(__METHOD__);
 
-        $routeObj = Factory::factoryRoute($route);
+        $routeObj = new QueryRoute($path, $query, $options);
 
         add_action(
             'cortex.routes',
@@ -157,14 +177,44 @@ class Routes
     }
 
     /**
-     * @param array $group
-     * @return \Brain\Cortex\Group\GroupInterface
+     * @param string $path
+     * @param string $to
+     * @param int    $status
+     * @param bool   $allowExternal
+     * @return \Brain\Cortex\Route\RedirectRoute
      */
-    public static function group(array $group)
+    public static function redirect($path, $to, $status = 301, $allowExternal = false)
     {
         self::checkTiming(__METHOD__);
 
-        $groupObj = Factory::factoryGroup($group);
+        $routeObj = new RedirectRoute([
+            'path'              => $path,
+            'redirect_to'       => $to,
+            'redirect_status'   => $status,
+            'redirect_external' => $allowExternal
+        ]);
+
+        add_action(
+            'cortex.routes',
+            function (RouteCollectionInterface $collection) use ($routeObj) {
+                $collection->addRoute($routeObj);
+            }
+        );
+
+        return $routeObj;
+    }
+
+    /**
+     * @param string $id
+     * @param array  $group
+     * @return \Brain\Cortex\Group\GroupInterface
+     */
+    public static function group($id, array $group)
+    {
+        self::checkTiming(__METHOD__);
+
+        $group['id'] = $id;
+        $groupObj = new Group($group);
 
         add_action(
             'cortex.groups',
