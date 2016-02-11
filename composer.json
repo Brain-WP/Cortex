@@ -2,7 +2,12 @@
     "name":              "brain/cortex",
     "description":       "Cortex is a package that implements a routing system in WordPress.",
     "keywords":          [
-        "wordpress"
+        "wordpress",
+        "routing",
+        "fast route",
+        "router",
+        "rewrite rules",
+        "pretty permalink"
     ],
     "homepage":          "https://github.com/Giuseppe-Mazzapica/Cortex",
     "license":           "MIT",
@@ -42,8 +47,7 @@
             "Brain\\Cortex\\Tests\\": "tests/src/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable":     true,
+    "minimum-stability": "stable",
     "config":            {
         "optimize-autoloader": true
     }
