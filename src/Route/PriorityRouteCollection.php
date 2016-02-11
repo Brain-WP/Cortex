@@ -34,7 +34,7 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     public function __construct()
     {
         $queue = new \SplPriorityQueue();
-        $queue->setExtractFlags(self::EXTR_DATA);
+        $queue->setExtractFlags(\SplPriorityQueue::EXTR_DATA);
         $this->queue = $queue;
     }
 
@@ -100,5 +100,13 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     public function rewind()
     {
         $this->queue->rewind();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function count()
+    {
+        return $this->queue->count();
     }
 }

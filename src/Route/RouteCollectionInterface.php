@@ -15,7 +15,7 @@ namespace Brain\Cortex\Route;
  * @license http://opensource.org/licenses/MIT MIT
  * @package Cortex
  */
-interface RouteCollectionInterface extends \Iterator
+interface RouteCollectionInterface extends \Iterator, \Countable
 {
 
     /**
