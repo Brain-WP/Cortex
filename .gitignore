@@ -8,3 +8,4 @@ $RECYCLE.BIN/
 .idea/
 vendor/
 composer.lock
+.build/
