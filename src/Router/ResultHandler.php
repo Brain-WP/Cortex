@@ -26,6 +26,8 @@ final class ResultHandler implements ResultHandlerInterface
     {
         if ($result->matched()) {
 
+            do_action('cortex.matched', $result);
+
             $handler = $this->buildCallback($result->handler());
             is_null($handler) and $handler = $this->buildCallback(new QueryVarsController());
             $before = $this->buildCallback($result->beforeHandler());
