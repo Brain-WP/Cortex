@@ -33,7 +33,8 @@
             "Brain\\Cortex\\": "src/"
         },
         "classmap": [
-            "Routes.php"
+            "Routes.php",
+            "Cortex.php"
         ]
     },
     "autoload-dev":      {
