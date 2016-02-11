@@ -5,7 +5,7 @@
         "wordpress"
     ],
     "homepage":          "https://github.com/Giuseppe-Mazzapica/Cortex",
-    "license":           "GPL-2.0+",
+    "license":           "MIT",
     "authors":           [
         {
             "name":     "Giuseppe Mazzapica",
