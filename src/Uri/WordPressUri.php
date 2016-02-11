@@ -16,7 +16,7 @@ namespace Brain\Cortex\Uri;
  * @license http://opensource.org/licenses/MIT MIT
  * @package Cortex
  */
-final class WordPressUri
+class WordPressUri
 {
 
     /**
@@ -117,7 +117,7 @@ final class WordPressUri
         empty($path) and $path = '/';
 
         $vars = [];
-        if (isset($_SERVER['QUERY_STRING'])) {
+        if (isset($this->server['QUERY_STRING'])) {
             $queryString = ltrim($this->server['QUERY_STRING'], '?');
             parse_str($queryString, $vars);
         }
@@ -127,7 +127,7 @@ final class WordPressUri
     }
 
     /**
-     * Contain code from Zend\Diactoros\ServerRequestFactory
+     * Contains code from Zend\Diactoros\ServerRequestFactory
      *
      * @copyright Copyright (c) 2015 Zend Technologies USA Inc. (http://www.zend.com)
      * @license   https://github.com/zendframework/zend-diactoros/blob/master/LICENSE.md New BSD
@@ -150,7 +150,7 @@ final class WordPressUri
     }
 
     /**
-     * Contain code from Zend\Diactoros\ServerRequestFactory
+     * Contains code from Zend\Diactoros\ServerRequestFactory
      *
      * @copyright Copyright (c) 2015 Zend Technologies USA Inc. (http://www.zend.com)
      * @license   https://github.com/zendframework/zend-diactoros/blob/master/LICENSE.md New BSD
