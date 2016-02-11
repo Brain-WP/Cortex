@@ -21,19 +21,12 @@ use Brain\Cortex\Controller\RedirectController;
 final class RedirectRoute implements RouteInterface
 {
 
-    /**
-     * @var array
-     */
-    private static $defaults = [
-        'redirect_to'       => null,
-        'redirect_status'   => null,
-        'redirect_external' => null,
-    ];
+    use DerivativeRouteTrait;
 
     /**
-     * @var array
+     * @var \Brain\Cortex\Route\Route
      */
-    private $storage = [];
+    private $route;
 
     /**
      * Route constructor.
@@ -43,61 +36,19 @@ final class RedirectRoute implements RouteInterface
      */
     public function __construct(array $data, ControllerInterface $controller = null)
     {
-        $id = is_string($data['id']) && $data['id'] ? $data['id'] : 'route_'.spl_object_hash($this);
-        $storage['id'] = $id;
-        isset($data['merge_query_string']) && $storage['merge_query_string'] = $data['merge_query_string'];
-        $storage['vars'] = array_diff_key($data, self::$defaults);
-        $storage['handler'] = $controller ? : new RedirectController();
-        $this->storage = $storage;
-    }
+        $args = [
+            'path'    => empty($data['path']) ? null : $data['path'],
+            'vars'    => [
+                'redirect_to'       => empty($data['redirect_to']) ? null : $data['redirect_to'],
+                'redirect_status'   => empty($data['redirect_status']) ? 301 : $data['redirect_status'],
+                'redirect_external' => empty($data['redirect_external']) ? false : $data['redirect_external'],
+            ],
+            'handler' => $controller ? : new RedirectController()
+        ];
 
-    /**
-     * @inheritdoc
-     */
-    public function id()
-    {
-        return $this->storage['id'];
-    }
+        isset($data['id']) and $args['id'] = $data['id'];
+        isset($data['merge_query_string']) and $args['merge_query_string'] = $data['merge_query_string'];
 
-    /**
-     * @inheritdoc
-     */
-    public function toArray()
-    {
-        return $this->storage;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetExists($offset)
-    {
-        return array_key_exists($offset, $this->storage);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetGet($offset)
-    {
-        return $this->offsetExists($offset) ? $this->storage[$offset] : null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->storage[$offset] = $value;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function offsetUnset($offset)
-    {
-        if ($this->offsetExists($offset)) {
-            unset($this->storage[$offset]);
-        }
+        $this->route = new Route($args);
     }
 }

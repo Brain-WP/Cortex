@@ -49,7 +49,9 @@ final class Route implements RouteInterface
      */
     public function __construct(array $data)
     {
-        $id = is_string($data['id']) && $data['id'] ? $data['id'] : 'route_'.spl_object_hash($this);
+        $id = ! empty($data['id']) && is_string($data['id'])
+            ? $data['id']
+            : 'route_'.spl_object_hash($this);
         $storage = array_intersect_key($data, self::$defaults);
         $storage['id'] = $id;
         $this->storage = $storage;
