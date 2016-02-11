@@ -51,11 +51,14 @@ final class RouteFilterIterator extends \FilterIterator
             return false;
         }
 
-        if (! empty($route['scheme']) && $route['scheme'] !== $this->uri->scheme()) {
+        $scheme = strtolower((string)$route['scheme']);
+        in_array($scheme, ['http', 'https']) or $scheme = '';
+        if (! empty($scheme) && $scheme !== $this->uri->scheme()) {
             return false;
         }
 
-        if (! empty($route['host']) && $route['host'] !== $this->uri->host()) {
+        $host = filter_var(strtolower((string)$route['host']), FILTER_SANITIZE_URL);
+        if (! empty($host) && $host !== $this->uri->host()) {
             return false;
         }
 
