@@ -48,6 +48,7 @@ final class Route implements RouteInterface
      */
     public function __construct(array $data)
     {
+        array_change_key_case($data, CASE_LOWER);
         $id = ! empty($data['id']) && is_string($data['id'])
             ? $data['id']
             : 'route_'.spl_object_hash($this);
@@ -101,7 +102,7 @@ final class Route implements RouteInterface
      */
     public function offsetUnset($offset)
     {
-        if ($this->offsetExists($offset)) {
+        if ($this->offsetExists($offset) && $offset !== 'id') {
             unset($this->storage[$offset]);
         }
     }
