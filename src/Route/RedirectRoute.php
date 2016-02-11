@@ -45,9 +45,8 @@ final class RedirectRoute implements RouteInterface
     {
         $id = is_string($data['id']) && $data['id'] ? $data['id'] : 'route_'.spl_object_hash($this);
         $storage['id'] = $id;
-        $storage['skip_vars'] = false;
         isset($data['merge_query_string']) && $storage['merge_query_string'] = $data['merge_query_string'];
-        $storage['defaults'] = array_diff_key($data, self::$defaults);
+        $storage['vars'] = array_diff_key($data, self::$defaults);
         $storage['handler'] = $controller ? : new RedirectController();
         $this->storage = $storage;
     }

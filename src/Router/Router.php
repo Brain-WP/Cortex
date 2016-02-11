@@ -198,10 +198,9 @@ final class Router implements RouterInterface
     {
         is_null($route['merge_query_string']) and $route['merge_query_string'] = true;
         $route['merge_query_string'] and $vars = array_merge($vars, $uri->vars());
-        if (is_array($route['defaults'])) {
-            foreach ($route['defaults'] as $key => $value) {
-                isset($vars[$key]) or $vars[$key] = $value;
-            }
+        $routeVars = is_array($route['vars']) ? $route['vars'] : [];
+        foreach ($routeVars as $key => $value) {
+            isset($vars[$key]) or $vars[$key] = $value;
         }
 
         return new MatchingResult([

@@ -22,7 +22,7 @@ final class Route implements RouteInterface
      * @var array
      */
     private static $defaults = [
-        'defaults'           => null,
+        'vars'               => null,
         'host'               => null,
         'priority'           => null,
         'group'              => null,
