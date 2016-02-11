@@ -10,6 +10,7 @@
 
 namespace Brain;
 
+use Brain\Cortex\Group\GroupCollection;
 use Brain\Cortex\Group\GroupCollectionInterface;
 use Brain\Cortex\Route\PriorityRouteCollection;
 use Brain\Cortex\Route\RouteCollectionInterface;
