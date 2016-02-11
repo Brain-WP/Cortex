@@ -10,7 +10,6 @@
 
 namespace Brain;
 
-use Brain\Cortex\Factory\Factory;
 use Brain\Cortex\Group\GroupCollection;
 use Brain\Cortex\Group\GroupCollectionInterface;
 use Brain\Cortex\Route\PriorityRouteCollection;
@@ -106,12 +105,40 @@ class Cortex
     }
 
     /**
+     * @param  string        $name
+     * @param  string|null   $abstract
+     * @param  callable|null $default
+     * @return object
+     */
+    private static function factoryByHook($name, $abstract = null, callable $default = null)
+    {
+        if (! is_string($name)) {
+            throw new \InvalidArgumentException('Name of object to factory must be in a string.');
+        }
+
+        $thing = apply_filters("cortex.{$name}.instance", null);
+        if (
+            is_string($abstract)
+            && (class_exists($abstract) || interface_exists($abstract))
+            && ! is_subclass_of($thing, $abstract, true)
+        ) {
+            $thing = is_callable($default) ? $default() : null;
+        }
+
+        if (! is_object($thing)) {
+            throw new \RuntimeException(sprintf('Impossible to factory "%s".', $name));
+        }
+
+        return $thing;
+    }
+
+    /**
      * @return \Brain\Cortex\Group\GroupCollectionInterface
      */
     private function factoryGroups()
     {
         /** @var \Brain\Cortex\Group\GroupCollectionInterface $groups */
-        $groups = Factory::factoryByHook(
+        $groups = self::factoryByHook(
             'group-collection',
             GroupCollectionInterface::class,
             function () {
@@ -130,7 +157,7 @@ class Cortex
     private function factoryRoutes()
     {
         /** @var \Brain\Cortex\Route\RouteCollectionInterface $routes */
-        $routes = Factory::factoryByHook(
+        $routes = self::factoryByHook(
             'group-collection',
             RouteCollectionInterface::class,
             function () {
@@ -153,7 +180,7 @@ class Cortex
         GroupCollectionInterface $groups
     ) {
         /** @var \Brain\Cortex\Router\RouterInterface $router */
-        $router = Factory::factoryByHook(
+        $router = self::factoryByHook(
             'router',
             RouterInterface::class,
             function () use ($routes, $groups) {
@@ -170,7 +197,7 @@ class Cortex
     private function factoryHandler()
     {
         /** @var ResultHandlerInterface $handler */
-        $handler = Factory::factoryByHook(
+        $handler = self::factoryByHook(
             'result-handler',
             ResultHandlerInterface::class,
             function () {
@@ -188,7 +215,7 @@ class Cortex
     private function factoryUri(PsrUriInterface $psrUri = null)
     {
         /** @var UriInterface $uri */
-        $uri = Factory::factoryByHook(
+        $uri = self::factoryByHook(
             'result-handler',
             UriInterface::class,
             function () use ($psrUri) {
