@@ -10,6 +10,9 @@
 
 namespace Brain\Cortex\Router;
 
+use Brain\Cortex\Controller\ControllerInterface;
+use Brain\Cortex\Controller\QueryVarsController;
+
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
