@@ -179,7 +179,7 @@ final class Router implements RouterInterface
     {
         $dispatcher = null;
         if (is_callable($this->dispatcherFactory)) {
-            $factory = $this->dispatcherFactor;
+            $factory = $this->dispatcherFactory;
             $dispatcher = $factory($data);
         }
 
