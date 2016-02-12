@@ -11,7 +11,7 @@ before_script:
 
 script:
   - mkdir -p .build/logs
-  - php vendor/bin/phpunit -c phpunit.xml.dist
+  - vendor/bin/phpunit -c phpunit.xml.dist
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
