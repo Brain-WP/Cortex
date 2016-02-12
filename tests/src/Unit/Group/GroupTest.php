@@ -32,7 +32,7 @@ class GroupTest extends TestCase
     {
         $group = new Group([]);
 
-        assertStringMatchesFormat('group_'.spl_object_hash($group), $group->id());
+        assertStringMatchesFormat('group_%s', $group->id());
     }
 
     public function testToArrayStripsInvalid()
