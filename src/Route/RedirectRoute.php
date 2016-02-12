@@ -33,13 +33,13 @@ final class RedirectRoute implements RouteInterface
      * @param string $to
      * @param array  $options
      */
-    public function __construct($from, $to, array $options)
+    public function __construct($from, $to, array $options = [])
     {
         list($vars, $options) = $this->parseOptions($options);
 
         $options['vars'] = is_callable($to)
             ? $this->redirectToFromCallback($to, $vars)
-            : $this->redirectToFromString($to, $vars);
+            : array_merge($vars, ['redirect_to' => $this->redirectToFromString($to, $vars)]);
 
         $options['path'] = $from;
         $options['handler'] = new RedirectController();
@@ -75,7 +75,7 @@ final class RedirectRoute implements RouteInterface
     private function redirectToFromCallback(callable $to, array $vars)
     {
         return function (array $args) use ($to, $vars) {
-            $vars['redirect_to'] = $this->redirectToFromString($to($args));
+            $vars['redirect_to'] = $this->redirectToFromString($to($args), $vars);
 
             return $vars;
         };
