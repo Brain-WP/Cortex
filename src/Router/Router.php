@@ -88,7 +88,7 @@ final class Router implements RouterInterface
         }
 
         if (! count($this->routes) || ! $this->parseRoutes($uri)) {
-            $this->results = new MatchingResult(['matched' => false]);
+            $this->results = new MatchingResult(['route' => null]);
 
             return $this->results;
         }
@@ -107,7 +107,7 @@ final class Router implements RouterInterface
             $this->results = $this->finalizeRoute($route, $vars, $uri);
         }
 
-        $this->results or $this->results = new MatchingResult(['matched' => false]);
+        $this->results or $this->results = new MatchingResult(['route' => null]);
 
         unset($this->parsedRoutes);
 
@@ -211,7 +211,8 @@ final class Router implements RouterInterface
 
         return new MatchingResult([
             'vars'     => $vars,
-            'matched'  => true,
+            'route'    => $route->id(),
+            'path'     => $route['path'],
             'handler'  => $route['handler'],
             'before'   => $route['before'],
             'after'    => $route['after'],

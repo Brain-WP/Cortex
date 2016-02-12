@@ -32,8 +32,9 @@ class MatchingResult
     public function __construct(array $data)
     {
         $defaults = [
-            'vars'     => [],
-            'matched'  => false,
+            'route'    => null,
+            'path'     => null,
+            'vars'     => null,
             'handler'  => null,
             'before'   => null,
             'after'    => null,
@@ -41,6 +42,22 @@ class MatchingResult
         ];
 
         $this->data = array_merge($defaults, array_change_key_case($data, CASE_LOWER));
+    }
+
+    /**
+     * @return string
+     */
+    public function route()
+    {
+        return is_string($this->data['route']) ? $this->data['route'] : '';
+    }
+
+    /**
+     * @return string
+     */
+    public function matchedPath()
+    {
+        return is_string($this->data['path']) ? $this->data['path'] : '';
     }
 
     /**
@@ -56,15 +73,15 @@ class MatchingResult
      */
     public function matched()
     {
-        return filter_var($this->data['matched'], FILTER_VALIDATE_BOOLEAN);
+        return $this->route() && $this->matchedPath();
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function template()
     {
-        return is_string($this->data['template']) ? $this->data['template'] : null;
+        return is_string($this->data['template']) ? $this->data['template'] : '';
     }
 
     /**
