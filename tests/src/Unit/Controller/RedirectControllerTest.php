@@ -22,7 +22,6 @@ use Brain\Monkey\Functions;
  */
 class RedirectControllerTest extends TestCase
 {
-
     public function testRunDoNothingIfRedirectToIsInvalid()
     {
         Actions::expectAdded('cortex.exit.redirect')->never();
@@ -60,7 +59,7 @@ class RedirectControllerTest extends TestCase
         $data = [
             'redirect_to' => 'https://example.com',
             'redirect_status' => 307,
-            'redirect_external' => true
+            'redirect_external' => true,
         ];
 
         $wp = \Mockery::mock('WP');

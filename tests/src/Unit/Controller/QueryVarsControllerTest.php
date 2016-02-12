@@ -20,7 +20,6 @@ use Brain\Cortex\Tests\TestCase;
  */
 class QueryVarsControllerTest extends TestCase
 {
-
     public function testRun()
     {
         $wp = \Mockery::mock('WP');

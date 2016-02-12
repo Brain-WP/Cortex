@@ -21,7 +21,6 @@ use Brain\Monkey\Functions;
  */
 class RedirectRouteTest extends TestCase
 {
-
     public function testAutoAbsoluteRedirectToFromString()
     {
         Functions::when('home_url')->alias(function ($arg = '') {
@@ -95,7 +94,7 @@ class RedirectRouteTest extends TestCase
 
         $route = new RedirectRoute(
             '/path/from',
-            function(array $args) {
+            function (array $args) {
                 return $args['foo'];
             },
             ['priority' => 2]
@@ -117,7 +116,7 @@ class RedirectRouteTest extends TestCase
     {
         $route = new RedirectRoute(
             'from',
-            function(array $args) {
+            function (array $args) {
                 return $args['bar'];
             }
         );
@@ -149,7 +148,7 @@ class RedirectRouteTest extends TestCase
     {
         $route = new RedirectRoute(
             '/path/from',
-            function(array $args) {
+            function (array $args) {
                 return 'http://example.com/'.$args['foo'];
             },
             ['priority' => 2]
@@ -171,7 +170,7 @@ class RedirectRouteTest extends TestCase
     {
         $route = new RedirectRoute(
             '/path/from',
-            function(array $args) {
+            function (array $args) {
                 return 'https://'.$args['sub'].'.bar.it/';
             },
             ['redirect_external' => 1]
@@ -192,7 +191,7 @@ class RedirectRouteTest extends TestCase
     {
         $route = new RedirectRoute(
             '/path/from',
-            function(array $args) {
+            function (array $args) {
                 return $args['sub'].'.bar.it/';
             },
             ['redirect_external' => 1]

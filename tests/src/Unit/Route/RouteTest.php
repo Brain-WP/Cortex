@@ -20,7 +20,6 @@ use Brain\Cortex\Tests\TestCase;
  */
 class RouteTest extends TestCase
 {
-
     public function testArrayAccess()
     {
         $vars = function (array $vars) {
@@ -34,7 +33,7 @@ class RouteTest extends TestCase
             'path'     => '/',
             'handler'  => '__return_true',
             'meh'      => 'meh',
-            'priority' => 0
+            'priority' => 0,
         ]);
 
         assertFalse($route->offsetExists('foo'));
@@ -64,7 +63,7 @@ class RouteTest extends TestCase
             'path'     => 'foo/bar',
             'vars'     => ['foo' => 'bar'],
             'meh'      => ['foo' => 'bar'],
-            'priority' => 0
+            'priority' => 0,
         ]);
 
         $array = $route->toArray();
@@ -90,5 +89,4 @@ class RouteTest extends TestCase
         assertStringMatchesFormat('route_%s', $route1->id());
         assertSame('route_2', $route2->id());
     }
-
 }

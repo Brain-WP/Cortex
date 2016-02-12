@@ -26,7 +26,6 @@ use Brain\Monkey\WP\Filters;
  */
 class CortexTest extends TestCaseFunctional
 {
-
     public function testBootOnce()
     {
         $boot1 = Cortex::boot();
@@ -254,7 +253,7 @@ class CortexTest extends TestCaseFunctional
                    }));
                });
 
-        Filters::expectApplied('cortex.uri.instance')->once()->andReturnUsing(function() {
+        Filters::expectApplied('cortex.uri.instance')->once()->andReturnUsing(function () {
             $uri = \Mockery::mock(Cortex\Uri\UriInterface::class);
             $uri->shouldReceive('scheme')->andReturn('http');
             $uri->shouldReceive('host')->andReturn('example.com');
@@ -288,7 +287,7 @@ class CortexTest extends TestCaseFunctional
                    }));
                });
 
-        Filters::expectApplied('cortex.uri.instance')->once()->andReturnUsing(function() {
+        Filters::expectApplied('cortex.uri.instance')->once()->andReturnUsing(function () {
             return 'http://example.com/foo/bar/baz';
         });
 

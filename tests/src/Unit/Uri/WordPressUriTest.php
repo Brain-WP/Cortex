@@ -22,7 +22,6 @@ use Psr\Http\Message\UriInterface as PrsUriInterface;
  */
 class WordPressUriTest extends TestCase
 {
-
     private function psrUriFromUrl($url)
     {
         $parts = parse_url($url);

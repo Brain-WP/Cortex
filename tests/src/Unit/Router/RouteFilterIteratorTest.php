@@ -23,7 +23,6 @@ use Brain\Cortex\Uri\UriInterface;
  */
 class RouteFilterIteratorTest extends TestCase
 {
-
     public function testAcceptForScheme()
     {
         $collection = new PriorityRouteCollection();
@@ -42,7 +41,7 @@ class RouteFilterIteratorTest extends TestCase
         $ok = [];
         $filter = new RouteFilterIterator($collection, $uri);
         /** @var \Brain\Cortex\Route\Route $route */
-        foreach($filter as $route) {
+        foreach ($filter as $route) {
             $ok[] = $route->id();
         }
 
@@ -67,7 +66,7 @@ class RouteFilterIteratorTest extends TestCase
         $ok = [];
         $filter = new RouteFilterIterator($collection, $uri);
         /** @var \Brain\Cortex\Route\Route $route */
-        foreach($filter as $route) {
+        foreach ($filter as $route) {
             $ok[] = $route->id();
         }
 
@@ -92,7 +91,7 @@ class RouteFilterIteratorTest extends TestCase
         $ok = [];
         $filter = new RouteFilterIterator($collection, $uri);
         /** @var \Brain\Cortex\Route\Route $route */
-        foreach($filter as $route) {
+        foreach ($filter as $route) {
             $ok[] = $route->id();
         }
 

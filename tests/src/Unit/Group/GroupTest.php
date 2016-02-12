@@ -20,7 +20,6 @@ use Brain\Cortex\Tests\TestCase;
  */
 class GroupTest extends TestCase
 {
-
     public function testIdWhenGiven()
     {
         $group = new Group(['id' => 'test_me']);
@@ -46,7 +45,7 @@ class GroupTest extends TestCase
             'handler'  => '__return_true',
             'meh'      => 'meh',
             'priority' => 0,
-            'id'       => 'test_me'
+            'id'       => 'test_me',
         ]);
 
         $expected = [
@@ -54,7 +53,7 @@ class GroupTest extends TestCase
             'path'     => '/',
             'handler'  => '__return_true',
             'priority' => 0,
-            'id'       => 'test_me'
+            'id'       => 'test_me',
         ];
 
         assertSame($expected, $group->toArray());
@@ -69,7 +68,7 @@ class GroupTest extends TestCase
             'path'     => '/',
             'handler'  => '__return_true',
             'meh'      => 'meh',
-            'priority' => 0
+            'priority' => 0,
         ]);
 
         assertFalse($group->offsetExists('foo'));
@@ -90,5 +89,4 @@ class GroupTest extends TestCase
         assertFalse($group->offsetExists('vars'));
         assertSame('__return_true', $group['handler']);
     }
-
 }

@@ -21,7 +21,6 @@ use Brain\Monkey\Functions;
  */
 class PsrUriTest extends TestCase
 {
-
     public function testGetSchemeSsl()
     {
         Functions::when('is_ssl')->justReturn(true);
@@ -112,10 +111,10 @@ class PsrUriTest extends TestCase
         $uri = new PsrUri([
             'HTTP_HOST' => 'example.com:80',
             'REQUEST_URI' => '/foo/bar/',
-            'QUERY_STRING' => '?foo=bar'
+            'QUERY_STRING' => '?foo=bar',
         ]);
 
-        assertSame('https:://example.com/foo/bar?foo=bar', (string)$uri);
+        assertSame('https:://example.com/foo/bar?foo=bar', (string) $uri);
     }
 
     /**

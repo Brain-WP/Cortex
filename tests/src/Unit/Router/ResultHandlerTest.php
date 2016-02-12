@@ -25,7 +25,6 @@ use Brain\Monkey\WP\Filters;
  */
 class ResultHandlerTest extends TestCase
 {
-
     public function testHandleDoNothingIfNotMarched()
     {
         Actions::expectFired('cortex.matched')->never();
@@ -47,22 +46,22 @@ class ResultHandlerTest extends TestCase
 
         Actions::expectFired('cortex.matched')->once();
         Filters::expectAdded('template_include')->never();
-        Functions::when('remove_filter')->alias(function() use(&$accumulator) {
+        Functions::when('remove_filter')->alias(function () use (&$accumulator) {
             $accumulator[] = func_get_args();
         });
 
-        $before = function(array $vars, \WP $wp) use(&$accumulator) {
+        $before = function (array $vars, \WP $wp) use (&$accumulator) {
             $accumulator[] = $wp;
         };
 
-        $handler = function(array $vars, \WP $wp) use(&$accumulator) {
+        $handler = function (array $vars, \WP $wp) use (&$accumulator) {
             $accumulator[] = $vars;
 
             return false;
         };
 
         $after = \Mockery::mock(ControllerInterface::class);
-        $after->shouldReceive('run')->once()->andReturnUsing(function() use(&$accumulator) {
+        $after->shouldReceive('run')->once()->andReturnUsing(function () use (&$accumulator) {
             $accumulator[] = 'after';
         });
 
@@ -80,7 +79,7 @@ class ResultHandlerTest extends TestCase
             $wp,                                        # returned by ResultHandler::beforeHandler()
             ['foo' => 'bar'],                           # returned by ResultHandler::handler()
             'after',                                    # returned by ResultHandler::afterHandler()
-            ['template_redirect', 'redirect_canonical'] # passed to remove_filter()
+            ['template_redirect', 'redirect_canonical'], # passed to remove_filter()
         ];
 
         $handler = new ResultHandler();
@@ -117,7 +116,7 @@ class ResultHandlerTest extends TestCase
             'index_template',
         ];
 
-        foreach($hooks as $hook) {
+        foreach ($hooks as $hook) {
             Filters::expectAdded($hook)->once();
         }
 
@@ -166,7 +165,7 @@ class ResultHandlerTest extends TestCase
             'index_template',
         ];
 
-        foreach($hooks as $hook) {
+        foreach ($hooks as $hook) {
             Filters::expectAdded($hook)->never();
         }
 

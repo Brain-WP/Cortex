@@ -58,26 +58,26 @@ class RoutesTest extends TestCaseFunctional
 
         $routeAdders = $groupAdders = [];
 
-        Actions::expectAdded('cortex.routes')->twice()->whenHappen(function($add) use(&$routeAdders) {
+        Actions::expectAdded('cortex.routes')->twice()->whenHappen(function ($add) use (&$routeAdders) {
             $routeAdders[] = $add;
         });
 
-        Actions::expectAdded('cortex.groups')->once()->whenHappen(function($add) use(&$groupAdders) {
+        Actions::expectAdded('cortex.groups')->once()->whenHappen(function ($add) use (&$groupAdders) {
             $groupAdders[] = $add;
         });
 
         Actions::expectFired('cortex.routes')
             ->once()
-               ->whenHappen(function (RouteCollectionInterface $routes) use(&$routeAdders) {
-                    foreach($routeAdders as $routeAdder) {
+               ->whenHappen(function (RouteCollectionInterface $routes) use (&$routeAdders) {
+                    foreach ($routeAdders as $routeAdder) {
                         $routeAdder($routes);
                     }
                });
 
         Actions::expectFired('cortex.groups')
                ->once()
-               ->whenHappen(function (GroupCollectionInterface $groups) use(&$groupAdders) {
-                   foreach($groupAdders as $groupAdder) {
+               ->whenHappen(function (GroupCollectionInterface $groups) use (&$groupAdders) {
+                   foreach ($groupAdders as $groupAdder) {
                        $groupAdder($groups);
                    }
                });
@@ -100,11 +100,11 @@ class RoutesTest extends TestCaseFunctional
         /** @var callable|null $factory */
         $factory = null;
 
-        Actions::expectAdded('cortex.routes')->once()->whenHappen(function($cb) use(&$factory) {
+        Actions::expectAdded('cortex.routes')->once()->whenHappen(function ($cb) use (&$factory) {
             $factory = $cb;
         });
 
-        Actions::expectFired('cortex.routes')->once()->whenHappen(function ($routes) use(&$factory) {
+        Actions::expectFired('cortex.routes')->once()->whenHappen(function ($routes) use (&$factory) {
             $factory($routes);
         });
 
@@ -121,5 +121,4 @@ class RoutesTest extends TestCaseFunctional
 
         assertTrue($do);
     }
-
 }

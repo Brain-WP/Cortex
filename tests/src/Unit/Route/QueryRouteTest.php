@@ -21,7 +21,6 @@ use Brain\Cortex\Tests\TestCase;
  */
 class QueryRouteTest extends TestCase
 {
-
     public function testArrayAccess()
     {
         $vars = function (array $vars) {
@@ -89,5 +88,4 @@ class QueryRouteTest extends TestCase
         assertStringMatchesFormat('route_%s', $route1->id());
         assertSame('route_2', $route2->id());
     }
-
 }

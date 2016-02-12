@@ -23,7 +23,6 @@ use Brain\Cortex\Tests\TestCase;
  */
 class PriorityRouteCollectionTest extends TestCase
 {
-
     public function testAddRoute()
     {
         $route1 = new Route(['id' => 'r_1']);
@@ -72,7 +71,7 @@ class PriorityRouteCollectionTest extends TestCase
         $route = new Route([
             'id'    => 'route_example',
             'path'  => '/foo',
-            'paged' => RouteInterface::PAGED_SINGLE
+            'paged' => RouteInterface::PAGED_SINGLE,
         ]);
 
         $collection = new PriorityRouteCollection();
@@ -100,7 +99,7 @@ class PriorityRouteCollectionTest extends TestCase
             'id'       => 'route_example',
             'path'     => '/bar',
             'priority' => 32,
-            'paged'    => RouteInterface::PAGED_ARCHIVE
+            'paged'    => RouteInterface::PAGED_ARCHIVE,
         ]);
 
         $collection = new PriorityRouteCollection();
@@ -121,5 +120,4 @@ class PriorityRouteCollectionTest extends TestCase
             $i++;
         }
     }
-
 }

@@ -25,7 +25,6 @@ use Brain\Cortex\Tests\TestCase;
  */
 class GroupCollectionTest extends TestCase
 {
-
     public function testAddGroup()
     {
         $group = \Mockery::mock(GroupInterface::class);
@@ -47,8 +46,8 @@ class GroupCollectionTest extends TestCase
             'id'    => 'my_route',
             'group' => 'test_group',
             'vars'  => [
-                'foo' => 'bar'
-            ]
+                'foo' => 'bar',
+            ],
         ]);
 
         $group = new Group([
@@ -56,18 +55,18 @@ class GroupCollectionTest extends TestCase
             'handler' => 'my_handler',
             'host'    => 'example.com',
             'vars'    => [
-                'meh' => 'meh'
-            ]
+                'meh' => 'meh',
+            ],
         ]);
 
         $expected = [
             'id'      => 'my_route',
             'group'   => 'test_group',
             'vars'    => [
-                'foo' => 'bar'
+                'foo' => 'bar',
             ],
             'handler' => 'my_handler',
-            'host'    => 'example.com'
+            'host'    => 'example.com',
         ];
 
         $collection = new GroupCollection();
@@ -104,7 +103,7 @@ class GroupCollectionTest extends TestCase
         $group2 = new Group([
             'id'                 => 'group_2',
             'paged'              => false,
-            'merge_query_string' => true
+            'merge_query_string' => true,
         ]);
 
         $expected = [

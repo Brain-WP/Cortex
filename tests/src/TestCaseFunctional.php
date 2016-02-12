@@ -22,7 +22,6 @@ use Psr\Http\Message\UriInterface;
  */
 class TestCaseFunctional extends TestCase
 {
-
     protected static function buildPsrRequest($url, $method = 'GET')
     {
         $parts = parse_url($url);

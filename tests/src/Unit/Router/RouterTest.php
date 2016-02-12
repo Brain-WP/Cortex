@@ -29,7 +29,6 @@ use FastRoute\RouteCollector;
  */
 class RouterTest extends TestCase
 {
-
     public function testMatchNothingIfAlreadyMatched()
     {
         $routes = \Mockery::mock(RouteCollectionInterface::class);
@@ -149,7 +148,7 @@ class RouterTest extends TestCase
             'handler' => function () {
                 return func_get_args();
             },
-            'method'  => 'POST'
+            'method'  => 'POST',
         ]);
         $routes = new PriorityRouteCollection();
 
@@ -208,7 +207,7 @@ class RouterTest extends TestCase
             'path'    => '/foo',
             'handler' => $handler,
             'vars'    => ['d' => 'D'],
-            'method'  => 'POST'
+            'method'  => 'POST',
         ]);
         $routes = new PriorityRouteCollection();
 
@@ -231,7 +230,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->with('POST', '/foo')->andReturn([
             Dispatcher::FOUND,
             'r1',
-            ['a' => 'A', 'b' => 'B']
+            ['a' => 'A', 'b' => 'B'],
         ]);
 
         $factory = function (array $args) use ($dispatcher) {
@@ -295,7 +294,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->with('POST', '/foo')->andReturn([
             Dispatcher::FOUND,
             'r1',
-            ['a' => 'A', 'b' => 'B']
+            ['a' => 'A', 'b' => 'B'],
         ]);
 
         $factory = function (array $args) use ($dispatcher) {
@@ -336,7 +335,7 @@ class RouterTest extends TestCase
             'path'    => '/foo',
             'handler' => $handler,
             'vars'    => 'array_keys',
-            'method'  => 'POST'
+            'method'  => 'POST',
         ]);
         $routes = new PriorityRouteCollection();
 
@@ -359,7 +358,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->with('POST', '/foo')->andReturn([
             Dispatcher::FOUND,
             'r1',
-            ['a' => 'A', 'b' => 'B']
+            ['a' => 'A', 'b' => 'B'],
         ]);
 
         $factory = function (array $args) use ($dispatcher) {
