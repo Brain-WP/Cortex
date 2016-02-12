@@ -126,6 +126,7 @@ final class Router implements RouterInterface
         while ($iterator->valid()) {
             /** @var \Brain\Cortex\Route\RouteInterface $route */
             $route = $this->groups->mergeGroup($iterator->current());
+            empty($route['method']) and $route['method'] = 'GET';
             if ($route instanceof RouteInterface && $this->validate($route)) {
                 $id = $route->id();
                 $this->parsedRoutes[$id] = $route;
