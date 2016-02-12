@@ -25,7 +25,7 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     /**
      * @var array
      */
-    private $priorities = [9];
+    private $priorities = [];
 
     /**
      * PriorityRouteCollection constructor.
@@ -43,23 +43,14 @@ final class PriorityRouteCollection implements RouteCollectionInterface
      */
     public function addRoute(RouteInterface $route)
     {
-        $i = is_int($route['priority']) ? $route['priority'] : max($this->priorities) + 1;
-        in_array($i, $this->priorities, true) or $this->priorities[] = $i;
-
-        empty($route['method']) and $route['method'] = 'GET';
-        empty($route['path']) and $route['path'] = '/';
-
-        if ($route['paged']) {
-            $paged = clone $route;
-            $paged['id'] .= '_paged';
-            $paged['paged'] = false;
-            $paged['path'] = rtrim($paged['path'], '/').'/page/{id:\d+}';
-            $paged['priority'] = $i;
-            $this->addRoute($paged);
-            $i++;
+        if (! $route->offsetExists('priority') || ! is_numeric($route->offsetGet('priority'))) {
+            $next = $this->priorities ? max($this->priorities) + 1 : 10;
+            $route->offsetSet('priority', $next);
         }
 
-        $this->queue->insert($route, ((-1) * $i));
+        $priority = $this->maybeAddPaged($route, (int) $route->offsetGet('priority'));
+        in_array($priority, $this->priorities, true) or $this->priorities[] = $priority;
+        $this->queue->insert($route, ((-1) * $priority));
 
         return $this;
     }
@@ -110,5 +101,35 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     public function count()
     {
         return $this->queue->count();
+    }
+
+    /**
+     * @param  \Brain\Cortex\Route\RouteInterface $route
+     * @param  int                                $priority
+     * @return int
+     */
+    private function maybeAddPaged(RouteInterface $route, $priority)
+    {
+        $pagedOpts = [RouteInterface::PAGED_ARCHIVE, RouteInterface::PAGED_SINGLE];
+        $pagedArg = $route->offsetExists('paged') ? $route->offsetGet('paged') : '';
+        $path = $route->offsetExists('path') ? $route->offsetGet('path') : '';
+        if (in_array($pagedArg, $pagedOpts, true) && $path && is_string($path)) {
+            $base = 'page';
+            /** @var \WP_Rewrite $wp_rewrite */
+            global $wp_rewrite;
+            $wp_rewrite instanceof \WP_Rewrite and $base = $wp_rewrite->pagination_base;
+            $paged = clone $route;
+            $newPath = $pagedArg === RouteInterface::PAGED_ARCHIVE
+                ? $path.'/'.$base.'/{paged:\d+}'
+                : $path.'/{page:\d+}';
+            $paged->offsetSet('path', $newPath);
+            $paged->offsetSet('id', $route->offsetGet('id').'_paged');
+            $paged->offsetSet('paged', '');
+            $paged->offsetSet('priority', $priority);
+            $this->addRoute($paged);
+            $priority++;
+        }
+
+        return $priority;
     }
 }
