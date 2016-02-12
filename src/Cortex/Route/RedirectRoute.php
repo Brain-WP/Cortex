@@ -42,7 +42,10 @@ final class RedirectRoute implements RouteInterface
             : array_merge($vars, ['redirect_to' => $this->redirectToFromString($to, $vars)]);
 
         $options['path'] = $from;
-        $options['handler'] = new RedirectController();
+        $handler = isset($options['handler']) && $options['handler'] instanceof ControllerInterface
+            ? $options['handler']
+            : new RedirectController();
+        $options['handler'] = $handler;
 
         $this->route = new Route($options);
     }

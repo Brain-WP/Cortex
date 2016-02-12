@@ -10,6 +10,7 @@
 
 namespace Brain\Cortex\Route;
 
+use Brain\Cortex\Controller\ControllerInterface;
 use Brain\Cortex\Controller\QueryVarsController;
 
 /**
@@ -37,7 +38,10 @@ final class QueryRoute implements RouteInterface
     {
         $options['path'] = $path;
         $options['vars'] = $queryBuilder;
-        $options['handler'] = new QueryVarsController();
+        $handler = isset($options['handler']) && $options['handler'] instanceof ControllerInterface
+            ? $options['handler']
+            : new QueryVarsController();
+        $options['handler'] = $handler;
 
         $this->route = new Route($options);
     }
