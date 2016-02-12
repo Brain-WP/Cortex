@@ -81,7 +81,7 @@ final class Router implements RouterInterface
     /**
      * @inheritdoc
      */
-    public function match(UriInterface $uri)
+    public function match(UriInterface $uri, $httpMethod)
     {
         if ($this->results instanceof MatchingResult) {
             return $this->results;
@@ -96,10 +96,8 @@ final class Router implements RouterInterface
         $dispatcher = $this->buildDispatcher($this->collector->getData());
         unset($this->collector);
 
-        $method = empty($_SERVER['REQUEST_METHOD']) ? 'GET' : strtoupper($_SERVER['REQUEST_METHOD']);
-
         $uriPath = '/'.trim($uri->path(), '/');
-        $routeInfo = $dispatcher->dispatch($method, $uriPath ?: '/');
+        $routeInfo = $dispatcher->dispatch($httpMethod, $uriPath ?: '/');
         if ($routeInfo[0] === Dispatcher::FOUND) {
             $route = $this->parsedRoutes[$routeInfo[1]];
             $vars = $routeInfo[2];

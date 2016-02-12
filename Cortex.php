@@ -21,7 +21,7 @@ use Brain\Cortex\Router\RouterInterface;
 use Brain\Cortex\Uri\PsrUri;
 use Brain\Cortex\Uri\UriInterface;
 use Brain\Cortex\Uri\WordPressUri;
-use Psr\Http\Message\UriInterface as PsrUriInterface;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -41,10 +41,10 @@ class Cortex
     private static $late = false;
 
     /**
-     * @param  \Psr\Http\Message\UriInterface|null $psrUri
+     * @param  \Psr\Http\Message\RequestInterface $request
      * @return bool
      */
-    public static function boot(PsrUriInterface $psrUri = null)
+    public static function boot(RequestInterface $request = null)
     {
         if (self::$booted) {
             return false;
@@ -62,7 +62,7 @@ class Cortex
             do_action('cortex.fail', $exception);
         }
 
-        self::$booted = add_filter('do_parse_request', function ($do, \WP $wp) use ($psrUri) {
+        self::$booted = add_filter('do_parse_request', function ($do, \WP $wp) use ($request) {
 
             self::$late = true;
 
@@ -72,9 +72,10 @@ class Cortex
                 $groups = $instance->factoryGroups();
                 $router = $instance->factoryRouter($routes, $groups);
                 $handler = $instance->factoryHandler();
-                $uri = $instance->factoryUri($psrUri);
-                $do = $handler->handle($router->match($uri), $wp, $do);
-                unset($uri, $handler, $router, $groups, $routes, $instance);
+                $uri = $instance->factoryUri($request);
+                $method = $instance->getMethod($request);
+                $do = $handler->handle($router->match($uri, $method), $wp, $do);
+                unset($method, $uri, $handler, $router, $groups, $routes, $instance);
                 remove_all_filters('cortex.routes');
                 remove_all_filters('cortex.groups');
 
@@ -207,22 +208,38 @@ class Cortex
     }
 
     /**
-     * @param  \Psr\Http\Message\UriInterface|null $psrUri
+     * @param  \Psr\Http\Message\RequestInterface $request
      * @return \Brain\Cortex\Uri\UriInterface
+     * @internal param null|\Psr\Http\Message\UriInterface $psrUri
      */
-    private function factoryUri(PsrUriInterface $psrUri = null)
+    private function factoryUri(RequestInterface $request = null)
     {
+        $psrUri = is_null($request) ? null : $request->getUri();
+
         /** @var UriInterface $uri */
         $uri = self::factoryByHook(
             'result-handler',
             UriInterface::class,
             function () use ($psrUri) {
-                $psrUri instanceof PsrUriInterface or $psrUri = new PsrUri();
+                is_null($psrUri) and $psrUri = new PsrUri();
 
                 return new WordPressUri($psrUri);
             }
         );
 
         return $uri;
+    }
+
+    /**
+     * @param  \Psr\Http\Message\RequestInterface|null $request
+     * @return string
+     */
+    private function getMethod(RequestInterface $request = null)
+    {
+        if ($request) {
+            return $request->getMethod();
+        }
+
+        return empty($_SERVER['REQUEST_METHOD']) ? 'GET' : strtoupper($_SERVER['REQUEST_METHOD']);
     }
 }
