@@ -17,6 +17,9 @@ namespace Brain\Cortex\Controller;
  */
 final class RedirectController implements ControllerInterface
 {
+    /**
+     * @codeCoverageIgnore
+     */
     public static function doExit()
     {
         exit();
