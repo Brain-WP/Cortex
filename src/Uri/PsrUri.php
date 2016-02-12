@@ -211,7 +211,7 @@ final class PsrUri implements PsrUriInterface
         $url = sprintf('%s:://%s/%s', $this->getScheme(), $this->getHost(), $this->getPath());
         $query = $this->getQuery();
 
-        return $query ? $url."?{$query}" : $url;
+        return $query ? "{$url}?{$query}" : $url;
     }
 
     /**
