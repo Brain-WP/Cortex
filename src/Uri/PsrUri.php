@@ -60,26 +60,6 @@ final class PsrUri implements PsrUriInterface
     }
 
     /**
-     * Not really implemented, because Cortex does not need it.
-     *
-     * @inheritdoc
-     */
-    public function getAuthority()
-    {
-        return '';
-    }
-
-    /**
-     * Not really implemented, because Cortex does not need it.
-     *
-     * @inheritdoc
-     */
-    public function getUserInfo()
-    {
-        return '';
-    }
-
-    /**
      * @inheritdoc
      */
     public function getHost()
@@ -93,6 +73,7 @@ final class PsrUri implements PsrUriInterface
      * Not really implemented, because Cortex does not need it.
      *
      * @inheritdoc
+     * @codeCoverageIgnore
      */
     public function getPort()
     {
@@ -123,6 +104,29 @@ final class PsrUri implements PsrUriInterface
      * Not really implemented, because Cortex does not need it.
      *
      * @inheritdoc
+     * @codeCoverageIgnore
+     */
+    public function getAuthority()
+    {
+        return '';
+    }
+
+    /**
+     * Not really implemented, because Cortex does not need it.
+     *
+     * @inheritdoc
+     * @codeCoverageIgnore
+     */
+    public function getUserInfo()
+    {
+        return '';
+    }
+
+    /**
+     * Not really implemented, because Cortex does not need it.
+     *
+     * @inheritdoc
+     * @codeCoverageIgnore
      */
     public function getFragment()
     {
@@ -200,8 +204,6 @@ final class PsrUri implements PsrUriInterface
     }
 
     /**
-     * Disabled.
-     *
      * @inheritdoc
      */
     public function __toString()
@@ -225,7 +227,7 @@ final class PsrUri implements PsrUriInterface
         $host = trim($host, '/');
 
         $pathArray = explode('?', $this->marshallPathFromServer(), 2);
-        $path = rawurldecode(trim($pathArray[0], '/'));
+        $path = trim($pathArray[0], '/');
 
         empty($path) and $path = '/';
 
@@ -251,7 +253,7 @@ final class PsrUri implements PsrUriInterface
      */
     private function marshallHostFromServer()
     {
-        $host = $this->server['HTTP_HOST'];
+        $host = isset($this->server['HTTP_HOST']) ? $this->server['HTTP_HOST'] : '';
         if (empty($host)) {
             return isset($this->server['SERVER_NAME']) ? $this->server['SERVER_NAME'] : '';
         }
