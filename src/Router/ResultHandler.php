@@ -68,7 +68,8 @@ final class ResultHandler implements ResultHandlerInterface
      */
     private function setTemplate($template)
     {
-        pathinfo($template, PATHINFO_EXTENSION) or $template .= '.php';
+        $ext = apply_filters('cortex.default-template-extension', 'php');
+        pathinfo($template, PATHINFO_EXTENSION) or $template .= '.'.ltrim($ext, '.');
         $template = is_file($template) ? $template : locate_template([$template], false);
         if (! $template) {
             return;
