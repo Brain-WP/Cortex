@@ -10,7 +10,7 @@
 
 namespace Brain\Cortex\Router;
 
-use Brain\Cortex\Controller\ControllerInterface;
+use Brain\Cortex\Controller\ControllerInterface as Controller;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -40,17 +40,7 @@ class MatchingResult
             'template' => null,
         ];
 
-        $data = array_merge($defaults, array_change_key_case($data, CASE_LOWER));
-        is_array($data['vars']) or $data['vars'] = [];
-        $data['matched'] = (bool) filter_var($data['matched'], FILTER_VALIDATE_BOOLEAN);
-        if (!is_callable($data['handler']) && ! $data['handler'] instanceof ControllerInterface) {
-            $data['handler'] = null;
-        }
-        is_callable($data['before']) or $data['before'] = null;
-        is_callable($data['after']) or $data['after'] = null;
-        is_string($data['template']) or $data['template'] = null;
-
-        $this->data = $data;
+        $this->data = array_merge($defaults, array_change_key_case($data, CASE_LOWER));
     }
 
     /**
@@ -58,7 +48,7 @@ class MatchingResult
      */
     public function vars()
     {
-        return $this->data['vars'];
+        return is_array($this->data['vars']) ? $this->data['vars'] : [];
     }
 
     /**
@@ -66,7 +56,7 @@ class MatchingResult
      */
     public function matched()
     {
-        return $this->data['matched'];
+        return filter_var($this->data['matched'], FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
@@ -74,30 +64,36 @@ class MatchingResult
      */
     public function template()
     {
-        return $this->data['template'];
+        return is_string($this->data['template']) ? $this->data['template'] : null;
     }
 
     /**
-     * @return callable|null
+     * @return callable|\Brain\Cortex\Controller\ControllerInterface|null
      */
     public function handler()
     {
-        return $this->data['handler'];
+        if (is_callable($this->data['handler']) || $this->data['handler'] instanceof Controller) {
+            return $this->data['handler'];
+        }
     }
 
     /**
-     * @return callable|null
+     * @return callable|\Brain\Cortex\Controller\ControllerInterface|null
      */
     public function beforeHandler()
     {
-        return $this->data['before'];
+        if (is_callable($this->data['before']) || $this->data['before'] instanceof Controller) {
+            return $this->data['before'];
+        }
     }
 
     /**
-     * @return callable|null
+     * @return callable|\Brain\Cortex\Controller\ControllerInterface|null
      */
     public function afterHandler()
     {
-        return $this->data['after'];
+        if (is_callable($this->data['after']) || $this->data['after'] instanceof Controller) {
+            return $this->data['after'];
+        }
     }
 }
