@@ -36,12 +36,8 @@
     },
     "autoload":          {
         "psr-4":    {
-            "Brain\\Cortex\\": "src/"
-        },
-        "classmap": [
-            "Routes.php",
-            "Cortex.php"
-        ]
+            "Brain\\": "src/"
+        }
     },
     "autoload-dev":      {
         "psr-4": {

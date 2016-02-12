@@ -43,54 +43,46 @@ class Cortex
     /**
      * @param  \Psr\Http\Message\RequestInterface $request
      * @return bool
+     * @throws \Exception
      */
     public static function boot(RequestInterface $request = null)
     {
-        if (self::$booted) {
-            return false;
-        }
-
-        if (did_action('parse_request')) {
-            $exception = new \BadMethodCallException(
-                sprintf('%s must be called before "do_parse_request".', __METHOD__)
-            );
-
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                throw $exception;
+        try {
+            if (self::$booted) {
+                return false;
             }
 
-            do_action('cortex.fail', $exception);
-        }
+            if (did_action('parse_request')) {
+                throw new \BadMethodCallException(
+                    sprintf('%s must be called before "do_parse_request".', __METHOD__)
+                );
+            }
 
-        self::$booted = add_filter('do_parse_request', function ($do, \WP $wp) use ($request) {
+            self::$booted = add_filter('do_parse_request', function ($do, \WP $wp) use ($request) {
+                self::$late = true;
+                try {
+                    $instance = new static();
+                    $do = $instance->doBoot($wp, $do, $request);
+                    unset($instance);
 
-            self::$late = true;
+                    return $do;
+                } catch (\Exception $e) {
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        throw $e;
+                    }
 
-            try {
-                $instance = new static();
-                $routes = $instance->factoryRoutes();
-                $groups = $instance->factoryGroups();
-                $router = $instance->factoryRouter($routes, $groups);
-                $handler = $instance->factoryHandler();
-                $uri = $instance->factoryUri($request);
-                $method = $instance->getMethod($request);
-                $do = $handler->handle($router->match($uri, $method), $wp, $do);
-                unset($method, $uri, $handler, $router, $groups, $routes, $instance);
-                remove_all_filters('cortex.routes');
-                remove_all_filters('cortex.groups');
+                    do_action('cortex.fail', $e);
 
-                return $do;
-            } catch (\Exception $e) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    throw $e;
+                    return $do;
                 }
-
-                do_action('cortex.fail', $e);
-
-                return $do;
+            }, 100, 2);
+        } catch (\Exception $e) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                throw $e;
             }
 
-        }, 100, 2);
+            do_action('cortex.fail', $e);
+        }
 
         return true;
     }
@@ -101,6 +93,28 @@ class Cortex
     public static function late()
     {
         return self::$late;
+    }
+
+    /**
+     * @param  \WP                                     $wp
+     * @param  bool                                    $do
+     * @param  \Psr\Http\Message\RequestInterface|null $request
+     * @return bool
+     */
+    private function doBoot(\WP $wp, $do, RequestInterface $request = null)
+    {
+        $routes = $this->factoryRoutes();
+        $groups = $this->factoryGroups();
+        $router = $this->factoryRouter($routes, $groups);
+        $handler = $this->factoryHandler();
+        $uri = $this->factoryUri($request);
+        $method = $this->getMethod($request);
+        $do = $handler->handle($router->match($uri, $method), $wp, $do);
+        unset($method, $uri, $handler, $router, $groups, $routes, $instance);
+        remove_all_filters('cortex.routes');
+        remove_all_filters('cortex.groups');
+
+        return $do;
     }
 
     /**
