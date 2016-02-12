@@ -25,20 +25,28 @@ final class ResultHandler implements ResultHandlerInterface
     public function handle(MatchingResult $result, \WP $wp, $doParseRequest)
     {
         if ($result->matched()) {
-            do_action('cortex.matched', $result);
-
             $handler = $this->buildCallback($result->handler());
             $before = $this->buildCallback($result->beforeHandler());
             $after = $this->buildCallback($result->afterHandler());
             $template = $result->template();
             $vars = $result->vars();
 
+            $args = compact('handler', 'before', 'after', 'template', 'vars');
+
+            do_action('cortex.matched', $args, $wp);
+
             is_callable($before) and $before($vars, $wp);
             is_callable($handler) and $doParseRequest = $handler($vars, $wp);
             is_callable($after) and $after($vars, $wp);
             is_string($template) and $this->setTemplate($template);
 
-            $doParseRequest or remove_filter('template_redirect', 'redirect_canonical');
+            do_action('cortex.matched-after', $args, $wp, $doParseRequest);
+
+            if (! apply_filters('cortex.do-parse-request', $doParseRequest)) {
+                remove_filter('template_redirect', 'redirect_canonical');
+
+                return false;
+            }
         }
 
         return $doParseRequest;
