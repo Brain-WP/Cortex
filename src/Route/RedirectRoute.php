@@ -10,7 +10,6 @@
 
 namespace Brain\Cortex\Route;
 
-use Brain\Cortex\Controller\ControllerInterface;
 use Brain\Cortex\Controller\RedirectController;
 
 /**
@@ -27,43 +26,83 @@ final class RedirectRoute implements RouteInterface
      */
     private $route;
 
-    public function __construct($from, $to, array $options, ControllerInterface $controller = null)
+    /**
+     * RedirectRoute constructor.
+     *
+     * @param string $from
+     * @param string $to
+     * @param array  $options
+     */
+    public function __construct($from, $to, array $options)
+    {
+        list($vars, $options) = $this->parseOptions($options);
+
+        $options['vars'] = is_callable($to)
+            ? $this->redirectToFromCallback($to, $vars)
+            : $this->redirectToFromString($to, $vars);
+
+        $options['path'] = $from;
+        $options['handler'] = new RedirectController();
+
+        $this->route = new Route($options);
+    }
+
+    /**
+     * @param  array $options
+     * @return array
+     */
+    private function parseOptions(array $options)
     {
         $status = empty($options['redirect_status']) ? 301 : $options['redirect_status'];
         in_array((int) $status, range(300, 308), true) or $status = 301;
 
-        $ext = empty($options['redirect_external']) ? false : $options['redirect_external'];
-        $ext = filter_var($ext, FILTER_VALIDATE_BOOLEAN);
+        $external = empty($options['redirect_external']) ? false : $options['redirect_external'];
 
         $vars = [
             'redirect_status'   => $status,
-            'redirect_external' => $ext,
+            'redirect_external' => filter_var($external, FILTER_VALIDATE_BOOLEAN),
             'redirect_to'       => null,
         ];
 
-        if (is_callable($to)) {
-            $vars = function (array $vars) use ($to, $status, $ext) {
-                $to = $to($vars);
+        return [$vars, array_diff_key($options, $vars)];
+    }
 
-                return [
-                    'redirect_to'       => filter_var($to, FILTER_VALIDATE_URL) ? $to : null,
-                    'redirect_status'   => $status,
-                    'redirect_external' => $ext
-                ];
-            };
-        } elseif (filter_var($to, FILTER_VALIDATE_URL)) {
-            $vars['redirect_to'] = $to;
+    /**
+     * @param  callable $to
+     * @param  array    $vars
+     * @return \Closure
+     */
+    private function redirectToFromCallback(callable $to, array $vars)
+    {
+        return function (array $args) use ($to, $vars) {
+            $vars['redirect_to'] = $this->redirectToFromString($to($args));
+
+            return $vars;
+        };
+    }
+
+    /**
+     * @param  string      $url
+     * @param  array       $vars
+     * @return null|string
+     */
+    private function redirectToFromString($url, array $vars)
+    {
+        if (! is_string($url)) {
+            return;
         }
 
-        $args = [
-            'path'    => $from,
-            'vars'    => $vars,
-            'handler' => $controller ?: new RedirectController(),
-        ];
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+        if (empty($url)) {
+            return;
+        }
 
-        isset($options['id']) and $args['id'] = $options['id'];
-        isset($options['merge_query_string']) and $args['merge_query_string'] = $options['merge_query_string'];
+        $valid = filter_var($url, FILTER_VALIDATE_URL);
 
-        $this->route = new Route($args);
+        if ($vars['redirect_external']) {
+            return $valid ? $url : null;
+        }
+
+        return $valid ? $url : home_url($url);
     }
 }
