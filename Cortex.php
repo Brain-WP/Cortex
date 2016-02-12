@@ -109,7 +109,7 @@ class Cortex
      * @param  callable|null $default
      * @return object
      */
-    private static function factoryByHook($name, $abstract = null, callable $default = null)
+    private function factoryByHook($name, $abstract = null, callable $default = null)
     {
         if (! is_string($name)) {
             throw new \InvalidArgumentException('Name of object to factory must be in a string.');
@@ -137,7 +137,7 @@ class Cortex
     private function factoryGroups()
     {
         /** @var \Brain\Cortex\Group\GroupCollectionInterface $groups */
-        $groups = self::factoryByHook(
+        $groups = $this->factoryByHook(
             'group-collection',
             GroupCollectionInterface::class,
             function () {
@@ -156,7 +156,7 @@ class Cortex
     private function factoryRoutes()
     {
         /** @var \Brain\Cortex\Route\RouteCollectionInterface $routes */
-        $routes = self::factoryByHook(
+        $routes = $this->factoryByHook(
             'group-collection',
             RouteCollectionInterface::class,
             function () {
@@ -179,7 +179,7 @@ class Cortex
         GroupCollectionInterface $groups
     ) {
         /** @var \Brain\Cortex\Router\RouterInterface $router */
-        $router = self::factoryByHook(
+        $router = $this->factoryByHook(
             'router',
             RouterInterface::class,
             function () use ($routes, $groups) {
@@ -196,7 +196,7 @@ class Cortex
     private function factoryHandler()
     {
         /** @var ResultHandlerInterface $handler */
-        $handler = self::factoryByHook(
+        $handler = $this->factoryByHook(
             'result-handler',
             ResultHandlerInterface::class,
             function () {
@@ -217,7 +217,7 @@ class Cortex
         $psrUri = is_null($request) ? null : $request->getUri();
 
         /** @var UriInterface $uri */
-        $uri = self::factoryByHook(
+        $uri = $this->factoryByHook(
             'result-handler',
             UriInterface::class,
             function () use ($psrUri) {
