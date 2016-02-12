@@ -129,7 +129,7 @@ class Cortex
         if (
             is_string($abstract)
             && (class_exists($abstract) || interface_exists($abstract))
-            && ! is_subclass_of($thing, $abstract, true)
+            && (! is_object($thing) || ! is_subclass_of($thing, $abstract, true))
         ) {
             $thing = is_callable($default) ? $default() : null;
         }
@@ -228,7 +228,7 @@ class Cortex
 
         /** @var UriInterface $uri */
         $uri = $this->factoryByHook(
-            'result-handler',
+            'uri',
             UriInterface::class,
             function () use ($psrUri) {
                 is_null($psrUri) and $psrUri = new PsrUri();
