@@ -125,10 +125,6 @@ class Cortex
      */
     private function factoryByHook($name, $abstract = null, callable $default = null)
     {
-        if (! is_string($name)) {
-            throw new \InvalidArgumentException('Name of object to factory must be in a string.');
-        }
-
         $thing = apply_filters("cortex.{$name}.instance", null);
         if (
             is_string($abstract)
