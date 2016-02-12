@@ -45,11 +45,11 @@ class Routes
 
     /**
      * @param  string                             $path
-     * @param  array                              $query
+     * @param  callable|array                     $query
      * @param  array                              $options
      * @return \Brain\Cortex\Route\RouteInterface
      */
-    public static function add($path, $query, $options = [])
+    public static function add($path, $query, array $options = [])
     {
         self::checkTiming(__METHOD__);
 
@@ -67,20 +67,18 @@ class Routes
 
     /**
      * @param  string                            $path
-     * @param  string                            $to
+     * @param  string|callable                   $to
      * @param  int                               $status
-     * @param  bool                              $allowExternal
+     * @param  bool                              $external
      * @return \Brain\Cortex\Route\RedirectRoute
      */
-    public static function redirect($path, $to, $status = 301, $allowExternal = false)
+    public static function redirect($path, $to, $status = 301, $external = false)
     {
         self::checkTiming(__METHOD__);
 
-        $routeObj = new RedirectRoute([
-            'path'              => $path,
-            'redirect_to'       => $to,
+        $routeObj = new RedirectRoute($path, $to, [
             'redirect_status'   => $status,
-            'redirect_external' => $allowExternal,
+            'redirect_external' => $external,
         ]);
 
         add_action(
