@@ -27,6 +27,24 @@ final class RouteFilterIterator extends \FilterIterator
     private $uri;
 
     /**
+     * @param  string $routeHost
+     * @param  string $serverHost
+     * @return bool
+     */
+    private static function checkHost($routeHost, $serverHost)
+    {
+        if (strpos($routeHost, '*') === false) {
+            return $routeHost === $serverHost;
+        }
+
+        if (strpos($routeHost, '*.') === 0) {
+            return fnmatch($routeHost, $serverHost) || fnmatch(substr($routeHost, 2), $serverHost);
+        }
+
+        return fnmatch($routeHost, $serverHost);
+    }
+
+    /**
      * RouteFilterIterator constructor.
      *
      * @param \Brain\Cortex\Route\RouteCollectionInterface $routes
@@ -50,13 +68,12 @@ final class RouteFilterIterator extends \FilterIterator
         }
 
         $scheme = strtolower((string) $route['scheme']);
-        in_array($scheme, ['http', 'https']) or $scheme = '';
         if (! empty($scheme) && $scheme !== $this->uri->scheme()) {
             return false;
         }
 
         $host = filter_var(strtolower((string) $route['host']), FILTER_SANITIZE_URL);
-        if (! empty($host) && $host !== $this->uri->host()) {
+        if (! empty($host) && ! self::checkHost($route['host'], $this->uri->host())) {
             return false;
         }
 
