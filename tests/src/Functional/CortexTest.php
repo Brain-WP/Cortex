@@ -15,6 +15,7 @@ use Brain\Cortex;
 use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Route\QueryRoute;
 use Brain\Cortex\Tests\TestCaseFunctional;
+use Brain\Cortex\Uri\WordPressUri;
 use Brain\Monkey\Functions;
 use Brain\Monkey\WP\Actions;
 use Brain\Monkey\WP\Filters;
@@ -74,6 +75,13 @@ class CortexTest extends TestCaseFunctional
         $do = $cortex->doBoot($wp, true, $request);
 
         assertTrue($do);
+    }
+
+    public function testCortexBuildUriWithNoRequest()
+    {
+        $cortex = new Proxy(new Cortex());
+
+        assertInstanceOf(WordPressUri::class, $cortex->factoryUri());
     }
 
     public function testCortexMatchStaticRoute()
