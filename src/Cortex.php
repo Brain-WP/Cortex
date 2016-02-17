@@ -103,12 +103,12 @@ class Cortex
      */
     private function doBoot(\WP $wp, $do, RequestInterface $request = null)
     {
-        $routes = $this->factoryRoutes();
+        $uri = $this->factoryUri($request);
+        $method = $this->getMethod($request);
+        $routes = $this->factoryRoutes($uri, $method);
         $groups = $this->factoryGroups();
         $router = $this->factoryRouter($routes, $groups);
         $handler = $this->factoryHandler();
-        $uri = $this->factoryUri($request);
-        $method = $this->getMethod($request);
         $do = $handler->handle($router->match($uri, $method), $wp, $do);
         unset($method, $uri, $handler, $router, $groups, $routes, $instance);
         remove_all_filters('cortex.routes');
@@ -142,6 +142,41 @@ class Cortex
     }
 
     /**
+     * @param  \Psr\Http\Message\RequestInterface $request
+     * @return \Brain\Cortex\Uri\UriInterface
+     */
+    private function factoryUri(RequestInterface $request = null)
+    {
+        $psrUri = is_null($request) ? null : $request->getUri();
+
+        /** @var UriInterface $uri */
+        $uri = $this->factoryByHook(
+            'uri',
+            UriInterface::class,
+            function () use ($psrUri) {
+                is_null($psrUri) and $psrUri = new PsrUri();
+
+                return new WordPressUri($psrUri);
+            }
+        );
+
+        return $uri;
+    }
+
+    /**
+     * @param  \Psr\Http\Message\RequestInterface|null $request
+     * @return string
+     */
+    private function getMethod(RequestInterface $request = null)
+    {
+        if ($request) {
+            return $request->getMethod();
+        }
+
+        return empty($_SERVER['REQUEST_METHOD']) ? 'GET' : strtoupper($_SERVER['REQUEST_METHOD']);
+    }
+
+    /**
      * @return \Brain\Cortex\Group\GroupCollectionInterface
      */
     private function factoryGroups()
@@ -161,9 +196,11 @@ class Cortex
     }
 
     /**
+     * @param \Brain\Cortex\Uri\UriInterface $uri
+     * @param string                         method
      * @return \Brain\Cortex\Route\RouteCollectionInterface
      */
-    private function factoryRoutes()
+    private function factoryRoutes(UriInterface $uri, $method)
     {
         /** @var \Brain\Cortex\Route\RouteCollectionInterface $routes */
         $routes = $this->factoryByHook(
@@ -174,7 +211,7 @@ class Cortex
             }
         );
 
-        do_action('cortex.routes', $routes);
+        do_action('cortex.routes', $routes, $uri, $method);
 
         return $routes;
     }
@@ -215,41 +252,5 @@ class Cortex
         );
 
         return $handler;
-    }
-
-    /**
-     * @param  \Psr\Http\Message\RequestInterface $request
-     * @return \Brain\Cortex\Uri\UriInterface
-     * @internal param null|\Psr\Http\Message\UriInterface $psrUri
-     */
-    private function factoryUri(RequestInterface $request = null)
-    {
-        $psrUri = is_null($request) ? null : $request->getUri();
-
-        /** @var UriInterface $uri */
-        $uri = $this->factoryByHook(
-            'uri',
-            UriInterface::class,
-            function () use ($psrUri) {
-                is_null($psrUri) and $psrUri = new PsrUri();
-
-                return new WordPressUri($psrUri);
-            }
-        );
-
-        return $uri;
-    }
-
-    /**
-     * @param  \Psr\Http\Message\RequestInterface|null $request
-     * @return string
-     */
-    private function getMethod(RequestInterface $request = null)
-    {
-        if ($request) {
-            return $request->getMethod();
-        }
-
-        return empty($_SERVER['REQUEST_METHOD']) ? 'GET' : strtoupper($_SERVER['REQUEST_METHOD']);
     }
 }
