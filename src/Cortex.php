@@ -167,7 +167,7 @@ class Cortex
     {
         /** @var \Brain\Cortex\Route\RouteCollectionInterface $routes */
         $routes = $this->factoryByHook(
-            'group-collection',
+            'route-collection',
             RouteCollectionInterface::class,
             function () {
                 return new PriorityRouteCollection();
