@@ -35,7 +35,7 @@ class WordPressUriTest extends TestCase
         return $uri;
     }
 
-    public function testNoHomeUrl()
+    public function testNoHomePath()
     {
         Functions::when('home_url')->justReturn('https://www.example.com/');
 
@@ -61,16 +61,29 @@ class WordPressUriTest extends TestCase
         assertSame([], $wpUri->vars());
     }
 
-    public function testHomeUrl()
+    public function testHomeUrlHomePath()
     {
         Functions::when('home_url')->justReturn('https://www.example.com/foo/');
 
-        $uri = $this->psrUriFromUrl('https://www.example.com/foo/bar/?meh=1');
+        $uri = $this->psrUriFromUrl('https://www.example.com/foo/');
         $wpUri = new WordPressUri($uri);
 
         assertSame('https', $wpUri->scheme());
         assertSame('www.example.com', $wpUri->host());
-        assertSame('bar', $wpUri->path());
-        assertSame(['meh' => '1'], $wpUri->vars());
+        assertSame('/', $wpUri->path());
+        assertSame([], $wpUri->vars());
+    }
+
+    public function testHomeUrlNoHomePath()
+    {
+        Functions::when('home_url')->justReturn('https://www.example.com/');
+
+        $uri = $this->psrUriFromUrl('https://www.example.com/');
+        $wpUri = new WordPressUri($uri);
+
+        assertSame('https', $wpUri->scheme());
+        assertSame('www.example.com', $wpUri->host());
+        assertSame('/', $wpUri->path());
+        assertSame([], $wpUri->vars());
     }
 }

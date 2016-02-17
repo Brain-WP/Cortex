@@ -35,5 +35,10 @@ interface UriInterface
     /**
      * @return array
      */
+    public function chunks();
+
+    /**
+     * @return array
+     */
     public function vars();
 }

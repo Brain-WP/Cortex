@@ -53,6 +53,16 @@ final class WordPressUri implements UriInterface
     /**
      * @inheritdoc
      */
+    public function chunks()
+    {
+        $path = $this->path();
+
+        return $path === '/' ? [] : explode('/', $path);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function path()
     {
         /*
@@ -66,7 +76,7 @@ final class WordPressUri implements UriInterface
             $path = trim(substr($path, strlen($homePath)), '/');
         }
 
-        return $path;
+        return $path ?: '/';
     }
 
     /**
