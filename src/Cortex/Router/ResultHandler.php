@@ -31,16 +31,14 @@ final class ResultHandler implements ResultHandlerInterface
             $template = $result->template();
             $vars = $result->vars();
 
-            $args = compact('handler', 'before', 'after', 'template', 'vars');
-
-            do_action('cortex.matched', $args, $wp);
+            do_action('cortex.matched', $result, $wp);
 
             is_callable($before) and $before($vars, $wp);
             is_callable($handler) and $doParseRequest = $handler($vars, $wp);
             is_callable($after) and $after($vars, $wp);
             is_string($template) and $this->setTemplate($template);
 
-            do_action('cortex.matched-after', $args, $wp, $doParseRequest);
+            do_action('cortex.matched-after', $result, $wp, $doParseRequest);
 
             if (! apply_filters('cortex.do-parse-request', $doParseRequest)) {
                 remove_filter('template_redirect', 'redirect_canonical');
