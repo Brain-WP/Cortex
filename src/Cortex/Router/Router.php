@@ -87,7 +87,7 @@ final class Router implements RouterInterface
             return $this->results;
         }
 
-        if (! count($this->routes) || ! $this->parseRoutes($uri)) {
+        if (! count($this->routes) || ! $this->parseRoutes($uri, $httpMethod)) {
             $this->results = new MatchingResult(['route' => null]);
 
             return $this->results;
@@ -114,9 +114,10 @@ final class Router implements RouterInterface
 
     /**
      * @param  \Brain\Cortex\Uri\UriInterface $uri
+     * @param  string                         $httpMethod
      * @return int
      */
-    private function parseRoutes(UriInterface $uri)
+    private function parseRoutes(UriInterface $uri, $httpMethod)
     {
         $iterator = new RouteFilterIterator($this->routes, $uri);
         $parsed = 0;
@@ -124,7 +125,9 @@ final class Router implements RouterInterface
         while ($iterator->valid()) {
             /** @var \Brain\Cortex\Route\RouteInterface $route */
             $route = $this->groups->mergeGroup($iterator->current());
-            empty($route['method']) and $route['method'] = 'GET';
+            if (empty($route['method']) || strtolower($route['method']) === 'any') {
+                $route['method'] = $httpMethod;
+            }
             if ($route instanceof RouteInterface && $this->validate($route)) {
                 $id = $route->id();
                 $this->parsedRoutes[$id] = $route;
@@ -197,17 +200,19 @@ final class Router implements RouterInterface
         is_null($route['merge_query_string']) and $route['merge_query_string'] = true;
         $merge = filter_var($route['merge_query_string'], FILTER_VALIDATE_BOOLEAN);
         $merge and $vars = array_merge($vars, $uri->vars());
+        $result = null;
         if (is_callable($route['vars'])) {
             $cb = $route['vars'];
             $routeVars = $cb($vars);
             is_array($routeVars) and $vars = $routeVars;
+            $routeVars instanceof MatchingResult and $result = $routeVars;
         } elseif (is_array($route['vars'])) {
             foreach ($route['vars'] as $key => $value) {
                 isset($vars[$key]) or $vars[$key] = $value;
             }
         }
 
-        return new MatchingResult([
+        return $result instanceof MatchingResult ? $result : new MatchingResult([
             'vars'     => $vars,
             'route'    => $route->id(),
             'path'     => $route['path'],

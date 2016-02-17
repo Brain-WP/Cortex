@@ -14,6 +14,7 @@ use Andrew\Proxy;
 use Brain\Cortex;
 use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Route\QueryRoute;
+use Brain\Cortex\Router\MatchingResult;
 use Brain\Cortex\Tests\TestCaseFunctional;
 use Brain\Cortex\Uri\WordPressUri;
 use Brain\Monkey\Functions;
@@ -84,6 +85,33 @@ class CortexTest extends TestCaseFunctional
         assertInstanceOf(WordPressUri::class, $cortex->factoryUri());
     }
 
+    public function testRouterReturnRouteResultsWhenGiven()
+    {
+        Functions::when('home_url')->justReturn('http://example.com/');
+        Functions::when('remove_all_filters')->justReturn();
+
+        Actions::expectFired('cortex.routes')
+               ->once()
+               ->whenHappen(function (RouteCollectionInterface $routes) {
+                   $routes->addRoute(new QueryRoute('/bar/baz', function () {
+                       return new MatchingResult([]);
+                   }));
+               });
+
+        Actions::expectFired('cortex.matched')->never();
+
+        $request = self::buildPsrRequest('http://example.com/bar/baz');
+
+        $cortex = new Proxy(new Cortex());
+        $wp = \Mockery::mock('WP');
+
+        $do = $cortex->doBoot($wp, true, $request);
+
+        assertTrue($do);
+        assertFalse(isset($wp->query_vars));
+
+    }
+
     public function testCortexMatchStaticRoute()
     {
         Functions::when('home_url')->justReturn('http://example.com/foo/');
@@ -96,6 +124,8 @@ class CortexTest extends TestCaseFunctional
                        return ['post_type' => 'products'];
                    }));
                });
+
+        Actions::expectFired('cortex.matched')->once();
 
         $request = self::buildPsrRequest('http://example.com/foo/bar/baz');
 
@@ -118,8 +148,10 @@ class CortexTest extends TestCaseFunctional
                ->whenHappen(function (RouteCollectionInterface $routes) {
                    $routes->addRoute(new QueryRoute('/bar/baz', function () {
                        return ['post_type' => 'products'];
-                   }));
+                   }, ['method' => 'GET']));
                });
+
+        Actions::expectFired('cortex.matched')->never();
 
         $request = self::buildPsrRequest('http://example.com/foo/bar/baz', 'POST');
 
@@ -149,6 +181,8 @@ class CortexTest extends TestCaseFunctional
                        )
                    );
                });
+
+        Actions::expectFired('cortex.matched')->once();
 
         $request = self::buildPsrRequest('http://example.com/foo/bar/baz?num=12');
 
@@ -180,6 +214,8 @@ class CortexTest extends TestCaseFunctional
                    );
                });
 
+        Actions::expectFired('cortex.matched')->once();
+
         $request = self::buildPsrRequest('http://example.com/foo/products/baz?num=12');
 
         $cortex = new Proxy(new Cortex());
@@ -205,6 +241,8 @@ class CortexTest extends TestCaseFunctional
                        })
                    );
                });
+
+        Actions::expectFired('cortex.matched')->never();
 
         $request = self::buildPsrRequest('http://example.com/foo/123/baz');
 
@@ -237,6 +275,8 @@ class CortexTest extends TestCaseFunctional
                        );
                });
 
+        Actions::expectFired('cortex.matched')->once();
+
         $request = self::buildPsrRequest('http://example.com/foo/bar/baz/?foo=bar');
 
         $cortex = new Proxy(new Cortex());
@@ -260,6 +300,8 @@ class CortexTest extends TestCaseFunctional
                        return ['post_type' => 'products'];
                    }));
                });
+
+        Actions::expectFired('cortex.matched')->never();
 
         Filters::expectApplied('cortex.uri.instance')->once()->andReturnUsing(function () {
             $uri = \Mockery::mock(Cortex\Uri\UriInterface::class);
@@ -298,6 +340,8 @@ class CortexTest extends TestCaseFunctional
         Filters::expectApplied('cortex.uri.instance')->once()->andReturnUsing(function () {
             return 'http://example.com/foo/bar/baz';
         });
+
+        Actions::expectFired('cortex.matched')->once();
 
         $request = self::buildPsrRequest('http://example.com/foo/bar/baz');
 
