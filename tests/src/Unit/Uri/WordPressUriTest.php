@@ -45,6 +45,7 @@ class WordPressUriTest extends TestCase
         assertSame('https', $wpUri->scheme());
         assertSame('www.example.com', $wpUri->host());
         assertSame('foo/bar.php', $wpUri->path());
+        assertSame(['foo', 'bar.php'], $wpUri->chunks());
         assertSame(['meh' => '1'], $wpUri->vars());
     }
 
@@ -58,6 +59,7 @@ class WordPressUriTest extends TestCase
         assertSame('https', $wpUri->scheme());
         assertSame('www.example.com', $wpUri->host());
         assertSame('foo/bar', $wpUri->path());
+        assertSame(['foo', 'bar'], $wpUri->chunks());
         assertSame([], $wpUri->vars());
     }
 
@@ -71,6 +73,7 @@ class WordPressUriTest extends TestCase
         assertSame('https', $wpUri->scheme());
         assertSame('www.example.com', $wpUri->host());
         assertSame('/', $wpUri->path());
+        assertSame([], $wpUri->chunks());
         assertSame([], $wpUri->vars());
     }
 
@@ -84,6 +87,7 @@ class WordPressUriTest extends TestCase
         assertSame('https', $wpUri->scheme());
         assertSame('www.example.com', $wpUri->host());
         assertSame('/', $wpUri->path());
+        assertSame([], $wpUri->chunks());
         assertSame([], $wpUri->vars());
     }
 }
