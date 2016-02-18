@@ -196,7 +196,7 @@ class Cortex
     }
 
     /**
-     * @param \Brain\Cortex\Uri\UriInterface $uri
+     * @param  \Brain\Cortex\Uri\UriInterface               $uri
      * @param string                         method
      * @return \Brain\Cortex\Route\RouteCollectionInterface
      */
