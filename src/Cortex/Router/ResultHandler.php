@@ -36,7 +36,7 @@ final class ResultHandler implements ResultHandlerInterface
             is_callable($before) and $before($vars, $wp);
             is_callable($handler) and $doParseRequest = $handler($vars, $wp);
             is_callable($after) and $after($vars, $wp);
-            is_string($template) and $this->setTemplate($template);
+            (is_string($template) && $template) and $this->setTemplate($template);
 
             do_action('cortex.matched-after', $result, $wp, $doParseRequest);
 

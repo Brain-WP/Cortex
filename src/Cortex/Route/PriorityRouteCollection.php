@@ -17,6 +17,8 @@ namespace Brain\Cortex\Route;
  */
 final class PriorityRouteCollection implements RouteCollectionInterface
 {
+    private static $pagedFlags = [RouteInterface::PAGED_ARCHIVE, RouteInterface::PAGED_SINGLE];
+
     /**
      * @var \SplPriorityQueue
      */
@@ -48,7 +50,18 @@ final class PriorityRouteCollection implements RouteCollectionInterface
             $route->offsetSet('priority', $next);
         }
 
-        $priority = $this->maybeAddPaged($route, (int) $route->offsetGet('priority'));
+        $priority = $route->offsetGet('priority');
+
+        $paged = $this->maybeBuildPaged($route, (int) $route->offsetGet('priority'));
+        if (
+            $paged instanceof RouteInterface
+            && ! in_array($paged['paged'], self::$pagedFlags, true) // ensure avoid infinite loops
+        ) {
+            $paged->offsetSet('priority', $priority);
+            $priority++;
+            $this->addRoute($paged);
+        }
+
         in_array($priority, $this->priorities, true) or $this->priorities[] = $priority;
         $this->queue->insert($route, ((-1) * $priority));
 
@@ -105,31 +118,25 @@ final class PriorityRouteCollection implements RouteCollectionInterface
 
     /**
      * @param  \Brain\Cortex\Route\RouteInterface $route
-     * @param  int                                $priority
      * @return int
      */
-    private function maybeAddPaged(RouteInterface $route, $priority)
+    private function maybeBuildPaged(RouteInterface $route)
     {
-        $pagedOpts = [RouteInterface::PAGED_ARCHIVE, RouteInterface::PAGED_SINGLE];
         $pagedArg = $route->offsetExists('paged') ? $route->offsetGet('paged') : '';
         $path = $route->offsetExists('path') ? $route->offsetGet('path') : '';
-        if (in_array($pagedArg, $pagedOpts, true) && $path && is_string($path)) {
+        if (in_array($pagedArg, self::$pagedFlags, true) && $path && is_string($path)) {
             $base = 'page';
             /** @var \WP_Rewrite $wp_rewrite */
             global $wp_rewrite;
             $wp_rewrite instanceof \WP_Rewrite and $base = $wp_rewrite->pagination_base;
-            $paged = clone $route;
-            $newPath = $pagedArg === RouteInterface::PAGED_ARCHIVE
+            $array = $route->toArray();
+            $array['id'] = $route->id().'_paged';
+            $array['paged'] = RouteInterface::PAGED_UNPAGED;
+            $array['path'] = $pagedArg === RouteInterface::PAGED_ARCHIVE
                 ? $path.'/'.$base.'/{paged:\d+}'
                 : $path.'/{page:\d+}';
-            $paged->offsetSet('path', $newPath);
-            $paged->offsetSet('id', $route->offsetGet('id').'_paged');
-            $paged->offsetSet('paged', '');
-            $paged->offsetSet('priority', $priority);
-            $this->addRoute($paged);
-            $priority++;
-        }
 
-        return $priority;
+            return apply_filters('cortex.paged-route', new Route($array), $route);
+        }
     }
 }

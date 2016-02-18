@@ -109,7 +109,6 @@ class CortexTest extends TestCaseFunctional
 
         assertTrue($do);
         assertFalse(isset($wp->query_vars));
-
     }
 
     public function testCortexMatchStaticRoute()
@@ -135,6 +134,34 @@ class CortexTest extends TestCaseFunctional
         $do = $cortex->doBoot($wp, true, $request);
 
         assertSame(['post_type' => 'products'], $wp->query_vars);
+        assertFalse($do);
+    }
+
+    public function testCortexMatchPagedRoute()
+    {
+        Functions::when('home_url')->justReturn('http://example.com/');
+        Functions::when('remove_all_filters')->justReturn();
+
+        Actions::expectFired('cortex.routes')
+               ->once()
+               ->whenHappen(function (RouteCollectionInterface $routes) {
+                   $routes->addRoute(new QueryRoute('/bar', function ($vars) {
+                       isset($vars['paged']) and $vars['paged'] = (int) $vars['paged'];
+
+                       return $vars;
+                   }, ['paged' => QueryRoute::PAGED_ARCHIVE]));
+               });
+
+        Actions::expectFired('cortex.matched')->once();
+
+        $request = self::buildPsrRequest('http://example.com/bar/page/3');
+
+        $cortex = new Proxy(new Cortex());
+        $wp = \Mockery::mock('WP');
+
+        $do = $cortex->doBoot($wp, true, $request);
+
+        assertSame(['paged' => 3], $wp->query_vars);
         assertFalse($do);
     }
 
