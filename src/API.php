@@ -1,5 +1,7 @@
 <?php namespace Brain\Cortex;
 
+use Brain\Container;
+
 /**
  * API class.
  *
@@ -26,7 +28,7 @@ class API {
      * @return \Brain\Cortex\RouteInterface
      * @since 0.1
      */
-    function add( $path = '', $id = NULL, $priority = NULL, Array $options = [ ] ) {
+    public function add( $path = '', $id = NULL, $priority = NULL, Array $options = [ ] ) {
         return $this->create( $path, $id, $priority, $options )->add();
     }
 
@@ -42,7 +44,7 @@ class API {
      * @return \Brain\Cortex\RouteInterface
      * @since 0.1
      */
-    function create( $path = '', $id = NULL, $priority = NULL, Array $options = [ ] ) {
+    public function create( $path = '', $id = NULL, $priority = NULL, Array $options = [ ] ) {
         $route = $this->getBrain()->get( 'cortex.route' );
         if ( ! empty( $path ) ) {
             $route->setPath( $path );
@@ -83,7 +85,7 @@ class API {
      * @see Brain\Cortex\Api::create()
      * @since 0.1
      */
-    function createRedirect( $path = '', $to = '', $status = 301, $external = FALSE,
+    public function createRedirect( $path = '', $to = '', $status = 301, $external = FALSE,
                              Array $options = [ ], $id = NULL, $priority = NULL ) {
         if ( ! isset( $options['methods'] ) ) {
             $options['methods'] = [ 'GET' ];
@@ -111,7 +113,7 @@ class API {
      * @return \Brain\Cortex\RouteInterface
      * @since 0.1
      */
-    function redirect( $path = '', $to = '', $status = 301, $external = FALSE, Array $options = [ ],
+    public function redirect( $path = '', $to = '', $status = 301, $external = FALSE, Array $options = [ ],
                        $id = NULL, $priority = NULL ) {
         return $this->createRedirect( $path, $to, $status, $external, $options, $id, $priority )->add();
     }
@@ -124,7 +126,7 @@ class API {
      * @return \Brain\Cortex\GroupContainer
      * @since 0.1
      */
-    function group( $id = '', Array $options = [ ] ) {
+    public function group( $id = '', Array $options = [ ] ) {
         $groups = $this->getBrain()->get( 'cortex.groups' );
         return $groups->addGroup( $id, $options );
     }
@@ -133,7 +135,7 @@ class API {
      * Register a fallback for the router.
      *
      * A FallbackController object can be registered passing itself or a binding id for it.
-     * Is possible limit the Fallback run under two conditions: a callaback and minimum/maximum/exact
+     * Is possible limit the Fallback run under two conditions: a callback and minimum/maximum/exact
      * number of url "pieces", where a piece is a part of url between two "/".
      *
      * @param string $bind
@@ -144,11 +146,18 @@ class API {
      * @return \Brain\Cortex\Controllers\Router
      * @since 0.1
      */
-    function useFallback( $bind = '', Controllers\FallbackController $object = NULL,
-                          $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
+    public function useFallback(
+        $bind = '',
+        Controllers\FallbackController $object = NULL,
+        $condition = NULL,
+        $min_pieces = 0,
+        $exact = FALSE
+    ) {
+        $router = $this->getBrain()->get( 'cortex.router' );
+
         if ( is_string( $bind ) && ! empty( $bind ) ) {
             $args = [ 'min_pieces' => $min_pieces, 'exact' => $exact, 'condition' => $condition ];
-            return $this->getBrain()->get( 'cortex.router' )->setFallbackBind( $bind, $args );
+            $router->setFallbackBind( $bind, $args );
         } elseif ( ! is_null( $object ) ) {
             if ( is_callable( $condition ) ) {
                 $object->setCondition( $condition );
@@ -157,14 +166,16 @@ class API {
                 $object->setMinPieces( (int) $min_pieces );
             }
             $object->isExact( (bool) $exact );
-            return $this->getBrain()->get( 'cortex.router' )->setFallback( $object );
+            $router->setFallback( $object );
         }
+
+        return $router;
     }
 
     /**
      * Register the FallbackQueryBuilder as fallback controller for the router.
      *
-     * Is possible limit the Fallback run under two conditions: a callaback and minimum/maximum/exact
+     * Is possible limit the Fallback run under two conditions: a callback and minimum/maximum/exact
      * number of url "pieces", where a piece is a part of url between two "/".
      *
      * @param \Closure $condition
@@ -173,7 +184,7 @@ class API {
      * @return  \Brain\Cortex\Controllers\Router
      * @since 0.1
      */
-    function useQueryFallback( $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
+    public function useQueryFallback( $condition = NULL, $min_pieces = 0, $exact = FALSE ) {
         $bind = 'cortex.fallback_query_builder';
         return $this->useFallback( $bind, NULL, $condition, $min_pieces, $exact );
     }
@@ -181,26 +192,24 @@ class API {
     /**
      * Generate the url for a route taking its id and an array of arguments.
      *
-     * @param type $route_id
+     * @param string $route_id
      * @param array $args
      * @return string
      * @since 0.1
      */
-    function url( $route_id = '', Array $args = [ ] ) {
-        if ( ! did_action( 'parse_request' ) ) {
-            return new \WP_Error( 'too-early-for-url-generator' );
-        }
+    public function url( $route_id = '', Array $args = [ ] ) {
         return $this->getBrain()->get( 'symfony.generator' )->generate( $route_id, $args );
     }
 
     /**
      * Register a Controller factory closure in the container
      *
-     * @param type $id Controller id
+     * @param string   $id Controller id
+     * @param \Closure $factory
      * @return \Brain\Container
      * @since 0.1
      */
-    function registerController( $id = '', \Closure $factory = NULL ) {
+    public function registerController( $id = '', \Closure $factory = NULL ) {
         return $this->getBrain()->set( $id, $factory );
     }
 
@@ -210,12 +219,12 @@ class API {
      * @return \Brain\Cortex\RouteInterface|void
      * @since 0.1
      */
-    function getMatched() {
+    public function getMatched() {
         return $this->getBrain()->get( 'cortex.router' )->getMatched();
     }
 
     private function getBrain() {
-        return \Brain\Container::instance();
+        return Container::instance();
     }
 
 }
