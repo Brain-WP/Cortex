@@ -6,5 +6,6 @@ $RECYCLE.BIN/
 .coverage
 .tox
 .idea/
+.build/
 vendor/
 composer.lock
