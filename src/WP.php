@@ -1,7 +1,6 @@
 <?php namespace Brain\Cortex;
 
 use Brain\Cortex\Controllers\QueryBuilderInterface;
-use Brain\Cortex\Worker;
 
 /**
  * Extends WordPress WP class, and is used to override global `$wp` object.
@@ -31,7 +30,7 @@ class WP extends \WP {
     }
 
     public function cortexToWP( $extra = '' ) {
-        return parent::parse_request( $extra );
+        parent::parse_request( $extra );
     }
 
     public function cortexGetWorker() {
@@ -56,17 +55,19 @@ class WP extends \WP {
      * Method that override core one. If a plugin route is found and route callable implements
      * IQueryBuilder interface, then query class and query vars via routable.
      * If the routable is a redirector, then the request is redirect accordingly.
-     * For different routables behaviour depends on the $stop_wp variable: if it set to true via
+     * For different routable behaviour depends on the $stop_wp variable: if it set to true via
      * cortexStopWP() method than function do nothing, otherwise core parse_request is ran.
      *
-     * @param array $extra_query_vars extra query vars core pass to method
+     * @param array|string $extra_query_vars extra query vars core pass to method
      * @see WP::parse_request()
      * @see Brain\Cortex\WPWorker;
      */
     public function parse_request( $extra_query_vars = '' ) {
         if ( did_action( 'parse_request' ) ) return;
         if ( $this->cortexGetWorker()->init() === FALSE ) {
-            return $this->cortexToWP( $extra_query_vars );
+            $this->cortexToWP( $extra_query_vars );
+
+            return;
         }
         $work = $this->cortexGetWorker()->work();
         $this->cortexStopWP(  ! empty( $work ) );
@@ -77,7 +78,7 @@ class WP extends \WP {
             }
         }
         if ( $this->cortexStopWP() !== TRUE ) {
-            return $this->cortexToWP( $extra_query_vars );
+            $this->cortexToWP( $extra_query_vars );
         } else {
             if ( is_null( $this->query_vars ) ) {
                 $this->query_vars = [ ];

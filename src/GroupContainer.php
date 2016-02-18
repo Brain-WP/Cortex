@@ -1,5 +1,7 @@
 <?php namespace Brain\Cortex;
 
+use Brain\Contextable;
+
 /**
  * Concrete implementation of GroupContainerInterface
  *
@@ -8,7 +10,7 @@
  */
 class GroupContainer implements GroupContainerInterface {
 
-    use \Brain\Contextable;
+    use Contextable;
 
     protected $groups;
 
@@ -39,10 +41,10 @@ class GroupContainer implements GroupContainerInterface {
                 $group = array_merge( $group, $this->getGroupData( $group_id ) );
             }
         }
-        $filtered = ! empty( $group ) ? \Brain\stringKeyed( $group ) : FALSE;
+        $filtered = ! empty( $group ) ? \Brain\stringKeyed( $group ) : [];
         if ( ! empty( $filtered ) ) {
             foreach ( $filtered as $key => $value ) {
-                $key = strtolower( $key ) !== 'bindtoclosure' ? strtolower( $key ) : 'binded_closure';
+                $key = strtolower( $key ) !== 'bindtoclosure' ? strtolower( $key ) : 'bound_closure';
                 if ( is_null( $route->get( $key ) ) ) {
                     $route->set( $key, $value );
                 }

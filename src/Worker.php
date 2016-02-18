@@ -74,7 +74,7 @@ class Worker implements HooksableInterface, RequestableInterface {
     }
 
     /**
-     * Get current controller instance that can be the matched route rotable or a fallback
+     * Get current controller instance that can be the matched route routable or a fallback
      *
      * @return\ Brain\Cortex\Controllers\ControllerInterface
      */
@@ -92,7 +92,7 @@ class Worker implements HooksableInterface, RequestableInterface {
     }
 
     /**
-     * Return current workes status: 'matched' when a route match 'fallback' if not and a fallback
+     * Return current worker status: 'matched' when a route match 'fallback' if not and a fallback
      * is set
      *
      * @return string
@@ -157,7 +157,7 @@ class Worker implements HooksableInterface, RequestableInterface {
      * @return mixed
      */
     function work() {
-        if ( ! in_array( $this->getStatus(), [ 'matched', 'fallback' ], TRUE ) ) return;
+        if ( ! in_array( $this->getStatus(), [ 'matched', 'fallback' ], TRUE ) ) return '';
         $controller = $this->getController();
         $args = $this->getMatchedArgs();
         if ( $this->getStatus() === 'matched' ) {
@@ -166,17 +166,17 @@ class Worker implements HooksableInterface, RequestableInterface {
             $controller->setMatchedArgs( $args );
             $route->runBefore( $args, $route );
         }
-        $this->getHooks()->trigger( 'cortex.pre_contoller_run', $controller, $args );
+        $this->getHooks()->trigger( 'cortex.pre_controller_run', $controller, $args );
         $result = $controller->run();
         $this->getHooks()->trigger( 'cortex.after_controller_run', $controller, $args );
-        if ( $this->getStatus() === 'matched' ) {
+        if ( isset($route) ) {
             $this->getMatched()->runAfter( $args, $route );
         }
         return $this->maybeQuery( $controller, $result );
     }
 
     /**
-     * When routable is a query builder build a result array, to be used by WP clas, when routable
+     * When routable is a query builder build a result array, to be used by WP class, when routable
      * is a redirector exit.
      * In all other cases just return what controller run() method returned.
      *

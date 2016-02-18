@@ -1,12 +1,13 @@
 <?php namespace Brain\Cortex\Controllers;
 
 use Brain\Cortex\RequestableInterface;
+use Brain\Cortex\Requestable;
 
 /**
  * FallbackController runs, if added to router, when no registered route matched
- * or when there are no routes registereed.
+ * or when there are no routes registered.
  *
- * It's possible to set a minum/maximum/exact number of url pieces for pieces to check against
+ * It's possible to set a minimum/maximum/exact number of url pieces for pieces to check against
  * before run.
  *
  * @author Giuseppe Mazzapica
@@ -14,7 +15,7 @@ use Brain\Cortex\RequestableInterface;
  */
 abstract class FallbackController implements ControllerInterface, RequestableInterface {
 
-    use \Brain\Cortex\Requestable;
+    use Requestable;
 
     /**
      * Request object. Injected by router using FallbackController::setRequest()
@@ -75,7 +76,7 @@ abstract class FallbackController implements ControllerInterface, RequestableInt
 
     /**
      * Set a callback that will be performed before the fallback runs,
-     * if it reurns false, the fallback is ignored
+     * if it returns false, the fallback is ignored
      *
      * @param callable $condition
      * @access public
@@ -89,7 +90,7 @@ abstract class FallbackController implements ControllerInterface, RequestableInt
 
     /**
      * Used as setter and getter for the exact_count property. When exact_count is TRUE
-     * (by default is FALSE) and a num of min num pieces is setted, the check is done checking
+     * (by default is FALSE) and a num of min num pieces is set, the check is done checking
      * the exact number of url pieces instead of the minimum one
      *
      * @param bool $exact True to allow exact match. Passing nothing method act as a getter

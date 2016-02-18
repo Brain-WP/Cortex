@@ -19,13 +19,13 @@ class TemplateLoaderTest extends TestCase {
     function testLoadNullIfWrongHook() {
         \WP_Mock::wpFunction( 'did_action', [ 'return' => TRUE ] );
         $loader = $this->get();
-        assertNull( $loader->load( 'foo' ) );
+        assertFalse( $loader->load( 'foo' ) );
     }
 
     function testLoadNullIfBadTemplate() {
         \WP_Mock::wpFunction( 'did_action', [ 'return' => FALSE ] );
         $loader = $this->get();
-        assertNull( $loader->load() );
+        assertFalse( $loader->load() );
     }
 
     function testLoad() {
@@ -49,7 +49,7 @@ class TemplateLoaderTest extends TestCase {
         \WP_Mock::wpFunction( 'current_filter', [ 'return' => 'template_redirect' ] );
         $loader = $this->get();
         $loader->shouldReceive( 'preLoad' )->once()->withNoArgs()->andReturnNull();
-        assertNull( $loader->loadTemplate() );
+        assertFalse( $loader->loadTemplate() );
     }
 
     function testLoadTemplate() {

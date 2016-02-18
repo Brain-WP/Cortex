@@ -7,7 +7,7 @@ use Brain\Cortex\RouteInterface;
 /**
  * Redirector is a routable controller.
  *
- * Routables are controllers that run when a route match and can be defined per route.
+ * Routable are controllers that run when a route match and can be defined per route.
  * This implementation is used to redirect the request to another url.
  * Redirect is done using core WordPress functions: `wp_safe_redirect` by default or
  * `wp_redirect` if 'redirectexternal' property is true fro the route.
@@ -63,7 +63,9 @@ class Redirector extends RoutableBase {
             $status = $this->def_status;
         }
         $this->getHooks()->trigger( 'cortex.pre_redirect', $to, (int) $status, $this->getRequest() );
-        return $ext ? wp_redirect( $to, (int) $status ) : wp_safe_redirect( $to, (int) $status );
+        $ext ? wp_redirect( $to, (int) $status ) : wp_safe_redirect( $to, (int) $status );
+
+        return TRUE;
     }
 
     /**

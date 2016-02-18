@@ -4,6 +4,7 @@ use Brain\Cortex\QueryVarsFilter as Filter;
 use Brain\Cortex\TemplateLoader as Loader;
 use Brain\Cortex\HooksableInterface;
 use Brain\Hooks;
+use Brain\Cortex\Hooksable;
 
 /**
  * FallbackQueryBuilder is a specialization of FallbackController that act as a query builder.
@@ -16,7 +17,7 @@ use Brain\Hooks;
  */
 class FallbackQueryBuilder extends FallbackController implements QueryBuilderInterface, HooksableInterface {
 
-    use \Brain\Cortex\Hooksable;
+    use Hooksable;
 
     private $filter;
 
@@ -124,6 +125,7 @@ class FallbackQueryBuilder extends FallbackController implements QueryBuilderInt
     /**
      * Setter for $custom_vars property.
      *
+     * @param array $vars
      * @return array
      */
     public function setCustomVars( Array $vars = [ ] ) {
@@ -143,11 +145,11 @@ class FallbackQueryBuilder extends FallbackController implements QueryBuilderInt
     /**
      * Setter for $skipvars property.
      *
+     * @param array $vars
      * @return array
      */
     public function setSkipVars( Array $vars = [ ] ) {
         $this->skipvars = $vars;
         return $this;
     }
-
 }

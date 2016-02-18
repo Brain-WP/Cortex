@@ -11,6 +11,8 @@ interface FrontendRouteInterface extends RouteInterface
 
     /**
      * Set the route id
+     *
+     * @param $id
      */
     function setId($id);
 

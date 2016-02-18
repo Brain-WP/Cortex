@@ -5,7 +5,7 @@ use Brain\Cortex\RouteInterface;
 /**
  * ActionRoutable is a routable controller.
  *
- * Routables are controllers that run when a route match and can be defined per route.
+ * Routable are controllers that run when a route match and can be defined per route.
  * This class is used to run a specific action depends on 'action' argument of matched route.
  *
  * @author Giuseppe Mazzapica
@@ -40,6 +40,8 @@ abstract class ActionRoutable extends RoutableBase {
         if ( is_string( $action ) && method_exists( $this, $action ) ) {
             return call_user_func_array( [ $this, $action ], $args );
         }
+
+        return '';
     }
 
     /**
@@ -56,6 +58,7 @@ abstract class ActionRoutable extends RoutableBase {
      * Set the route variable name to use as method name for the routable object.
      * By default ir 'action'
      *
+     * @param string $var
      * @return string
      */
     public function setActionVar( $var = '' ) {

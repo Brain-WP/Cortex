@@ -9,17 +9,19 @@ use Brain\Cortex\RouteCollectionInterface as Collection;
 use Brain\Cortex\GroupContainerInterface as Groups;
 use Brain\Cortex\RouteInterface;
 use Brain\Cortex\FrontendRouteInterface;
+use Brain\Cortex\Hooksable;
+use Brain\Cortex\Requestable;
 
 /**
- * Concrete implemantation for RouterInterface.
+ * Concrete implementation for RouterInterface.
  *
  * @author Giuseppe Mazzapica
  * @package Brain\Cortex
  */
 class Router implements RouterInterface, RequestableInterface, HooksableInterface {
 
-    use \Brain\Cortex\Requestable,
-        \Brain\Cortex\Hooksable;
+    use Requestable,
+        Hooksable;
 
     /**
      * Default routable

@@ -2,7 +2,7 @@
 
 /**
  * One of the main "actors" of the package. Routes link a path to a set of arguments.
- * When the route match thos arguments are passed to a routable, that can be set per route
+ * When the route match those arguments are passed to a routable, that can be set per route
  * or by default in the router.
  *
  * @author Giuseppe Mazzapica
@@ -28,7 +28,7 @@ interface RouteInterface {
     public function set( $index = NULL, $value = NULL );
 
     /**
-     * Get currently binded routable object
+     * Get currently bound routable object
      *
      * @return  \Brain\Cortex\Controllers\RoutableInterface
      */
@@ -57,7 +57,7 @@ interface RouteInterface {
     function runAfter();
 
     /**
-     * Bing the route to routable saveb in Brain controller using its id.
+     * Bing the route to routable saved in Brain controller using its id.
      *
      * @param string $bind
      * @return \Brain\Cortex\Route Self
@@ -65,7 +65,7 @@ interface RouteInterface {
     function bindTo( $bind = '' );
 
     /**
-     * Get id of currently binded routable
+     * Get id of currently bound routable
      *
      * @return string
      */

@@ -9,9 +9,9 @@ use Brain\Cortex\FrontendRouteInterface;
 /**
  * QueryBuilder is the default routable controller.
  *
- * Routables are controllers that run when a route match and can be defined per route.
+ * Routable are controllers that run when a route match and can be defined per route.
  * When a route does not define a routable, this class is used.
- * QueryBuilder use arguments returnd by routing system to build a complete query arguments array.
+ * QueryBuilder use arguments returned by routing system to build a complete query arguments array.
  * Moreover, if the matched route has a 'template' param, it will be loaded using TemplateLoader class.
  *
  * @author Giuseppe Mazzapica
@@ -34,7 +34,7 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
 
     /**
      * Main controller method. After instance sanity check, use the 'query' route param and the
-     * matched route argumets to build a complete query arguments array.
+     * matched route arguments to build a complete query arguments array.
      * Run template() method to setup a template if related argument is provided by matched route.
      *
      * @return boolean If non empty query args are built return TRUE, FALSE otherwise
@@ -91,11 +91,15 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
      */
     public function buildQueryVars( Array $vars = [ ] ) {
         $route = $this->getRoute();
-        $query_vars = $this->runQueryCallback( $route, $vars );
+        $query_vars = [];
+        if ($route instanceof FrontendRouteInterface) {
+            $query_vars = $this->runQueryCallback( $route, $vars );
+        }
         $args = [ ];
         foreach ( [ 'qsmerge', 'autocustomvars', 'customvars', 'skipvars' ] as $key ) {
             if ( ! is_null( $route->get( $key ) ) ) $args[$key] = $route->get( $key );
         }
+
         return $this->getFilter()->filter( $query_vars, $args );
     }
 
@@ -113,6 +117,8 @@ class QueryBuilder extends RoutableBase implements QueryBuilderInterface {
             }
             return TRUE;
         }
+
+        return FALSE;
     }
 
     private function runQueryCallback( FrontendRouteInterface $route, Array $matches = [ ] ) {

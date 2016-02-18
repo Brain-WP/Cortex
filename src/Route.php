@@ -1,7 +1,11 @@
 <?php namespace Brain\Cortex;
 
 use Symfony\Component\Routing\Route as SymfonyRoute;
-use \Brain\Cortex\Controllers\RouterInterface;
+use Brain\Cortex\Controllers\RouterInterface;
+use Brain\Fullclonable;
+use Brain\Contextable;
+use Brain\Idable;
+use Brain\Container;
 
 /**
  * Concrete implementation for QueryRouteInterface > FrontendRouteInterface > RouteInterface
@@ -11,9 +15,9 @@ use \Brain\Cortex\Controllers\RouterInterface;
  */
 class Route implements QueryRouteInterface {
 
-    use \Brain\Fullclonable,
-        \Brain\Contextable,
-        \Brain\Idable;
+    use Fullclonable,
+        Contextable,
+        Idable;
 
     /**
      * Route id
@@ -22,7 +26,7 @@ class Route implements QueryRouteInterface {
     protected $id;
 
     /**
-     * Propery container fo the route
+     * Property container for the route
      * @var \ArrayObject
      */
     protected $context;
@@ -88,15 +92,16 @@ class Route implements QueryRouteInterface {
         if ( $this->router instanceof Controllers\RouterInterface ) {
             return $this->router;
         }
-        return \Brain\Container::instance()->get( 'cortex.router' );
+        return Container::instance()->get( 'cortex.router' );
     }
 
     function add() {
         if ( $this->getRouter() instanceof RouterInterface ) {
             $this->getRouter()->addRoute( $this );
             $this->setRouter();
-            return $this;
         }
+
+        return $this;
     }
 
     /**
@@ -113,7 +118,7 @@ class Route implements QueryRouteInterface {
     }
 
     public function set( $index = NULL, $value = NULL ) {
-        if ( $index === 'binded_closure' && $value instanceof \Closure ) {
+        if ( $index === 'bound_closure' && $value instanceof \Closure ) {
             $this->setContext( 'context', 'bindto', 'cortex.closure_routable' );
         }
         return $this->setContext( 'context', $index, $value );
@@ -143,15 +148,16 @@ class Route implements QueryRouteInterface {
      * @see \Brain\Cortex\Route::bindTo()
      */
     public function bindToClosure( \Closure $closure ) {
-        return $this->set( 'binded_closure', $closure );
+        return $this->set( 'bound_closure', $closure );
     }
 
     /**
      * Bind the route to as ActionRoutable routable implementation.
      * Optionally set the variable name to be used.
      *
-     * @param \Closure $closure
-     * @return  \Brain\Cortex\Route Self
+     * @param string|\Brain\Cortex\Controllers\RoutableInterface $routable
+     * @param string|null                                        $var_name
+     * @return \Brain\Cortex\Route Self
      * @see \Brain\Cortex\Controllers\ActionRoutable
      * @see \Brain\Cortex\Route::bindTo()
      */
@@ -160,24 +166,27 @@ class Route implements QueryRouteInterface {
             $this->set( 'action_routable_id', $var_name );
         }
         if ( $routable instanceof Controllers\ActionRoutable ) {
-            return $this->setRoutable( $routable );
+            $this->setRoutable( $routable );
         } elseif ( is_string( $routable ) ) {
-            return $this->bindTo( $routable );
+            $this->bindTo( $routable );
         }
+
+        return $this;
     }
 
     /**
      * Bind the route to an arbitrary object method.
      *
-     * Can be used to run static or dynamic methods. Method instanciate object when a class name is
+     * Can be used to run static or dynamic methods. Method instantiate object when a class name is
      * given and $static param is false (default), however no arguments or other construct routines
      * can be automatically ran. For advanced controllers booting using bindToClosure that is also
      * used internally by this method.
      *
-     * @param \Closure $closure
-     * @return  \Brain\Cortex\Route Self
+     * @param string $ctrl
+     * @param string $method
+     * @param bool   $static
+     * @return static
      * @see \Brain\Cortex\Route::bindToClosure()
-     * @throws \InvalidArgumentException
      */
     public function bindToMethod( $ctrl = NULL, $method = NULL, $static = FALSE ) {
         if ( ! is_string( $method ) ) {
@@ -191,8 +200,10 @@ class Route implements QueryRouteInterface {
                 $object = is_string( $ctrl ) && ! $static ? new $ctrl : $ctrl;
                 return call_user_func( [ $object, $method ], $matches, $route, $request );
             };
-            return $this->bindToClosure( $closure );
+            $this->bindToClosure( $closure );
         }
+
+        return $this;
     }
 
     public function getBinding() {
@@ -212,7 +223,7 @@ class Route implements QueryRouteInterface {
     }
 
     /**
-     * Set dafaults array to be used for defaults argument in Symfony route object
+     * Set default array to be used for defaults argument in Symfony route object
      *
      * @param array $defaults
      * @return \Brain\Cortex\Route Self
@@ -395,9 +406,8 @@ class Route implements QueryRouteInterface {
             throw new \InvalidArgumentException;
         }
         $callback = $this->get( $which );
-        if ( is_callable( $callback ) ) {
-            return call_user_func_array( $callback, $args );
-        }
+
+        return is_callable( $callback ) ? call_user_func_array( $callback, $args ) : null;
     }
 
 }

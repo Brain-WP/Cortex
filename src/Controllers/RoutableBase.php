@@ -3,11 +3,13 @@
 use Brain\Cortex\RequestableInterface;
 use Brain\Cortex\HooksableInterface;
 use Brain\Cortex\RouteInterface;
+use Brain\Cortex\Hooksable;
+use Brain\Cortex\Requestable;
 
 /**
  * Abstract base class for routable controllers.
  *
- * Routables are controllers that run when a route match and can be defined per route.
+ * Routable are controllers that run when a route match and can be defined per route.
  * This class define the basic setters/getters, allowing concrete subclasses to only define
  * main controller logic (the run() method).
  *
@@ -16,8 +18,8 @@ use Brain\Cortex\RouteInterface;
  */
 abstract class RoutableBase implements RoutableInterface, RequestableInterface, HooksableInterface {
 
-    use \Brain\Cortex\Hooksable,
-        \Brain\Cortex\Requestable;
+    use Hooksable,
+        Requestable;
 
     protected $hooks;
 

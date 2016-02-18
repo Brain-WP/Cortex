@@ -21,7 +21,7 @@ class ClosureRoutableTest extends TestCase {
                 return 'Success!';
             }
         };
-        $route->shouldReceive( 'get' )->atLeast( 1 )->with( 'binded_closure' )->andReturn( $cb );
+        $route->shouldReceive( 'get' )->atLeast( 1 )->with( 'bound_closure' )->andReturn( $cb );
         $ctrl = \Mockery::mock( '\Brain\Cortex\Controllers\ClosureRoutable' )->makePartial();
         $ctrl->shouldReceive( 'getRoute' )->atLeast( 1 )->withNoArgs()->andReturn( $route );
         $args = [ 'foo' => 1 ];

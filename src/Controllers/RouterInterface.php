@@ -116,7 +116,7 @@ interface RouterInterface extends ControllerInterface {
     /**
      * Return the matched arguments by Symfony routing component, if any
      *
-     * @return array|vois
+     * @return array|void
      */
     function getMatchedArgs();
 

@@ -56,7 +56,7 @@ class RouteTest extends TestCase {
         };
         $route->bindToClosure( $closure );
         assertEquals( 'cortex.closure_routable', $route->getBinding() );
-        assertEquals( 'Binded To Closure!', call_user_func( $route->get( 'binded_closure' ) ) );
+        assertEquals( 'Binded To Closure!', call_user_func( $route->get( 'bound_closure' ) ) );
     }
 
     function testBindToActionRoutable() {
@@ -93,7 +93,7 @@ class RouteTest extends TestCase {
         $route = $this->get();
         $stub = new \Brain\Cortex\Tests\ActionRoutableStub;
         $route->bindToMethod( $stub, 'foo' );
-        $call = call_user_func( $route->get( 'binded_closure' ), NULL, NULL, NULL );
+        $call = call_user_func( $route->get( 'bound_closure' ), NULL, NULL, NULL );
         assertEquals( 'cortex.closure_routable', $route->getBinding() );
         assertEquals( 'Foo!', $call );
     }
@@ -101,7 +101,7 @@ class RouteTest extends TestCase {
     function testBindToMethodString() {
         $route = $this->get();
         $route->bindToMethod( '\Brain\Cortex\Tests\ActionRoutableStub', 'foo' );
-        $call = call_user_func( $route->get( 'binded_closure' ), NULL, NULL, NULL );
+        $call = call_user_func( $route->get( 'bound_closure' ), NULL, NULL, NULL );
         assertEquals( 'cortex.closure_routable', $route->getBinding() );
         assertEquals( 'Foo!', $call );
     }
@@ -109,7 +109,7 @@ class RouteTest extends TestCase {
     function testBindToMethodStatic() {
         $route = $this->get();
         $route->bindToMethod( '\Brain\Cortex\Tests\ActionRoutableStub', 'foo_static', TRUE );
-        $call = call_user_func( $route->get( 'binded_closure' ), NULL, NULL, NULL );
+        $call = call_user_func( $route->get( 'bound_closure' ), NULL, NULL, NULL );
         assertEquals( 'cortex.closure_routable', $route->getBinding() );
         assertEquals( 'Foo Static!', $call );
     }

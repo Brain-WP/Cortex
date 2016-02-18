@@ -5,7 +5,7 @@ use Brain\Cortex\RouteInterface;
 /**
  * Interface for routable controllers.
  *
- * Routables are controllers that run when a route match and can be defined per route.
+ * Routable are controllers that run when a route match and can be defined per route.
  *
  * @author Giuseppe Mazzapica
  * @package Brain\Cortex
@@ -15,7 +15,7 @@ interface RoutableInterface extends ControllerInterface {
     /**
      * Set the matched route object in the instance. Should be called by router when a route match.
      *
-     * @param \Cortex\RouteInterface $route The matched route object
+     * @param \Brain\Cortex\RouteInterface $route The matched route object
      * @return void
      */
     function setRoute( RouteInterface $route );
@@ -23,7 +23,7 @@ interface RoutableInterface extends ControllerInterface {
     /**
      * Get the matched route object in the instance.
      *
-     * @return \Cortex\RouteInterface the matched route
+     * @return \Brain\Cortex\RouteInterface the matched route
      */
     function getRoute();
 
@@ -32,7 +32,7 @@ interface RoutableInterface extends ControllerInterface {
      * that match the variable pieces in the route path.
      * Should be called by router when a route match.
      *
-     * @param Array $args The route arguments
+     * @param array $args The route arguments
      * @return void
      */
     function setMatchedArgs( Array $args = [ ] );

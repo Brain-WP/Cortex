@@ -2,6 +2,7 @@
 
 use Brain\Container as Brain;
 use Brain\Hooks;
+use Brain\Module;
 use Brain\Request;
 use Symfony\Component\Routing as Symfony;
 
@@ -14,7 +15,7 @@ use Symfony\Component\Routing as Symfony;
  * @author Giuseppe Mazzapica
  * @package Brain\Cortex
  */
-class BrainModule implements \Brain\Module {
+class BrainModule implements Module {
 
     static $booted = FALSE;
 
@@ -108,6 +109,8 @@ class BrainModule implements \Brain\Module {
             if ( is_object( $wp ) && ( get_class( $wp ) === 'WP' ) ) {
                 return new WP( $c[ 'cortex.worker' ], get_object_vars( $wp ) );
             }
+
+            return $wp;
         };
 
         $brain[ 'cortex.api' ] = function() {
@@ -123,10 +126,11 @@ class BrainModule implements \Brain\Module {
      * Get Cortex\WP (extends core WP class) from container. Use it to override global $wp object.
      * In this way, when WordPress call parse_request method on global $wp object, the function
      * is called on plugin WP class, instead of core one.
-     * Plugin will parse the added routes and if one match, query vars are setted accordingly.
+     * Plugin will parse the added routes and if one match, query vars are set accordingly.
      * Otherwise plugin call parse_request on core WP class making request transparent to WordPress.
      * Also load API file.
      *
+     * @param \Brain\Container $brain
      * @return null
      */
     public function bootFrontend( Brain $brain ) {
@@ -169,8 +173,8 @@ class BrainModule implements \Brain\Module {
         $fallback = ! empty( $bind->bind ) ? Brain::instance()->get( $bind->bind ) : FALSE;
         if ( $fallback instanceof Controllers\FallbackController ) {
             $defaults = [ 'min_pieces' => 0, 'exact' => FALSE, 'condition' => NULL ];
-            $binded_args = isset( $bind->args ) && is_array( $bind->args ) ? $bind->args : [ ];
-            $args = wp_parse_args( $binded_args, $defaults );
+            $bound_args = isset( $bind->args ) && is_array( $bind->args ) ? $bind->args : [ ];
+            $args = wp_parse_args( $bound_args, $defaults );
             $fallback->setMinPieces( (int) $args[ 'min_pieces' ] );
             $fallback->isExact( (bool) $args[ 'exact' ] );
             if ( is_callable( $args[ 'condition' ] ) ) {

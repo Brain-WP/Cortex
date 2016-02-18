@@ -7,8 +7,8 @@ use Brain\Hooks;
 /**
  * ClosureRoutable is is a routable controller.
  *
- * Routables are controllers that run when a route match and can be defined per route.
- * This class is used to run a closure saved in the 'binded_closure' route property.
+ * Routable are controllers that run when a route match and can be defined per route.
+ * This class is used to run a closure saved in the 'bound_closure' route property.
  *
  * @author Giuseppe Mazzapica
  * @package Brain\Cortex
@@ -21,7 +21,7 @@ class ClosureRoutable extends RoutableBase {
     }
 
     /**
-     * After sanity check, check the route for a binded closure and if found runs it.
+     * After sanity check, check the route for a bound closure and if found runs it.
      *
      * @return mixed whatever returned by called closure
      * @throws \DomainException
@@ -32,10 +32,11 @@ class ClosureRoutable extends RoutableBase {
         if ( ! $route instanceof RouteInterface ) {
             throw new \DomainException;
         }
-        $closure = $route->get( 'binded_closure' );
-        if ( $closure instanceof \Closure ) {
-            return call_user_func( $closure, $this->getMatchedArgs(), $route, $this->getRequest() );
-        }
+        $closure = $route->get( 'bound_closure' );
+
+        return  $closure instanceof \Closure
+            ? call_user_func( $closure, $this->getMatchedArgs(), $route, $this->getRequest() )
+            : null;
     }
 
 }

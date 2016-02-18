@@ -66,7 +66,7 @@ class WorkerTest extends TestCase {
     function testWorkNullIfWrongStatus() {
         $router = \Mockery::mock( 'Brain\Cortex\Controllers\Router' );
         $worker = new Worker( $router, new Tests\MockedRequest, new Tests\MockedHooks );
-        assertNull( $worker->work() );
+        assertEmpty( $worker->work() );
     }
 
     function testWorkFallback() {
@@ -74,7 +74,7 @@ class WorkerTest extends TestCase {
         $fallback->shouldReceive( 'run' )->once()->withNoArgs()->andReturn( 'Fallback!' );
         $hooks = \Mockery::mock( 'Brain\Cortex\Tests\MockedHooks' )->makePartial();
         $hooks->shouldReceive( 'trigger' )
-            ->with( 'cortex.pre_contoller_run', $fallback, [ ] )
+            ->with( 'cortex.pre_controller_run', $fallback, [ ] )
             ->once()
             ->andReturnNull();
         $hooks->shouldReceive( 'trigger' )
@@ -103,7 +103,7 @@ class WorkerTest extends TestCase {
         $routable->shouldReceive( 'setMatchedArgs' )->with( $args )->once()->andReturnNull();
         $hooks = \Mockery::mock( 'Brain\Cortex\Tests\MockedHooks' )->makePartial();
         $hooks->shouldReceive( 'trigger' )
-            ->with( 'cortex.pre_contoller_run', $routable, $args )
+            ->with( 'cortex.pre_controller_run', $routable, $args )
             ->once()
             ->andReturnNull();
         $hooks->shouldReceive( 'trigger' )

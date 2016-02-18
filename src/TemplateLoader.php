@@ -1,5 +1,7 @@
 <?php namespace Brain\Cortex;
 
+use Brain\Hooks;
+
 /**
  * Concrete implementation of TemplateLoaderInterface.
  *
@@ -23,7 +25,7 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
 
     private $unfiltered = FALSE;
 
-    public function __construct( \Brain\Hooks $hooks ) {
+    public function __construct( Hooks $hooks ) {
         $this->hooks = $hooks;
     }
 
@@ -33,7 +35,7 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
      *
      * @param mixed $template   The template(s) to load
      * @param bool $unfiltered  If true found template is not filtered using core hooks
-     * @return void
+     * @return void|bool
      * @access public
      */
     public function load( $template = NULL, $unfiltered = FALSE ) {
@@ -43,8 +45,11 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
             $this->getHooks()->addAction(
                 'cortex.template_load', 'template_redirect', [ $this, 'loadTemplate' ], 50
             )->runOnce();
+
             return TRUE;
         }
+
+        return FALSE;
     }
 
     /**
@@ -59,13 +64,15 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
         if ( $this->preLoad() ) {
             return $this->loadFile( $this->getTemplate(), TRUE );
         }
+
+        return FALSE;
     }
 
     /**
      * Load a file from setted directories.
      *
      * @param string $template
-     * @param boolaed $main_template
+     * @param bool $main_template
      * @return boolean
      */
     public function loadFile( $template = '', $main_template = FALSE ) {
@@ -103,6 +110,8 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
 
     /**
      * Set directories where to look for template files
+     *
+     * @param bool $main_template
      */
     public function setDirectories( $main_template = FALSE ) {
         $def = [ get_template_directory() ];
@@ -147,9 +156,9 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
      * @return callable
      */
     public function getFunction() {
-        $funcs = [ 'require', 'include', 'require_once', 'include_once' ];
+        $functions = [ 'require', 'include', 'require_once', 'include_once' ];
         $func = $this->getHooks()->filter( 'cortex.template_include_function', $this->function );
-        return ( in_array( $func, $funcs, TRUE ) ) ? $func : 'require_once';
+        return ( in_array( $func, $functions, TRUE ) ) ? $func : 'require_once';
     }
 
     /**
@@ -170,9 +179,10 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
     }
 
     /**
-     * Loop throught all directroies and return the first template found
+     * Loop through all directories and return the first template found
      *
      * @param string $template The template to look for
+     * @return bool|string
      */
     public function getTemplateFile( $template ) {
         if ( ! is_string( $template ) && ! is_array( $template ) ) {
@@ -191,14 +201,23 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
      * Traverse the folders set in the class to find a specific template
      *
      * @param string $basename Template basepath
+     * @return string
      */
     function getTemplateFullPath( $basename ) {
-        if ( ! is_string( $basename ) ) return;
-        foreach ( $this->getDirectories() as $directory ) {
-            if ( ! is_string( $directory ) ) continue;
-            $path = trailingslashit( $directory ) . $basename;
-            if ( is_file( $path ) ) return $path;
+        if ( ! is_string( $basename ) ) {
+            return '';
         }
+        foreach ( $this->getDirectories() as $directory ) {
+            if ( ! is_string( $directory ) ) {
+                continue;
+            }
+            $path = trailingslashit( $directory ) . $basename;
+            if ( is_file( $path ) ) {
+                return $path;
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -217,7 +236,7 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
      */
     function preLoad() {
         if ( ! $this->useThemes() ) {
-            $this->doneAndExit( 'dont_use_themes' );
+            $this->doneAndExit( 'do_not_use_themes' );
         }
         $method = strtoupper( filter_input( INPUT_SERVER, 'REQUEST_METHOD' ) );
         if ( 'HEAD' === $method && apply_filters( 'exit_on_http_head', TRUE ) ) {
@@ -242,18 +261,22 @@ class TemplateLoader implements TemplateLoaderInterface, HooksableInterface {
     }
 
     function doInclude( $path ) {
+        /** @noinspection PhpIncludeInspection */
         include $path;
     }
 
     function doRequire( $path ) {
+        /** @noinspection PhpIncludeInspection */
         require $path;
     }
 
     function doIncludeOnce( $path ) {
+        /** @noinspection PhpIncludeInspection */
         include_once $path;
     }
 
     function doRequireOnce( $path ) {
+        /** @noinspection PhpIncludeInspection */
         require_once $path;
     }
 

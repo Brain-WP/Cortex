@@ -9,7 +9,7 @@
 interface ControllerInterface {
 
     /**
-     * Main controller function. What it does depends on more specilized Controller type
+     * Main controller function. What it does depends on more specialized Controller type
      */
     function run();
 }
