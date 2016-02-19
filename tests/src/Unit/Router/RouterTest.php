@@ -19,6 +19,7 @@ use Brain\Cortex\Router\MatchingResult;
 use Brain\Cortex\Router\Router;
 use Brain\Cortex\Tests\TestCase;
 use Brain\Cortex\Uri\UriInterface;
+use Brain\Monkey\Functions;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 
@@ -222,7 +223,7 @@ class RouterTest extends TestCase
         $uri->shouldReceive('scheme')->andReturn('http');
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo');
-        $uri->shouldReceive('vars')->once()->andReturn(['c' => 'C']);
+        $uri->shouldReceive('vars')->atLeast()->once()->andReturn(['c' => 'C']);
         $uri->shouldReceive('chunks')->andReturn(['foo']);
 
         $collector = \Mockery::mock(RouteCollector::class);
@@ -282,7 +283,7 @@ class RouterTest extends TestCase
         $uri->shouldReceive('scheme')->andReturn('http');
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo/i-am-bar');
-        $uri->shouldReceive('vars')->once()->andReturn(['c' => 'C']);
+        $uri->shouldReceive('vars')->atLeast()->once()->andReturn(['c' => 'C']);
         $uri->shouldReceive('chunks')->andReturn(['foo', 'meh']);
 
         $collector = \Mockery::mock(RouteCollector::class);
@@ -352,6 +353,7 @@ class RouterTest extends TestCase
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo');
         $uri->shouldReceive('chunks')->andReturn(['foo']);
+        $uri->shouldReceive('vars')->andReturn(['foo' => 'no-way']);
 
         $collector = \Mockery::mock(RouteCollector::class);
         $collector->shouldReceive('addRoute')->never();
@@ -372,6 +374,69 @@ class RouterTest extends TestCase
             'route'    => 'r1',
             'path'     => '/foo',
             'vars'     => ['d' => 'D'],
+            'handler'  => $handler,
+            'before'   => null,
+            'after'    => null,
+            'template' => null,
+        ];
+
+        $proxy = new Proxy($result);
+        /** @noinspection PhpUndefinedFieldInspection */
+        $data = $proxy->data;
+
+        assertTrue($result->matched());
+        assertSame($expected, $data);
+    }
+
+    public function testMatchMatchingNoQueryVarsMaintainPreviewVar()
+    {
+        Functions::when('is_user_logged_in')->justReturn(true);
+
+        $handler = function () {
+            return func_get_args();
+        };
+
+        $route = new Route([
+            'id'                 => 'r1',
+            'path'               => '/foo',
+            'handler'            => $handler,
+            'vars'               => ['d' => 'D'],
+            'method'             => 'POST',
+            'merge_query_string' => false,
+        ]);
+        $routes = new PriorityRouteCollection();
+
+        $routes->addRoute($route);
+
+        $groups = \Mockery::mock(GroupCollectionInterface::class);
+        $groups->shouldReceive('mergeGroup')->once()->with($route)->andReturn($route);
+
+        $uri = \Mockery::mock(UriInterface::class);
+        $uri->shouldReceive('scheme')->andReturn('http');
+        $uri->shouldReceive('host')->andReturn('example.com');
+        $uri->shouldReceive('path')->andReturn('foo');
+        $uri->shouldReceive('chunks')->andReturn(['foo']);
+        $uri->shouldReceive('vars')->andReturn(['foo' => 'no-way', 'preview' => 1]);
+
+        $collector = \Mockery::mock(RouteCollector::class);
+        $collector->shouldReceive('addRoute')->never();
+
+        $dispatcher = \Mockery::mock(Dispatcher::class);
+        $dispatcher->shouldReceive('dispatch')->never();
+
+        $factory = function (array $args) use ($dispatcher) {
+            assertSame($args, ['foo' => 'bar']);
+
+            return $dispatcher;
+        };
+
+        $router = new Router($routes, $groups, $collector, $factory);
+        $result = $router->match($uri, 'POST');
+
+        $expected = [
+            'route'    => 'r1',
+            'path'     => '/foo',
+            'vars'     => ['preview' => 1, 'd' => 'D'],
             'handler'  => $handler,
             'before'   => null,
             'after'    => null,
@@ -412,7 +477,7 @@ class RouterTest extends TestCase
         $uri->shouldReceive('scheme')->andReturn('http');
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo');
-        $uri->shouldReceive('vars')->once()->andReturn(['c' => 'C']);
+        $uri->shouldReceive('vars')->atLeast()->once()->andReturn(['c' => 'C']);
         $uri->shouldReceive('chunks')->andReturn(['foo']);
 
         $collector = \Mockery::mock(RouteCollector::class);

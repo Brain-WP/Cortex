@@ -87,7 +87,7 @@ final class Router implements RouterInterface
             return $this->results;
         }
 
-        if (! count($this->routes) || !$this->parseRoutes($uri, $httpMethod)) {
+        if (! count($this->routes) || ! $this->parseRoutes($uri, $httpMethod)) {
             $this->results = new MatchingResult(['route' => null]);
 
             return $this->results;
@@ -129,7 +129,7 @@ final class Router implements RouterInterface
         /** @var \Brain\Cortex\Route\RouteInterface $route */
         foreach ($iterator as $route) {
             $route = $this->sanitizeRouteMethod($this->groups->mergeGroup($route), $httpMethod);
-            if (!$this->validateRoute($route, $uri, $httpMethod)) {
+            if (! $this->validateRoute($route, $uri, $httpMethod)) {
                 continue;
             }
 
@@ -159,7 +159,7 @@ final class Router implements RouterInterface
      */
     private function sanitizeRouteMethod(RouteInterface $route, $httpMethod)
     {
-        if (empty($route['method']) || !(is_string($route['method']) || is_array($route['method']))) {
+        if (empty($route['method']) || ! (is_string($route['method']) || is_array($route['method']))) {
             $route['method'] = $httpMethod;
         }
 
@@ -227,7 +227,9 @@ final class Router implements RouterInterface
     {
         is_null($route['merge_query_string']) and $route['merge_query_string'] = true;
         $merge = filter_var($route['merge_query_string'], FILTER_VALIDATE_BOOLEAN);
-        $merge and $vars = array_merge($vars, $uri->vars());
+        $vars = $merge
+            ? array_merge($vars, $uri->vars())
+            : $this->ensurePreviewVar($vars, $uri, $route);
         $result = null;
         if (is_callable($route['vars'])) {
             $cb = $route['vars'];
@@ -240,14 +242,38 @@ final class Router implements RouterInterface
             }
         }
 
-        return $result instanceof MatchingResult ? $result : new MatchingResult([
-            'vars'     => $vars,
-            'route'    => $route->id(),
-            'path'     => $route['path'],
-            'handler'  => $route['handler'],
-            'before'   => $route['before'],
-            'after'    => $route['after'],
-            'template' => $route['template'],
-        ]);
+        $vars = $this->ensurePreviewVar($vars, $uri, $route);
+        $vars = apply_filters('cortex.matched-vars', $vars, $route, $uri);
+
+        return $result instanceof MatchingResult
+            ? $result
+            : new MatchingResult([
+                'vars'     => (array) $vars,
+                'route'    => $route->id(),
+                'path'     => $route['path'],
+                'handler'  => $route['handler'],
+                'before'   => $route['before'],
+                'after'    => $route['after'],
+                'template' => $route['template'],
+            ]);
+    }
+
+    /**
+     * We need this to ensure preview works.
+     *
+     * @param  array                              $vars
+     * @param  \Brain\Cortex\Uri\UriInterface     $uri
+     * @param  \Brain\Cortex\Route\RouteInterface $route
+     * @return array
+     */
+    private function ensurePreviewVar(array $vars, UriInterface $uri, RouteInterface $route)
+    {
+        $uriVars = $uri->vars();
+
+        if (! isset($vars['preview']) && isset($uriVars['preview']) && is_user_logged_in()) {
+            $vars['preview'] = $uriVars['preview'];
+        }
+
+        return $vars;
     }
 }
