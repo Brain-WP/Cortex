@@ -87,9 +87,14 @@ final class Router implements RouterInterface
             return $this->results;
         }
 
-        if (! count($this->routes) || ! $this->parseRoutes($uri, $httpMethod)) {
+        if (! count($this->routes) || !$this->parseRoutes($uri, $httpMethod)) {
             $this->results = new MatchingResult(['route' => null]);
 
+            return $this->results;
+        }
+
+        // in case of exact match, no need to go further
+        if ($this->results instanceof MatchingResult) {
             return $this->results;
         }
 
@@ -121,21 +126,25 @@ final class Router implements RouterInterface
     {
         $iterator = new RouteFilterIterator($this->routes, $uri);
         $parsed = 0;
-        $iterator->rewind();
-        while ($iterator->valid()) {
-            /** @var \Brain\Cortex\Route\RouteInterface $route */
-            $route = $this->groups->mergeGroup($iterator->current());
-            if (empty($route['method']) || strtolower($route['method']) === 'any') {
-                $route['method'] = $httpMethod;
+        /** @var \Brain\Cortex\Route\RouteInterface $route */
+        foreach ($iterator as $route) {
+            $route = $this->sanitizeRouteMethod($this->groups->mergeGroup($route), $httpMethod);
+            if (!$this->validateRoute($route, $uri, $httpMethod)) {
+                continue;
             }
-            if ($route instanceof RouteInterface && $this->validate($route)) {
-                $id = $route->id();
-                $this->parsedRoutes[$id] = $route;
-                $path = '/'.trim($route['path'], '/');
-                $this->collector->addRoute(strtoupper($route['method']), $path, $id);
-                $parsed++;
+
+            $parsed++;
+            $id = $route->id();
+            $this->parsedRoutes[$id] = $route;
+            $path = '/'.trim($route['path'], '/');
+            // exact match
+            if ($path === '/'.trim($uri->path(), '/')) {
+                $this->results = $this->finalizeRoute($route, [], $uri);
+                unset($this->parsedRoutes, $this->collector);
+                break;
             }
-            $iterator->next();
+
+            $this->collector->addRoute(strtoupper($route['method']), $path, $id);
         }
 
         unset($this->routes, $this->groups);
@@ -145,30 +154,49 @@ final class Router implements RouterInterface
 
     /**
      * @param  \Brain\Cortex\Route\RouteInterface $route
+     * @param  string                             $httpMethod
+     * @return \Brain\Cortex\Route\RouteInterface
+     */
+    private function sanitizeRouteMethod(RouteInterface $route, $httpMethod)
+    {
+        if (empty($route['method']) || !(is_string($route['method']) || is_array($route['method']))) {
+            $route['method'] = $httpMethod;
+        }
+
+        if (is_array($route['method'])) {
+            $route['method'] = array_map('strtoupper', array_filter($route['method'], 'is_string'));
+
+            return $route;
+        }
+
+        (strtolower($route['method']) === 'any') and $route['method'] = $httpMethod;
+
+        $route['method'] = strtoupper($route['method']);
+
+        return $route;
+    }
+
+    /**
+     * @param  \Brain\Cortex\Route\RouteInterface $route
+     * @param  \Brain\Cortex\Uri\UriInterface     $uri
+     * @param                                     $httpMethod
      * @return bool
      */
-    private function validate(RouteInterface $route)
+    private function validateRoute(RouteInterface $route, UriInterface $uri, $httpMethod)
     {
         $id = $route->id();
-        $path = $route['path'];
-        $method = $route['method'];
+        $path = trim($route['path'], '/');
+        if (count($uri->chunks()) !== (substr_count($path, '/') + 1)) {
+            return false;
+        }
+        $method = (array) $route['method'];
         $handler = $route['handler'];
-        $methods = [
-            'GET',
-            'POST',
-            'PUT',
-            'OPTIONS',
-            'HEAD',
-            'DELETE',
-            'TRACE',
-            'CONNECT',
-        ];
 
         return
             is_string($id)
             && $id
             && filter_var($path, FILTER_SANITIZE_URL) === $path
-            && in_array(strtoupper((string) $method), $methods, true)
+            && in_array($httpMethod, $method, true)
             && (is_callable($handler) || $handler instanceof ControllerInterface);
     }
 
@@ -203,7 +231,7 @@ final class Router implements RouterInterface
         $result = null;
         if (is_callable($route['vars'])) {
             $cb = $route['vars'];
-            $routeVars = $cb($vars);
+            $routeVars = $cb($vars, $uri);
             is_array($routeVars) and $vars = $routeVars;
             $routeVars instanceof MatchingResult and $result = $routeVars;
         } elseif (is_array($route['vars'])) {

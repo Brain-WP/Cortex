@@ -118,6 +118,7 @@ class RouterTest extends TestCase
         $uri = \Mockery::mock(UriInterface::class);
         $uri->shouldReceive('scheme')->andReturn('http');
         $uri->shouldReceive('host')->andReturn('example.com');
+        $uri->shouldReceive('chunks')->andReturn([]);
 
         $router = new Router($routes, $groups);
         $result = $router->match($uri, 'GET');
@@ -161,6 +162,7 @@ class RouterTest extends TestCase
         $uri->shouldReceive('scheme')->andReturn('http');
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('bar');
+        $uri->shouldReceive('chunks')->andReturn(['bar']);
 
         $collector = \Mockery::mock(RouteCollector::class);
         $collector->shouldReceive('addRoute')->once()->with('POST', '/foo', 'r1')->andReturnNull();
@@ -196,7 +198,7 @@ class RouterTest extends TestCase
         assertSame($expected, $data);
     }
 
-    public function testMatchMatching()
+    public function testMatchMatchingExactMatch()
     {
         $handler = function () {
             return func_get_args();
@@ -221,17 +223,13 @@ class RouterTest extends TestCase
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo');
         $uri->shouldReceive('vars')->once()->andReturn(['c' => 'C']);
+        $uri->shouldReceive('chunks')->andReturn(['foo']);
 
         $collector = \Mockery::mock(RouteCollector::class);
-        $collector->shouldReceive('addRoute')->once()->with('POST', '/foo', 'r1')->andReturnNull();
-        $collector->shouldReceive('getData')->once()->andReturn(['foo' => 'bar']);
+        $collector->shouldReceive('addRoute')->never();
 
         $dispatcher = \Mockery::mock(Dispatcher::class);
-        $dispatcher->shouldReceive('dispatch')->with('POST', '/foo')->andReturn([
-            Dispatcher::FOUND,
-            'r1',
-            ['a' => 'A', 'b' => 'B'],
-        ]);
+        $dispatcher->shouldReceive('dispatch')->never();
 
         $factory = function (array $args) use ($dispatcher) {
             assertSame($args, ['foo' => 'bar']);
@@ -245,7 +243,7 @@ class RouterTest extends TestCase
         $expected = [
             'route'    => 'r1',
             'path'     => '/foo',
-            'vars'     => ['a' => 'A', 'b' => 'B', 'c' => 'C', 'd' => 'D'],
+            'vars'     => ['c' => 'C', 'd' => 'D'],
             'handler'  => $handler,
             'before'   => null,
             'after'    => null,
@@ -260,7 +258,75 @@ class RouterTest extends TestCase
         assertSame($expected, $data);
     }
 
-    public function testMatchMatchingNoQueryVars()
+    public function testMatchDynamicMatch()
+    {
+        $handler = function () {
+            return func_get_args();
+        };
+
+        $route = new Route([
+            'id'      => 'r1',
+            'path'    => '/foo/{bar}',
+            'handler' => $handler,
+            'vars'    => ['d' => 'D'],
+            'method'  => 'POST',
+        ]);
+        $routes = new PriorityRouteCollection();
+
+        $routes->addRoute($route);
+
+        $groups = \Mockery::mock(GroupCollectionInterface::class);
+        $groups->shouldReceive('mergeGroup')->once()->with($route)->andReturn($route);
+
+        $uri = \Mockery::mock(UriInterface::class);
+        $uri->shouldReceive('scheme')->andReturn('http');
+        $uri->shouldReceive('host')->andReturn('example.com');
+        $uri->shouldReceive('path')->andReturn('foo/i-am-bar');
+        $uri->shouldReceive('vars')->once()->andReturn(['c' => 'C']);
+        $uri->shouldReceive('chunks')->andReturn(['foo', 'meh']);
+
+        $collector = \Mockery::mock(RouteCollector::class);
+        $collector->shouldReceive('addRoute')->once()->with('POST', '/foo/{bar}', 'r1');
+        $collector->shouldReceive('getData')->once()->andReturn(['foo' => 'bar']);
+
+        $dispatcher = \Mockery::mock(Dispatcher::class);
+        $dispatcher->shouldReceive('dispatch')
+            ->once()
+            ->with('POST', '/foo/i-am-bar')
+            ->andReturn([
+                Dispatcher::FOUND,
+                'r1',
+                ['bar' => 'i-am-bar'],
+            ]);
+
+        $factory = function (array $args) use ($dispatcher) {
+            assertSame($args, ['foo' => 'bar']);
+
+            return $dispatcher;
+        };
+
+        $router = new Router($routes, $groups, $collector, $factory);
+        $result = $router->match($uri, 'POST');
+
+        $expected = [
+            'route'    => 'r1',
+            'path'     => '/foo/{bar}',
+            'vars'     => ['bar' => 'i-am-bar', 'c' => 'C', 'd' => 'D'],
+            'handler'  => $handler,
+            'before'   => null,
+            'after'    => null,
+            'template' => null,
+        ];
+
+        $proxy = new Proxy($result);
+        /** @noinspection PhpUndefinedFieldInspection */
+        $data = $proxy->data;
+
+        assertTrue($result->matched());
+        assertSame($expected, $data);
+    }
+
+    public function testMatchMatchingExactMatchNoQueryVars()
     {
         $handler = function () {
             return func_get_args();
@@ -285,17 +351,13 @@ class RouterTest extends TestCase
         $uri->shouldReceive('scheme')->andReturn('http');
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo');
+        $uri->shouldReceive('chunks')->andReturn(['foo']);
 
         $collector = \Mockery::mock(RouteCollector::class);
-        $collector->shouldReceive('addRoute')->once()->with('POST', '/foo', 'r1')->andReturnNull();
-        $collector->shouldReceive('getData')->once()->andReturn(['foo' => 'bar']);
+        $collector->shouldReceive('addRoute')->never();
 
         $dispatcher = \Mockery::mock(Dispatcher::class);
-        $dispatcher->shouldReceive('dispatch')->with('POST', '/foo')->andReturn([
-            Dispatcher::FOUND,
-            'r1',
-            ['a' => 'A', 'b' => 'B'],
-        ]);
+        $dispatcher->shouldReceive('dispatch')->never();
 
         $factory = function (array $args) use ($dispatcher) {
             assertSame($args, ['foo' => 'bar']);
@@ -309,7 +371,7 @@ class RouterTest extends TestCase
         $expected = [
             'route'    => 'r1',
             'path'     => '/foo',
-            'vars'     => ['a' => 'A', 'b' => 'B', 'd' => 'D'],
+            'vars'     => ['d' => 'D'],
             'handler'  => $handler,
             'before'   => null,
             'after'    => null,
@@ -324,7 +386,7 @@ class RouterTest extends TestCase
         assertSame($expected, $data);
     }
 
-    public function testMatchMatchingCallableVars()
+    public function testMatchMatchingExactMatchCallableVars()
     {
         $handler = function () {
             return func_get_args();
@@ -334,7 +396,9 @@ class RouterTest extends TestCase
             'id'      => 'r1',
             'path'    => '/foo',
             'handler' => $handler,
-            'vars'    => 'array_keys',
+            'vars'    => function (array $vars) {
+                return array_keys($vars);
+            },
             'method'  => 'POST',
         ]);
         $routes = new PriorityRouteCollection();
@@ -349,17 +413,13 @@ class RouterTest extends TestCase
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo');
         $uri->shouldReceive('vars')->once()->andReturn(['c' => 'C']);
+        $uri->shouldReceive('chunks')->andReturn(['foo']);
 
         $collector = \Mockery::mock(RouteCollector::class);
-        $collector->shouldReceive('addRoute')->once()->with('POST', '/foo', 'r1')->andReturnNull();
-        $collector->shouldReceive('getData')->once()->andReturn(['foo' => 'bar']);
+        $collector->shouldReceive('addRoute')->never();
 
         $dispatcher = \Mockery::mock(Dispatcher::class);
-        $dispatcher->shouldReceive('dispatch')->with('POST', '/foo')->andReturn([
-            Dispatcher::FOUND,
-            'r1',
-            ['a' => 'A', 'b' => 'B'],
-        ]);
+        $dispatcher->shouldReceive('dispatch')->never();
 
         $factory = function (array $args) use ($dispatcher) {
             assertSame($args, ['foo' => 'bar']);
@@ -373,7 +433,7 @@ class RouterTest extends TestCase
         $expected = [
             'route'    => 'r1',
             'path'     => '/foo',
-            'vars'     => ['a', 'b', 'c'],
+            'vars'     => ['c'],
             'handler'  => $handler,
             'before'   => null,
             'after'    => null,

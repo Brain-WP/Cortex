@@ -336,6 +336,7 @@ class CortexTest extends TestCaseFunctional
             $uri->shouldReceive('host')->andReturn('example.com');
             $uri->shouldReceive('vars')->andReturn([]);
             $uri->shouldReceive('path')->andReturn('meh/meh/meh'); // this does not match
+            $uri->shouldReceive('chunks')->andReturn(['meh', 'meh', 'meh']);
 
             return $uri;
         });
