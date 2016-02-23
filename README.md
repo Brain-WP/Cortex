@@ -1,6 +1,12 @@
 Cortex
 ======
 
+[![Travis CI](https://img.shields.io/travis/Brain-WP/Cortex.svg?branch=refactoring-fastroute&style=flat-square)](https://travis-ci.org/Brain-WP/Cortex)
+[![codecov.io](https://img.shields.io/codecov/c/github/Brain-WP/Cortex.svg?style=flat-square&branch=refactoring-fastroute)](https://codecov.io/github/Brain-WP/Cortex?branch=refactoring-fastroute)
+[![MIT license](https://img.shields.io/packagist/l/brain/cortex.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+
+------
+
 **Cortex is routing system for WordPress** based on [FastRoute](https://github.com/nikic/FastRoute)
 
 ## Start using Cortex
