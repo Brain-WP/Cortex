@@ -56,6 +56,7 @@ route configuration.
 
 One of them is **"template"** to force WordPress use a template when the route matches:
 
+```php
 add_action('cortex.routes', function(Routes $routes) {
 	
 	$routes->addRoute(new QueryRoute(
