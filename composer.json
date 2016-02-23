@@ -24,7 +24,7 @@
         "source": "https://github.com/Brain-WP/Cortex"
     },
     "require":           {
-        "php":              ">=5.4",
+        "php":              ">=5.5",
         "nikic/fast-route": "~0.7.0",
         "psr/http-message": "*"
     },
