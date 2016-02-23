@@ -2,7 +2,7 @@
     "name": "brain/cortex",
     "description": "Cortex is a package that implements a routing system in WordPress.",
     "keywords": ["wordpress"],
-    "homepage": "https://github.com/Giuseppe-Mazzapica/Cortex",
+    "homepage": "https://github.com/Brain-WP/Cortex",
     "license": "GPL-2.0+",
     "authors": [
         {
@@ -13,8 +13,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/Giuseppe-Mazzapica/Cortex/issues",
-        "source": "https://github.com/Giuseppe-Mazzapica/Cortex"
+        "issues": "https://github.com/Brain-WP/Cortex/issues",
+        "source": "https://github.com/Brain-WP/Cortex"
     },
     "require": {
         "php": ">=5.4",
