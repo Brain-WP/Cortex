@@ -19,9 +19,9 @@
     "require": {
         "php": ">=5.4",
         "brain/brain": "~0.1.0",
-        "brain/support": "dev-master",
+        "brain/support": "~0.1.0",
         "brain/amygdala": "~0.1.0",
-        "brain/striatum": "dev-master",
+        "brain/striatum": "~0.1.0",
         "symfony/routing": "~2.0"
     },
     "require-dev": {
