@@ -133,8 +133,8 @@ final class PriorityRouteCollection implements RouteCollectionInterface
             $array['id'] = $route->id().'_paged';
             $array['paged'] = RouteInterface::PAGED_UNPAGED;
             $array['path'] = $pagedArg === RouteInterface::PAGED_ARCHIVE
-                ? $path.'/'.$base.'/{paged:\d+}/?$'
-                : $path.'/{page:\d+}/?$';
+                ? $path.'/'.$base.'/{paged:\d+}'
+                : $path.'/{page:\d+}';
 
             $routeVars = $route->offsetExists('vars') ? $route->offsetGet('vars') : [];
             if (is_callable($routeVars)) {
