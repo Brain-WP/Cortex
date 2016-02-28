@@ -42,6 +42,12 @@ final class QueryRoute implements RouteInterface
             ? $options['handler']
             : new QueryVarsController();
         $options['handler'] = $handler;
+        $default = isset($options['default_vars']) && is_array($options['default_vars'])
+            ? $options['default_vars']
+            : [];
+        if (isset($options['default']) && is_array($options['default'])) {
+            $options['default_vars'] = array_merge($options['default'], $default);
+        }
 
         $this->route = new Route($options);
     }

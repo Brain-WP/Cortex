@@ -249,6 +249,10 @@ final class Router implements RouterInterface
             return $result;
         }
 
+        if (! empty($route['default_vars']) && is_array($route['default_vars'])) {
+            $vars = array_merge($route['default_vars'], $vars);
+        }
+
         $vars = $this->ensurePreviewVars($vars, $uriVars);
         $vars = apply_filters('cortex.matched-vars', $vars, $route, $uri);
 
