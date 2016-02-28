@@ -19,15 +19,31 @@ use Brain\Monkey;
  */
 class TestCase extends \PHPUnit_Framework_TestCase
 {
+    protected $wp_user_logged = true;
+
     protected function setUp()
     {
         parent::setUp();
         Monkey::setUpWP();
+        Monkey\Functions::when('is_user_logged_in')->alias(function() {
+            return $this->wp_user_logged;
+        });
     }
 
     protected function tearDown()
     {
+        $this->loginUser();
         Monkey::tearDownWP();
         parent::tearDown();
+    }
+
+    protected function loginUser()
+    {
+        $this->wp_user_logged = TRUE;
+    }
+
+    protected function logoutUser()
+    {
+        $this->wp_user_logged = FALSE;
     }
 }
