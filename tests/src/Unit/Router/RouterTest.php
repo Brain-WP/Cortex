@@ -30,7 +30,6 @@ use FastRoute\RouteCollector;
  */
 class RouterTest extends TestCase
 {
-
     public function testMatchNothingIfAlreadyMatched()
     {
         $routes = \Mockery::mock(RouteCollectionInterface::class);
@@ -427,7 +426,7 @@ class RouterTest extends TestCase
             'foo'           => 'no-way',
             'preview'       => 'true',
             'preview_id'    => '123',
-            'preview_nonce' => 'abc'
+            'preview_nonce' => 'abc',
         ]);
 
         $collector = \Mockery::mock(RouteCollector::class);
@@ -452,7 +451,7 @@ class RouterTest extends TestCase
                 'd'             => 'D',
                 'preview'       => 'true',
                 'preview_id'    => '123',
-                'preview_nonce' => 'abc'
+                'preview_nonce' => 'abc',
             ],
             'handler'  => $handler,
             'before'   => null,

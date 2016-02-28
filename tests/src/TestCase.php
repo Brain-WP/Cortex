@@ -25,7 +25,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
         Monkey::setUpWP();
-        Monkey\Functions::when('is_user_logged_in')->alias(function() {
+        Monkey\Functions::when('is_user_logged_in')->alias(function () {
             return $this->wp_user_logged;
         });
     }
@@ -39,11 +39,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function loginUser()
     {
-        $this->wp_user_logged = TRUE;
+        $this->wp_user_logged = true;
     }
 
     protected function logoutUser()
     {
-        $this->wp_user_logged = FALSE;
+        $this->wp_user_logged = false;
     }
 }

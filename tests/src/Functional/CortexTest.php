@@ -229,8 +229,8 @@ class CortexTest extends TestCaseFunctional
                        new QueryRoute(
                            '/bar/baz',
                            function (array $vars = []) {
-                                return ['post_type' => 'products', 'posts_per_page' => $vars['num']];
-                            },
+                               return ['post_type' => 'products', 'posts_per_page' => $vars['num']];
+                           },
                            ['merge_query_string' => 1]
                        )
                    );
@@ -325,7 +325,10 @@ class CortexTest extends TestCaseFunctional
                        new QueryRoute(
                            '/{type:\w+}/baz',
                            function (array $vars = []) {
-                               return ['post_type' => $vars['type'], 'posts_per_page' => $vars['num']];
+                               return [
+                                   'post_type'      => $vars['type'],
+                                   'posts_per_page' => $vars['num']
+                               ];
                            },
                            ['merge_query_string' => 1]
                        )
@@ -439,7 +442,7 @@ class CortexTest extends TestCaseFunctional
                 'pagename'      => 'bar',
                 'preview'       => 'true',
                 'preview_id'    => '123',
-                'preview_nonce' => 'abc'
+                'preview_nonce' => 'abc',
             ],
             $wp->query_vars
         );

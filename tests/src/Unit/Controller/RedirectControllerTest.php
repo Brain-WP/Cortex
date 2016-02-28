@@ -57,8 +57,8 @@ class RedirectControllerTest extends TestCase
         Functions::expect('wp_safe_redirect')->never();
 
         $data = [
-            'redirect_to' => 'https://example.com',
-            'redirect_status' => 307,
+            'redirect_to'       => 'https://example.com',
+            'redirect_status'   => 307,
             'redirect_external' => true,
         ];
 

@@ -197,7 +197,7 @@ class Cortex
 
     /**
      * @param  \Brain\Cortex\Uri\UriInterface               $uri
-     * @param string                         method
+     * @param                                 string                         method
      * @return \Brain\Cortex\Route\RouteCollectionInterface
      */
     private function factoryRoutes(UriInterface $uri, $method)

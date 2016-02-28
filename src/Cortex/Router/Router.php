@@ -265,7 +265,7 @@ final class Router implements RouterInterface
             'before'   => $route['before'],
             'after'    => $route['after'],
             'template' => $route['template'],
-         ]);
+        ]);
     }
 
     /**

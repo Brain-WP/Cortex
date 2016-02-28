@@ -93,9 +93,9 @@ class ResultHandlerTest extends TestCase
         Actions::expectFired('cortex.matched')->once();
         Filters::expectApplied('cortex.default-template-extension')->once()->andReturn('.mustache');
         Functions::expect('locate_template')
-            ->once()
-            ->with(['foo.mustache'], false)
-            ->andReturn('path/to/theme/foo.mustache');
+                 ->once()
+                 ->with(['foo.mustache'], false)
+                 ->andReturn('path/to/theme/foo.mustache');
 
         $hooks = [
             '404_template',

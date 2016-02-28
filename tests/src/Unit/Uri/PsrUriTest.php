@@ -109,8 +109,8 @@ class PsrUriTest extends TestCase
         Functions::when('is_ssl')->justReturn(true);
 
         $uri = new PsrUri([
-            'HTTP_HOST' => 'example.com:80',
-            'REQUEST_URI' => '/foo/bar/',
+            'HTTP_HOST'    => 'example.com:80',
+            'REQUEST_URI'  => '/foo/bar/',
             'QUERY_STRING' => '?foo=bar',
         ]);
 

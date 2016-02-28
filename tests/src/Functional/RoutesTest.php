@@ -58,20 +58,23 @@ class RoutesTest extends TestCaseFunctional
 
         $routeAdders = $groupAdders = [];
 
-        Actions::expectAdded('cortex.routes')->twice()->whenHappen(function ($add) use (&$routeAdders) {
+        Actions::expectAdded('cortex.routes')->twice()->whenHappen(function ($add) use (
+            &$routeAdders
+        ) {
             $routeAdders[] = $add;
         });
 
-        Actions::expectAdded('cortex.groups')->once()->whenHappen(function ($add) use (&$groupAdders) {
+        Actions::expectAdded('cortex.groups')->once()->whenHappen(function ($add) use (&$groupAdders
+        ) {
             $groupAdders[] = $add;
         });
 
         Actions::expectFired('cortex.routes')
-            ->once()
+               ->once()
                ->whenHappen(function (RouteCollectionInterface $routes) use (&$routeAdders) {
-                    foreach ($routeAdders as $routeAdder) {
-                        $routeAdder($routes);
-                    }
+                   foreach ($routeAdders as $routeAdder) {
+                       $routeAdder($routes);
+                   }
                });
 
         Actions::expectFired('cortex.groups')
@@ -104,13 +107,14 @@ class RoutesTest extends TestCaseFunctional
             $factory = $cb;
         });
 
-        Actions::expectFired('cortex.routes')->once()->whenHappen(function ($routes) use (&$factory) {
+        Actions::expectFired('cortex.routes')->once()->whenHappen(function ($routes) use (&$factory
+        ) {
             $factory($routes);
         });
 
         Functions::expect('wp_redirect')->once()->with('https://www.google.com', 305);
         Actions::expectAdded('cortex.exit.redirect')->once()
-            ->with([RedirectController::class, 'doExit'], 100);
+               ->with([RedirectController::class, 'doExit'], 100);
         Actions::expectFired('cortex.exit.redirect')->once();
 
         Routes::redirect('/from', 'https://www.google.com', 305, true);

@@ -37,7 +37,9 @@ final class RedirectController implements ControllerInterface
             in_array((int) $status, range(300, 308), true) or $status = 301;
             $external = empty($vars['redirect_external']) ? false : $vars['redirect_external'];
             /** @var callable $cb */
-            $cb = filter_var($external, FILTER_VALIDATE_BOOLEAN) ? 'wp_redirect' : 'wp_safe_redirect';
+            $cb = filter_var($external, FILTER_VALIDATE_BOOLEAN)
+                ? 'wp_redirect'
+                : 'wp_safe_redirect';
             $cb($to, $status);
 
             add_action('cortex.exit.redirect', [__CLASS__, 'doExit'], 100);
