@@ -36,7 +36,7 @@ use Brain\Cortex\Route\QueryRoute;
 add_action('cortex.routes', function(Routes $routes) {
 	
 	$routes->addRoute(new QueryRoute(
-		'^{type:[a-z]+}/latest$',
+		'{type:[a-z]+}/latest',
 		function(array $matches) {
 		  return [
 		    'post_type'      => $matches['type'],
@@ -66,7 +66,7 @@ One of them is **"template"** to force WordPress use a template when the route m
 add_action('cortex.routes', function(Routes $routes) {
 	
 	$routes->addRoute(new QueryRoute(
-		'^post/latest$',
+		'post/latest',
 		function(array $matches) {
 		  return [
 		    'orderby'        => 'date',
@@ -118,26 +118,26 @@ add_action('cortex.groups', function(Groups $groups) {
 add_action('cortex.routes', function(Routes $routes) {
 	
 	$routes->addRoute(new QueryRoute(
-		'^post/latest$',
-		function(array $matches) {
-		  return [
-		    'orderby'        => 'date',
-		    'order'          => 'DESC'
-		  ];
-		},
-		['group' => 'archive-group']
+	    '^post/latest$',
+	    function(array $matches) {
+	        return [
+	            'orderby'        => 'date',
+	            'order'          => 'DESC'
+	        ];
+	    },
+	    ['group' => 'archive-group']
 	));
 	
 	$routes->addRoute(new QueryRoute(
-	    '^post/oldest',
-    	function(array $matches) {
-    	    return [
-    		    'orderby'        => 'date',
-    		    'order'          => 'ASC'
-    		];
-    	},
-    	['group' => 'archive-group']
-    ));
+	    'post/oldest',
+	    function(array $matches) {
+	        return [
+	            'orderby'        => 'date',
+	            'order'          => 'ASC'
+	         ];
+	     },
+	     ['group' => 'archive-group']
+	));
 });
 ```
 
@@ -167,7 +167,7 @@ use Brain\Cortex\Route\RedirectRoute;
 add_action('cortex.routes', function(Routes $routes) {
 	
 	$routes->addRoute(new RedirectRoute(
-		'^old/url/{postname}$',
+		'old/url/{postname}',
 		function(array $matches) {
 		  return 'new/url/' . $matches['postname'];
 		}
