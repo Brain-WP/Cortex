@@ -235,6 +235,7 @@ final class Router implements RouterInterface
                 /** @var callable $cb */
                 $cb = $route['vars'];
                 $routeVars = $cb($vars, $uri);
+                is_array($routeVars) and $vars = $routeVars;
                 $routeVars instanceof MatchingResult and $result = $routeVars;
                 break;
             case (is_array($route['vars'])) :
