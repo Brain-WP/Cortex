@@ -227,51 +227,60 @@ final class Router implements RouterInterface
     {
         is_null($route['merge_query_string']) and $route['merge_query_string'] = true;
         $merge = filter_var($route['merge_query_string'], FILTER_VALIDATE_BOOLEAN);
-        $vars = $merge
-            ? array_merge($vars, $uri->vars())
-            : $this->ensurePreviewVar($vars, $uri, $route);
+        $uriVars = $uri->vars();
+        $merge and $vars = array_merge($vars, $uriVars);
         $result = null;
-        if (is_callable($route['vars'])) {
-            $cb = $route['vars'];
-            $routeVars = $cb($vars, $uri);
-            is_array($routeVars) and $vars = $routeVars;
-            $routeVars instanceof MatchingResult and $result = $routeVars;
-        } elseif (is_array($route['vars'])) {
-            foreach ($route['vars'] as $key => $value) {
-                isset($vars[$key]) or $vars[$key] = $value;
-            }
+        switch (true) {
+            case (is_callable($route['vars'])) :
+                /** @var callable $cb */
+                $cb = $route['vars'];
+                $routeVars = $cb($vars, $uri);
+                $routeVars instanceof MatchingResult and $result = $routeVars;
+                break;
+            case (is_array($route['vars'])) :
+                $vars = array_merge($route['vars'], $vars);
+                break;
+            case ($route['vars'] instanceof MatchingResult) :
+                $result = $route['vars'];
+                break;
         }
 
-        $vars = $this->ensurePreviewVar($vars, $uri, $route);
+        if ($result instanceof MatchingResult) {
+            return $result;
+        }
+
+        $vars = $this->ensurePreviewVars($vars, $uriVars);
         $vars = apply_filters('cortex.matched-vars', $vars, $route, $uri);
 
-        return $result instanceof MatchingResult
-            ? $result
-            : new MatchingResult([
-                'vars'     => (array) $vars,
-                'route'    => $route->id(),
-                'path'     => $route['path'],
-                'handler'  => $route['handler'],
-                'before'   => $route['before'],
-                'after'    => $route['after'],
-                'template' => $route['template'],
-            ]);
+        return new MatchingResult([
+            'vars'     => (array) $vars,
+            'route'    => $route->id(),
+            'path'     => $route['path'],
+            'handler'  => $route['handler'],
+            'before'   => $route['before'],
+            'after'    => $route['after'],
+            'template' => $route['template'],
+         ]);
     }
 
     /**
-     * We need this to ensure preview works.
+     * To ensure preview works, we need to merge preview-related query string
+     * to query arguments.
      *
-     * @param  array                              $vars
-     * @param  \Brain\Cortex\Uri\UriInterface     $uri
-     * @param  \Brain\Cortex\Route\RouteInterface $route
+     * @param  array $vars
+     * @param  array $uriVars
      * @return array
      */
-    private function ensurePreviewVar(array $vars, UriInterface $uri, RouteInterface $route)
+    private function ensurePreviewVars(array $vars, array $uriVars)
     {
-        $uriVars = $uri->vars();
+        if (! is_user_logged_in()) {
+            return $vars;
+        }
 
-        if (! isset($vars['preview']) && isset($uriVars['preview']) && is_user_logged_in()) {
-            $vars['preview'] = $uriVars['preview'];
+        foreach (['preview', 'preview_id', 'preview_nonce'] as $var) {
+            if (! isset($vars[$var]) && isset($uriVars[$var])) {
+                $vars[$var] = $uriVars[$var];
+            }
         }
 
         return $vars;
