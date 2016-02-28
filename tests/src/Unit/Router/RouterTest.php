@@ -30,6 +30,7 @@ use FastRoute\RouteCollector;
  */
 class RouterTest extends TestCase
 {
+
     public function testMatchNothingIfAlreadyMatched()
     {
         $routes = \Mockery::mock(RouteCollectionInterface::class);
@@ -244,7 +245,7 @@ class RouterTest extends TestCase
         $expected = [
             'route'    => 'r1',
             'path'     => '/foo',
-            'vars'     => ['c' => 'C', 'd' => 'D'],
+            'vars'     => ['d' => 'D', 'c' => 'C'],
             'handler'  => $handler,
             'before'   => null,
             'after'    => null,
@@ -254,6 +255,9 @@ class RouterTest extends TestCase
         $proxy = new Proxy($result);
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
+
+        ksort($expected);
+        ksort($data);
 
         assertTrue($result->matched());
         assertSame($expected, $data);
@@ -292,13 +296,13 @@ class RouterTest extends TestCase
 
         $dispatcher = \Mockery::mock(Dispatcher::class);
         $dispatcher->shouldReceive('dispatch')
-            ->once()
-            ->with('POST', '/foo/i-am-bar')
-            ->andReturn([
-                Dispatcher::FOUND,
-                'r1',
-                ['bar' => 'i-am-bar'],
-            ]);
+                   ->once()
+                   ->with('POST', '/foo/i-am-bar')
+                   ->andReturn([
+                       Dispatcher::FOUND,
+                       'r1',
+                       ['bar' => 'i-am-bar'],
+                   ]);
 
         $factory = function (array $args) use ($dispatcher) {
             assertSame($args, ['foo' => 'bar']);
@@ -312,7 +316,7 @@ class RouterTest extends TestCase
         $expected = [
             'route'    => 'r1',
             'path'     => '/foo/{bar}',
-            'vars'     => ['bar' => 'i-am-bar', 'c' => 'C', 'd' => 'D'],
+            'vars'     => ['d' => 'D', 'bar' => 'i-am-bar', 'c' => 'C'],
             'handler'  => $handler,
             'before'   => null,
             'after'    => null,
@@ -322,6 +326,9 @@ class RouterTest extends TestCase
         $proxy = new Proxy($result);
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
+
+        ksort($expected);
+        ksort($data);
 
         assertTrue($result->matched());
         assertSame($expected, $data);
@@ -416,7 +423,12 @@ class RouterTest extends TestCase
         $uri->shouldReceive('host')->andReturn('example.com');
         $uri->shouldReceive('path')->andReturn('foo');
         $uri->shouldReceive('chunks')->andReturn(['foo']);
-        $uri->shouldReceive('vars')->andReturn(['foo' => 'no-way', 'preview' => 1]);
+        $uri->shouldReceive('vars')->andReturn([
+            'foo'           => 'no-way',
+            'preview'       => 'true',
+            'preview_id'    => '123',
+            'preview_nonce' => 'abc'
+        ]);
 
         $collector = \Mockery::mock(RouteCollector::class);
         $collector->shouldReceive('addRoute')->never();
@@ -436,7 +448,12 @@ class RouterTest extends TestCase
         $expected = [
             'route'    => 'r1',
             'path'     => '/foo',
-            'vars'     => ['preview' => 1, 'd' => 'D'],
+            'vars'     => [
+                'd'             => 'D',
+                'preview'       => 'true',
+                'preview_id'    => '123',
+                'preview_nonce' => 'abc'
+            ],
             'handler'  => $handler,
             'before'   => null,
             'after'    => null,
@@ -446,6 +463,9 @@ class RouterTest extends TestCase
         $proxy = new Proxy($result);
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
+
+        ksort($data);
+        ksort($expected);
 
         assertTrue($result->matched());
         assertSame($expected, $data);
