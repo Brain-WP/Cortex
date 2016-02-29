@@ -11,7 +11,6 @@
 namespace Brain\Cortex\Router;
 
 use Brain\Cortex\Controller\ControllerInterface;
-use Brain\Cortex\Controller\QueryVarsController;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -67,17 +66,18 @@ final class ResultHandler implements ResultHandlerInterface
      */
     private function buildCallback($handler)
     {
+        $built = null;
         if (is_callable($handler)) {
-            return $handler;
+            $built = $handler;
         }
 
-        if ($handler instanceof ControllerInterface) {
-            return function (array $vars, \WP $wp) use ($handler) {
+        if (! $built && $handler instanceof ControllerInterface) {
+            $built = function (array $vars, \WP $wp) use ($handler) {
                 return $handler->run($vars, $wp);
             };
         }
 
-        return;
+        return $built;
     }
 
     /**
@@ -119,7 +119,7 @@ final class ResultHandler implements ResultHandlerInterface
             add_filter("{$type}_template", $setter);
         });
 
-        add_filter('template_include', function () use($template) {
+        add_filter('template_include', function () use ($template) {
             remove_all_filters('template_include');
 
             return $template;

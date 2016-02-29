@@ -27,9 +27,9 @@ final class ActionRoute implements RouteInterface
     /**
      * QueryRoute constructor.
      *
-     * @param string         $path
+     * @param string   $path
      * @param callable $action
-     * @param array          $options
+     * @param array    $options
      */
     public function __construct($path, callable $action, array $options = [])
     {

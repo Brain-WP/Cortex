@@ -89,9 +89,9 @@ class MatchingResult
      */
     public function handler()
     {
-        if (is_callable($this->data['handler']) || $this->data['handler'] instanceof Controller) {
-            return $this->data['handler'];
-        }
+        return is_callable($this->data['handler']) || $this->data['handler'] instanceof Controller
+            ? $this->data['handler']
+            : null;
     }
 
     /**
@@ -99,9 +99,9 @@ class MatchingResult
      */
     public function beforeHandler()
     {
-        if (is_callable($this->data['before']) || $this->data['before'] instanceof Controller) {
-            return $this->data['before'];
-        }
+        return is_callable($this->data['before']) || $this->data['before'] instanceof Controller
+            ? $this->data['before']
+            : null;
     }
 
     /**
@@ -109,8 +109,8 @@ class MatchingResult
      */
     public function afterHandler()
     {
-        if (is_callable($this->data['after']) || $this->data['after'] instanceof Controller) {
-            return $this->data['after'];
-        }
+        return is_callable($this->data['after']) || $this->data['after'] instanceof Controller
+            ? $this->data['after']
+            : null;
     }
 }

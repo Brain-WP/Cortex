@@ -10,6 +10,7 @@
 
 namespace Brain\Cortex\Route;
 
+use Brain\Cortex\Controller\ControllerInterface;
 use Brain\Cortex\Controller\RedirectController;
 
 /**
@@ -85,25 +86,25 @@ final class RedirectRoute implements RouteInterface
     }
 
     /**
-     * @param  string      $url
-     * @param  array       $vars
-     * @return null|string
+     * @param  string $url
+     * @param  array  $vars
+     * @return string
      */
     private function redirectToFromString($url, array $vars)
     {
         if (! is_string($url)) {
-            return;
+            return '';
         }
 
         $url = filter_var($url, FILTER_SANITIZE_URL);
         if (empty($url)) {
-            return;
+            return '';
         }
 
         $valid = filter_var($url, FILTER_VALIDATE_URL);
 
         if ($vars['redirect_external']) {
-            return $valid ? $url : null;
+            return $valid ? $url : '';
         }
 
         return $valid ? $url : home_url($url);

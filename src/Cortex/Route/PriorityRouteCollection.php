@@ -52,7 +52,7 @@ final class PriorityRouteCollection implements RouteCollectionInterface
 
         $priority = $route->offsetGet('priority');
 
-        $paged = $this->maybeBuildPaged($route, (int) $route->offsetGet('priority'));
+        $paged = $this->maybeBuildPaged($route);
         if (
             $paged instanceof RouteInterface
             && ! in_array($paged['paged'], self::$pagedFlags, true) // ensure avoid infinite loops
@@ -117,11 +117,12 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param  \Brain\Cortex\Route\RouteInterface $route
-     * @return int
+     * @param  \Brain\Cortex\Route\RouteInterface      $route
+     * @return \Brain\Cortex\Route\RouteInterface|null
      */
     private function maybeBuildPaged(RouteInterface $route)
     {
+        $built = null;
         $pagedArg = $route->offsetExists('paged') ? $route->offsetGet('paged') : '';
         $path = $route->offsetExists('path') ? $route->offsetGet('path') : '';
         if (in_array($pagedArg, self::$pagedFlags, true) && $path && is_string($path)) {
@@ -141,8 +142,10 @@ final class PriorityRouteCollection implements RouteCollectionInterface
                 $array['vars'] = $this->buildPagedVars($routeVars, $pagedArg);
             }
 
-            return apply_filters('cortex.paged-route', new Route($array), $route);
+            $built = apply_filters('cortex.paged-route', new Route($array), $route);
         }
+
+        return $built;
     }
 
     /**
