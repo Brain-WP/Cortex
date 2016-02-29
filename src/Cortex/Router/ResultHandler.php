@@ -11,6 +11,7 @@
 namespace Brain\Cortex\Router;
 
 use Brain\Cortex\Controller\ControllerInterface;
+use Brain\Cortex\Controller\QueryVarsController;
 
 /**
  * @author  Giuseppe Mazzapica <giuseppe.mazzapica@gmail.com>
@@ -24,8 +25,13 @@ final class ResultHandler implements ResultHandlerInterface
      */
     public function handle(MatchingResult $result, \WP $wp, $doParseRequest)
     {
+        $result = apply_filters('cortex.match.done', $result, $wp, $doParseRequest);
+        $handlerResult = $doParseRequest;
+
         if ($result->matched()) {
-            $handler = $this->buildCallback($result->handler());
+            $doParseRequest = false;
+            $origHandler = $result->handler();
+            $handler = $this->buildCallback($origHandler);
             $before = $this->buildCallback($result->beforeHandler());
             $after = $this->buildCallback($result->afterHandler());
             $template = $result->template();
@@ -34,11 +40,13 @@ final class ResultHandler implements ResultHandlerInterface
             do_action('cortex.matched', $result, $wp);
 
             is_callable($before) and $before($vars, $wp);
-            is_callable($handler) and $doParseRequest = $handler($vars, $wp);
+            is_callable($handler) and $handlerResult = $handler($vars, $wp);
             is_callable($after) and $after($vars, $wp);
             (is_string($template) && $template) and $this->setTemplate($template);
 
-            do_action('cortex.matched-after', $result, $wp, $doParseRequest);
+            do_action('cortex.matched-after', $result, $wp, $handlerResult);
+
+            is_bool($handlerResult) and $doParseRequest = $handlerResult;
 
             if (! apply_filters('cortex.do-parse-request', $doParseRequest)) {
                 remove_filter('template_redirect', 'redirect_canonical');
@@ -46,6 +54,8 @@ final class ResultHandler implements ResultHandlerInterface
                 return false;
             }
         }
+
+        do_action('cortex.result.done', $result, $wp, $handlerResult);
 
         return $doParseRequest;
     }
@@ -108,8 +118,10 @@ final class ResultHandler implements ResultHandlerInterface
             add_filter("{$type}_template", $setter);
         });
 
-        add_filter('template_include', function () {
+        add_filter('template_include', function () use($template) {
             remove_all_filters('template_include');
+
+            return $template;
         }, -1);
     }
 }
