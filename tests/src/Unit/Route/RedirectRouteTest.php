@@ -65,7 +65,7 @@ class RedirectRouteTest extends TestCase
         $expectedVars = [
             'redirect_status'   => 307,
             'redirect_external' => true,
-            'redirect_to'       => null,
+            'redirect_to'       => '',
         ];
 
         assertSame('/from', $route['path']);
@@ -112,7 +112,7 @@ class RedirectRouteTest extends TestCase
         assertSame($expectedVars, $route['vars'](['foo' => 'bar']));
     }
 
-    public function testRedirectToInternalNullIfCallbackReturnNoString()
+    public function testRedirectToInternalEmptyIfCallbackReturnNoString()
     {
         $route = new RedirectRoute(
             'from',
@@ -124,21 +124,21 @@ class RedirectRouteTest extends TestCase
         $expectedVars = [
             'redirect_status'   => 301,
             'redirect_external' => false,
-            'redirect_to'       => null,
+            'redirect_to'       => '',
         ];
 
         assertInstanceOf('Closure', $route['vars']);
         assertSame($expectedVars, $route['vars'](['bar' => 111]));
     }
 
-    public function testRedirectToInternalNullEmptyString()
+    public function testRedirectToInternalEmptyString()
     {
         $route = new RedirectRoute('/', '');
 
         $expectedVars = [
             'redirect_status'   => 301,
             'redirect_external' => false,
-            'redirect_to'       => null,
+            'redirect_to'       => '',
         ];
 
         assertSame($expectedVars, $route['vars']);
@@ -187,7 +187,7 @@ class RedirectRouteTest extends TestCase
         assertSame($expectedVars, $route['vars'](['sub' => 'www']));
     }
 
-    public function testRedirectToExternalNullIfCallbackReturnNoUrl()
+    public function testRedirectToExternalEmptyIfCallbackReturnNoUrl()
     {
         $route = new RedirectRoute(
             '/path/from',
@@ -200,7 +200,7 @@ class RedirectRouteTest extends TestCase
         $expectedVars = [
             'redirect_status'   => 301,
             'redirect_external' => true,
-            'redirect_to'       => null,
+            'redirect_to'       => '',
         ];
 
         assertSame('/path/from', $route['path']);
