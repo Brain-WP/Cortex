@@ -47,8 +47,9 @@ final class ResultHandler implements ResultHandlerInterface
             do_action('cortex.matched-after', $result, $wp, $handlerResult);
 
             is_bool($handlerResult) and $doParseRequest = $handlerResult;
+            $doParseRequest = apply_filters('cortex.do-parse-request', $doParseRequest);
 
-            if (! apply_filters('cortex.do-parse-request', $doParseRequest)) {
+            if (! $doParseRequest) {
                 remove_filter('template_redirect', 'redirect_canonical');
 
                 return false;
