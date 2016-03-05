@@ -376,6 +376,62 @@ class CortexTest extends TestCaseFunctional
         assertFalse(isset($wp->query_vars));
     }
 
+    public function testCortexMatchDynamicRouteOptionRequirements()
+    {
+        Functions::when('home_url')->justReturn('http://example.com/foo');
+        Functions::when('remove_all_filters')->justReturn();
+
+        Actions::expectFired('cortex.routes')
+               ->once()
+               ->whenHappen(function (RouteCollectionInterface $routes) {
+                   $routes->addRoute(
+                       new QueryRoute('/{greeting:hello|ciao}/baz', function (array $vars = []) {
+                           return ['greeting' => $vars['greeting']];
+                       })
+                   );
+               });
+
+        Actions::expectFired('cortex.matched')->once();
+
+        $request = self::buildPsrRequest('http://example.com/foo/ciao/baz');
+
+        $cortex = new Proxy(new Cortex());
+        $wp = \Mockery::mock('WP');
+
+        $do = $cortex->doBoot($wp, true, $request);
+
+        assertFalse($do);
+        assertSame(['greeting' => 'ciao'], $wp->query_vars);
+    }
+
+    public function testCortexNotMatchDynamicRouteBadOptionRequirements()
+    {
+        Functions::when('home_url')->justReturn('http://example.com/foo');
+        Functions::when('remove_all_filters')->justReturn();
+
+        Actions::expectFired('cortex.routes')
+               ->once()
+               ->whenHappen(function (RouteCollectionInterface $routes) {
+                   $routes->addRoute(
+                       new QueryRoute('/{greeting:hello|ciao}/baz', function (array $vars = []) {
+                           return ['greeting' => $vars['greeting']];
+                       })
+                   );
+               });
+
+        Actions::expectFired('cortex.matched')->never();
+
+        $request = self::buildPsrRequest('http://example.com/foo/goodbye/baz');
+
+        $cortex = new Proxy(new Cortex());
+        $wp = \Mockery::mock('WP');
+
+        $do = $cortex->doBoot($wp, true, $request);
+
+        assertTrue($do);
+        assertFalse(isset($wp->query_vars));
+    }
+
     public function testCortexMatchFirstRoute()
     {
         Functions::when('home_url')->justReturn('http://example.com/foo');
