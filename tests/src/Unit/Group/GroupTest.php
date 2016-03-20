@@ -43,7 +43,6 @@ class GroupTest extends TestCase
             'group'    => 'nested',
             'path'     => '/',
             'handler'  => '__return_true',
-            'meh'      => 'meh',
             'priority' => 0,
             'id'       => 'test_me',
         ]);
@@ -56,7 +55,12 @@ class GroupTest extends TestCase
             'id'       => 'test_me',
         ];
 
-        assertSame($expected, $group->toArray());
+        $actual = $group->toArray();
+
+        ksort($expected);
+        ksort($actual);
+
+        assertSame($expected, $actual);
     }
 
     public function testArrayAccess()
@@ -67,12 +71,10 @@ class GroupTest extends TestCase
             'vars'     => [],
             'path'     => '/',
             'handler'  => '__return_true',
-            'meh'      => 'meh',
             'priority' => 0,
         ]);
 
         assertFalse($group->offsetExists('foo'));
-        assertNull($group->offsetGet('meh'));
         assertTrue($group->offsetExists('id')); // id is auto generated
         assertTrue($group->offsetExists('vars'));
         assertSame('/', $group->offsetGet('path'));

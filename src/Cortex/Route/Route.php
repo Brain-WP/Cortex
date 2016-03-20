@@ -71,7 +71,12 @@ final class Route implements RouteInterface
      */
     public function toArray()
     {
-        return $this->storage;
+        $result = [];
+        foreach ($this->storage as $key => $value) {
+            (is_string($key) && $key && ! is_null($value)) and $result[$key] = $value;
+        }
+
+        return $result;
     }
 
     /**

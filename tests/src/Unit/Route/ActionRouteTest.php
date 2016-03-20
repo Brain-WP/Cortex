@@ -10,9 +10,7 @@
 
 namespace Brain\Cortex\Tests\Unit\Route;
 
-use Brain\Cortex\Controller\QueryVarsController;
 use Brain\Cortex\Route\ActionRoute;
-use Brain\Cortex\Route\QueryRoute;
 use Brain\Cortex\Tests\TestCase;
 
 /**
@@ -33,12 +31,10 @@ class ActionRouteTest extends TestCase
             1,
             'vars'     => [],
             'path'     => '/',
-            'meh'      => 'meh',
             'priority' => 0
         ]);
 
         assertFalse($route->offsetExists('foo'));
-        assertNull($route->offsetGet('meh'));
         assertTrue($route->offsetExists('id')); // id is auto generated
         assertSame(0, $route->offsetGet('priority'));
         assertSame('foo/bar', $route->offsetGet('path'));

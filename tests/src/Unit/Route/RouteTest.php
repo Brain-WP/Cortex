@@ -37,7 +37,7 @@ class RouteTest extends TestCase
         ]);
 
         assertFalse($route->offsetExists('foo'));
-        assertNull($route->offsetGet('meh'));
+        assertSame('meh', $route->offsetGet('meh'));
         assertTrue($route->offsetExists('id')); // id is auto generated
         assertSame(0, $route->offsetGet('priority'));
         assertSame('/', $route->offsetGet('path'));
@@ -75,7 +75,7 @@ class RouteTest extends TestCase
         assertFalse(array_key_exists('foo', $array));
         assertFalse(array_key_exists(0, $array));
         assertFalse(array_key_exists(1, $array));
-        assertFalse(array_key_exists('meh', $array));
+        assertSame(['foo' => 'bar'], $array['meh']);
         assertSame('foo/bar', $array['path']);
         assertSame(['foo' => 'bar'], $array['vars']);
         assertStringMatchesFormat('route_%s', $array['id']);

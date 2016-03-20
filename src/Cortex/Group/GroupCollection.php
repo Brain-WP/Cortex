@@ -49,6 +49,7 @@ final class GroupCollection implements GroupCollectionInterface
                 /** @var \Brain\Cortex\Group\GroupInterface $groupObj */
                 $groupObj = $this->groups[$group];
                 $data = array_merge($data, $groupObj->toArray());
+                unset($data['id']);
             }
 
             return $data;
@@ -56,7 +57,10 @@ final class GroupCollection implements GroupCollectionInterface
 
         $clone = clone $route;
         array_walk($data, function ($value, $key) use (&$clone) {
-            ($key === 'id' || $clone->offsetExists($key)) or $clone->offsetSet($key, $value);
+            $skip =
+                in_array($key, ['id', 'group'], true)
+                || ($clone->offsetExists($key) && ! is_null($clone->offsetGet($key)));
+            $skip or $clone->offsetSet($key, $value);
         });
 
         return $clone;

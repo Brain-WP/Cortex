@@ -33,12 +33,10 @@ class QueryRouteTest extends TestCase
             'vars'     => [],
             'path'     => '/',
             'handler'  => '__return_true',
-            'meh'      => 'meh',
             'priority' => 0
         ]);
 
         assertFalse($route->offsetExists('foo'));
-        assertNull($route->offsetGet('meh'));
         assertTrue($route->offsetExists('id')); // id is auto generated
         assertSame(0, $route->offsetGet('priority'));
         assertSame('foo/bar', $route->offsetGet('path'));
@@ -74,7 +72,7 @@ class QueryRouteTest extends TestCase
         assertFalse(array_key_exists('foo', $array));
         assertFalse(array_key_exists(0, $array));
         assertFalse(array_key_exists(1, $array));
-        assertFalse(array_key_exists('meh', $array));
+        assertTrue(array_key_exists('meh', $array));
         assertSame('foo/bar', $array['path']);
         assertSame(['foo' => 'bar'], $array['vars']);
         assertInstanceOf(QueryVarsController::class, $array['handler']);

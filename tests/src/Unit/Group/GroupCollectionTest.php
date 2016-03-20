@@ -74,7 +74,7 @@ class GroupCollectionTest extends TestCase
 
         /** @var \Brain\Cortex\Route\RouteInterface $newRoute */
         $newRoute = $collection->mergeGroup($route);
-        $actual = $newRoute->toArray();
+        $actual = array_filter($newRoute->toArray());
 
         ksort($actual);
         ksort($expected);
@@ -88,10 +88,13 @@ class GroupCollectionTest extends TestCase
             '/path/to',
             ['name' => 'test'],
             [
+                'id'    => 'my_route',
                 'paged' => true,
                 'group' => ['group_1', 'group_2', 'group_3']
             ]
         );
+
+        $handler = $route->offsetGet('handler');
 
         $group1 = new Group([
             'id'      => 'group_1',
@@ -107,12 +110,12 @@ class GroupCollectionTest extends TestCase
         ]);
 
         $expected = [
-            'id'                 => $route->id(),
+            'id'                 => 'my_route',
             'path'               => '/path/to',
             'vars'               => ['name' => 'test'],
             'paged'              => true,
             'group'              => ['group_1', 'group_2', 'group_3'],
-            'handler'            => $route->offsetGet('handler'),
+            'handler'            => $handler,
             'method'             => 'POST',
             'merge_query_string' => true,
         ];
@@ -120,9 +123,11 @@ class GroupCollectionTest extends TestCase
         $collection = new GroupCollection();
         $collection->addGroup($group1)->addGroup($group2);
 
+        define('DIE', 1);
+
         /** @var \Brain\Cortex\Route\RouteInterface $newRoute */
         $newRoute = $collection->mergeGroup($route);
-        $actual = $newRoute->toArray();
+        $actual = array_filter($newRoute->toArray());
 
         ksort($actual);
         ksort($expected);
