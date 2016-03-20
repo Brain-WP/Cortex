@@ -34,14 +34,15 @@ final class ResultHandler implements ResultHandlerInterface
             $before = $this->buildCallback($result->beforeHandler());
             $after = $this->buildCallback($result->afterHandler());
             $template = $result->template();
+            (is_string($template)) or $template = '';
             $vars = $result->vars();
 
             do_action('cortex.matched', $result, $wp);
 
-            is_callable($before) and $before($vars, $wp);
-            is_callable($handler) and $handlerResult = $handler($vars, $wp);
-            is_callable($after) and $after($vars, $wp);
-            (is_string($template) && $template) and $this->setTemplate($template);
+            is_callable($before) and $before($vars, $wp, $template);
+            is_callable($handler) and $handlerResult = $handler($vars, $wp, $template);
+            is_callable($after) and $after($vars, $wp, $template);
+            $template and $this->setTemplate($template);
 
             do_action('cortex.matched-after', $result, $wp, $handlerResult);
 
