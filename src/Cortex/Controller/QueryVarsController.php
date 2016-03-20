@@ -20,7 +20,7 @@ final class QueryVarsController implements ControllerInterface
     /**
      * @inheritdoc
      */
-    public function run(array $vars, \WP $wp)
+    public function run(array $vars, \WP $wp, $template = '')
     {
         $wp->query_vars = $vars;
 

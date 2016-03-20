@@ -22,9 +22,10 @@ namespace Brain\Cortex\Controller;
 interface ControllerInterface
 {
     /**
-     * @param  array $vars
-     * @param  \WP   $wp
+     * @param  array  $vars
+     * @param  \WP    $wp
+     * @param  string $template
      * @return bool
      */
-    public function run(array $vars, \WP $wp);
+    public function run(array $vars, \WP $wp, $template = '');
 }

@@ -28,7 +28,7 @@ final class RedirectController implements ControllerInterface
     /**
      * @inheritdoc
      */
-    public function run(array $vars, \WP $wp)
+    public function run(array $vars, \WP $wp, $template = '')
     {
         $to = empty($vars['redirect_to']) ? home_url() : $vars['redirect_to'];
 

@@ -73,8 +73,8 @@ final class ResultHandler implements ResultHandlerInterface
         }
 
         if (! $built && $handler instanceof ControllerInterface) {
-            $built = function (array $vars, \WP $wp) use ($handler) {
-                return $handler->run($vars, $wp);
+            $built = function (array $vars, \WP $wp, $template) use ($handler) {
+                return $handler->run($vars, $wp, $template);
             };
         }
 
