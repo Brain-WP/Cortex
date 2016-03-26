@@ -109,10 +109,12 @@ class Cortex
         $groups = $this->factoryGroups();
         $router = $this->factoryRouter($routes, $groups);
         $handler = $this->factoryHandler();
+        add_action('cortex.match.done', function() {
+            remove_all_filters('cortex.routes');
+            remove_all_filters('cortex.groups');
+        });
         $do = $handler->handle($router->match($uri, $method), $wp, $do);
-        unset($method, $uri, $handler, $router, $groups, $routes, $instance);
-        remove_all_filters('cortex.routes');
-        remove_all_filters('cortex.groups');
+        is_bool($do) or $do = true;
 
         return $do;
     }
