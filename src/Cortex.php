@@ -109,7 +109,7 @@ class Cortex
         $groups = $this->factoryGroups();
         $router = $this->factoryRouter($routes, $groups);
         $handler = $this->factoryHandler();
-        add_filter('cortex.match.done', function($result) {
+        add_filter('cortex.match.done', function ($result) {
             remove_all_filters('cortex.routes');
             remove_all_filters('cortex.groups');
             
