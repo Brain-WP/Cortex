@@ -44,9 +44,9 @@ class Routes
     }
 
     /**
-     * @param  string                             $path
-     * @param  callable|array                     $query
-     * @param  array                              $options
+     * @param  string         $path
+     * @param  callable|array $query
+     * @param  array          $options
      * @return \Brain\Cortex\Route\RouteInterface
      */
     public static function add($path, $query, array $options = [])
@@ -66,10 +66,10 @@ class Routes
     }
 
     /**
-     * @param  string                            $path
-     * @param  string|callable                   $to
-     * @param  int                               $status
-     * @param  bool                              $external
+     * @param  string          $path
+     * @param  string|callable $to
+     * @param  int             $status
+     * @param  bool            $external
      * @return \Brain\Cortex\Route\RedirectRoute
      */
     public static function redirect($path, $to, $status = 301, $external = false)
@@ -92,8 +92,8 @@ class Routes
     }
 
     /**
-     * @param  string                             $id
-     * @param  array                              $group
+     * @param  string $id
+     * @param  array  $group
      * @return \Brain\Cortex\Group\GroupInterface
      */
     public static function group($id, array $group)

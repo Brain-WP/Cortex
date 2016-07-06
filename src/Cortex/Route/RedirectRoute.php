@@ -58,7 +58,7 @@ final class RedirectRoute implements RouteInterface
     private function parseOptions(array $options)
     {
         $status = empty($options['redirect_status']) ? 301 : $options['redirect_status'];
-        in_array((int) $status, range(300, 308), true) or $status = 301;
+        in_array((int)$status, range(300, 308), true) or $status = 301;
 
         $external = empty($options['redirect_external']) ? false : $options['redirect_external'];
 

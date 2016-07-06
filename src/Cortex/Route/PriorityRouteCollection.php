@@ -40,7 +40,7 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param  \Brain\Cortex\Route\RouteInterface           $route
+     * @param  \Brain\Cortex\Route\RouteInterface $route
      * @return \Brain\Cortex\Route\RouteCollectionInterface
      */
     public function addRoute(RouteInterface $route)
@@ -117,7 +117,7 @@ final class PriorityRouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @param  \Brain\Cortex\Route\RouteInterface      $route
+     * @param  \Brain\Cortex\Route\RouteInterface $route
      * @return \Brain\Cortex\Route\RouteInterface|null
      */
     private function maybeBuildPaged(RouteInterface $route)
@@ -163,12 +163,12 @@ final class PriorityRouteCollection implements RouteCollectionInterface
 
         return function (array $vars) use ($routeVars, $key) {
             (isset($vars[$key]) && is_numeric($vars[$key])) or $vars[$key] = 1;
-            $vars[$key] = (int) $vars[$key];
+            $vars[$key] = (int)$vars[$key];
             $result = $routeVars($vars);
             if (is_array($result) && ! (isset($result[$key]) && is_numeric($result[$key]))) {
                 $result[$key] = $vars[$key];
             }
-            $result[$key] = (int) $result[$key];
+            $result[$key] = (int)$result[$key];
 
             return $result;
         };

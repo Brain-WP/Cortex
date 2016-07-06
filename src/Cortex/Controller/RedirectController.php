@@ -34,7 +34,7 @@ final class RedirectController implements ControllerInterface
 
         if (filter_var($to, FILTER_VALIDATE_URL)) {
             $status = empty($vars['redirect_status']) ? 301 : $vars['redirect_status'];
-            in_array((int) $status, range(300, 308), true) or $status = 301;
+            in_array((int)$status, range(300, 308), true) or $status = 301;
             $external = empty($vars['redirect_external']) ? false : $vars['redirect_external'];
             /** @var callable $cb */
             $cb = filter_var($external, FILTER_VALIDATE_BOOLEAN)

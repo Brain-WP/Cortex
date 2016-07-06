@@ -44,7 +44,7 @@ final class GroupCollection implements GroupCollectionInterface
             return $route;
         }
 
-        $data = array_reduce((array) $groups, function (array $data, $group) {
+        $data = array_reduce((array)$groups, function (array $data, $group) {
             if (is_string($group) && array_key_exists($group, $this->groups)) {
                 /** @var \Brain\Cortex\Group\GroupInterface $groupObj */
                 $groupObj = $this->groups[$group];

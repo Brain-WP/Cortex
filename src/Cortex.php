@@ -112,7 +112,7 @@ class Cortex
         add_filter('cortex.match.done', function ($result) {
             remove_all_filters('cortex.routes');
             remove_all_filters('cortex.groups');
-            
+
             return $result;
         });
         $do = $handler->handle($router->match($uri, $method), $wp, $do);
@@ -200,8 +200,8 @@ class Cortex
     }
 
     /**
-     * @param  \Brain\Cortex\Uri\UriInterface               $uri
-     * @param  string                                       $method
+     * @param  \Brain\Cortex\Uri\UriInterface $uri
+     * @param  string                         $method
      * @return \Brain\Cortex\Route\RouteCollectionInterface
      */
     private function factoryRoutes(UriInterface $uri, $method)

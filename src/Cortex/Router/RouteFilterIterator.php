@@ -67,12 +67,12 @@ final class RouteFilterIterator extends \FilterIterator
             return false;
         }
 
-        $scheme = strtolower((string) $route['scheme']);
+        $scheme = strtolower((string)$route['scheme']);
         if (! empty($scheme) && $scheme !== $this->uri->scheme()) {
             return false;
         }
 
-        $host = filter_var(strtolower((string) $route['host']), FILTER_SANITIZE_URL);
+        $host = filter_var(strtolower((string)$route['host']), FILTER_SANITIZE_URL);
         if (! empty($host) && ! self::checkHost($route['host'], $this->uri->host())) {
             return false;
         }

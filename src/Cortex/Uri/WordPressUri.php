@@ -76,7 +76,7 @@ final class WordPressUri implements UriInterface
             $path = trim(substr($path, strlen($homePath)), '/');
         }
 
-        return $path ?: '/';
+        return $path ? : '/';
     }
 
     /**
