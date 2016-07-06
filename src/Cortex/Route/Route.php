@@ -33,6 +33,7 @@ final class Route implements RouteInterface
         'before'             => null,
         'after'              => null,
         'template'           => null,
+        'no_template'        => null,
         'path'               => null,
         'handler'            => null,
     ];

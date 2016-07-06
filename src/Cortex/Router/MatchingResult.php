@@ -81,7 +81,9 @@ class MatchingResult
      */
     public function template()
     {
-        return is_string($this->data['template']) ? $this->data['template'] : '';
+        $template = $this->data['template'];
+
+        return (is_string($template) || $template === false) ? $template : '';
     }
 
     /**

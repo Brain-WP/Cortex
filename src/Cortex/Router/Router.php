@@ -74,7 +74,7 @@ final class Router implements RouterInterface
     ) {
         $this->groups = $groups;
         $this->routes = $routes;
-        $this->collector = $collector ?: new RouteCollector(new Std(), new DefDataGenerator());
+        $this->collector = $collector ? : new RouteCollector(new Std(), new DefDataGenerator());
         $this->dispatcherFactory = $dispatcherFactory;
     }
 
@@ -102,7 +102,7 @@ final class Router implements RouterInterface
         unset($this->collector);
 
         $uriPath = '/'.trim($uri->path(), '/');
-        $routeInfo = $dispatcher->dispatch($httpMethod, $uriPath ?: '/');
+        $routeInfo = $dispatcher->dispatch($httpMethod, $uriPath ? : '/');
         if ($routeInfo[0] === Dispatcher::FOUND) {
             $route = $this->parsedRoutes[$routeInfo[1]];
             $vars = $routeInfo[2];
@@ -189,7 +189,7 @@ final class Router implements RouterInterface
         if (count($uri->chunks()) !== (substr_count($path, '/') + 1)) {
             return false;
         }
-        $method = (array) $route['method'];
+        $method = (array)$route['method'];
         $handler = $route['handler'];
 
         return
@@ -201,7 +201,7 @@ final class Router implements RouterInterface
     }
 
     /**
-     * @param  array                 $data
+     * @param  array $data
      * @return \FastRoute\Dispatcher
      */
     private function buildDispatcher(array $data)
@@ -218,9 +218,9 @@ final class Router implements RouterInterface
     }
 
     /**
-     * @param  \Brain\Cortex\Route\RouteInterface  $route
-     * @param  array                               $vars
-     * @param  \Brain\Cortex\Uri\UriInterface      $uri
+     * @param  \Brain\Cortex\Route\RouteInterface $route
+     * @param  array                              $vars
+     * @param  \Brain\Cortex\Uri\UriInterface     $uri
      * @return \Brain\Cortex\Router\MatchingResult
      */
     private function finalizeRoute(RouteInterface $route, array $vars, UriInterface $uri)
@@ -256,15 +256,16 @@ final class Router implements RouterInterface
 
         $vars = $this->ensurePreviewVars($vars, $uriVars);
         $vars = apply_filters('cortex.matched-vars', $vars, $route, $uri);
+        $noTemplate = filter_var($route['no_template'], FILTER_VALIDATE_BOOLEAN);
 
         return new MatchingResult([
-            'vars'     => (array) $vars,
+            'vars'     => (array)$vars,
             'route'    => $route->id(),
             'path'     => $route['path'],
             'handler'  => $route['handler'],
             'before'   => $route['before'],
             'after'    => $route['after'],
-            'template' => $route['template'],
+            'template' => $noTemplate ? false : $route['template'],
         ]);
     }
 

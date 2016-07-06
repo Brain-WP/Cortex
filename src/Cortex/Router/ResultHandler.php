@@ -24,6 +24,7 @@ final class ResultHandler implements ResultHandlerInterface
      */
     public function handle(MatchingResult $result, \WP $wp, $doParseRequest)
     {
+        /** @var \Brain\Cortex\Router\MatchingResult $result */
         $result = apply_filters('cortex.match.done', $result, $wp, $doParseRequest);
         $handlerResult = $doParseRequest;
 
@@ -62,7 +63,7 @@ final class ResultHandler implements ResultHandlerInterface
     }
 
     /**
-     * @param  mixed         $handler
+     * @param  mixed $handler
      * @return callable|null
      */
     private function buildCallback($handler)
@@ -86,16 +87,26 @@ final class ResultHandler implements ResultHandlerInterface
      */
     private function setTemplate($template)
     {
-        $ext = apply_filters('cortex.default-template-extension', 'php');
-        pathinfo($template, PATHINFO_EXTENSION) or $template .= '.'.ltrim($ext, '.');
-        $template = is_file($template) ? $template : locate_template([$template], false);
-        if (! $template) {
+        if (is_string($template)) {
+            $ext = apply_filters('cortex.default-template-extension', 'php');
+            pathinfo($template, PATHINFO_EXTENSION) or $template .= '.'.ltrim($ext, '.');
+            $template = is_file($template) ? $template : locate_template([$template], false);
+            $template or $template = null;
+        }
+
+        // Allow template to be a file path or `false`, which will actually disable template
+        if (! is_file($template) && $template !== false) {
             return;
         }
 
-        $setter = function () use ($template) {
-            return $template;
-        };
+        // If template is `false`, we return `true` on `"{$type}_template"`
+        // to speed up `template-loader.php`
+        $template_setter = $template
+            ? function () use ($template) {
+                return $template;
+            }
+        : '__return_true';
+
 
         $types = [
             '404',
@@ -116,8 +127,8 @@ final class ResultHandler implements ResultHandlerInterface
             'index',
         ];
 
-        array_walk($types, function ($type) use ($setter) {
-            add_filter("{$type}_template", $setter);
+        array_walk($types, function ($type) use ($template_setter) {
+            add_filter("{$type}_template", $template_setter);
         });
 
         add_filter('template_include', function () use ($template) {
