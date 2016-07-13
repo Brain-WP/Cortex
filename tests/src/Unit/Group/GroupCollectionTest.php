@@ -122,9 +122,7 @@ class GroupCollectionTest extends TestCase
 
         $collection = new GroupCollection();
         $collection->addGroup($group1)->addGroup($group2);
-
-        define('DIE', 1);
-
+        
         /** @var \Brain\Cortex\Route\RouteInterface $newRoute */
         $newRoute = $collection->mergeGroup($route);
         $actual = array_filter($newRoute->toArray());
