@@ -93,15 +93,14 @@ final class ResultHandler implements ResultHandlerInterface
             $template = is_file($template) ? $template : locate_template([$template], false);
             $template or $template = null;
         }
-
-        // Allow template to be a file path or `false`, which will actually disable template
-        if (! is_file($template) && $template !== false) {
+        
+        if (is_null($template)) {
             return;
         }
 
         // If template is `false`, we return `true` on `"{$type}_template"`
         // to speed up `template-loader.php`
-        $template_setter = $template
+        $template_setter = $template !== false
             ? function () use ($template) {
                 return $template;
             }
