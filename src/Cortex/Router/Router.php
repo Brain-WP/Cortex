@@ -129,7 +129,7 @@ final class Router implements RouterInterface
         /** @var \Brain\Cortex\Route\RouteInterface $route */
         foreach ($iterator as $route) {
             $route = $this->sanitizeRouteMethod($this->groups->mergeGroup($route), $httpMethod);
-            if (! $this->validateRoute($route, $uri, $httpMethod)) {
+            if (! $this->validateRoute($route, $httpMethod)) {
                 continue;
             }
 
@@ -178,25 +178,20 @@ final class Router implements RouterInterface
 
     /**
      * @param  \Brain\Cortex\Route\RouteInterface $route
-     * @param  \Brain\Cortex\Uri\UriInterface     $uri
      * @param                                     $httpMethod
      * @return bool
      */
-    private function validateRoute(RouteInterface $route, UriInterface $uri, $httpMethod)
+    private function validateRoute(RouteInterface $route, $httpMethod)
     {
         $id = $route->id();
         $path = trim($route['path'], '/');
-        if (count($uri->chunks()) !== (substr_count($path, '/') + 1)) {
-            return false;
-        }
-        $method = (array)$route['method'];
         $handler = $route['handler'];
 
         return
             is_string($id)
             && $id
             && filter_var($path, FILTER_SANITIZE_URL) === $path
-            && in_array($httpMethod, $method, true)
+            && in_array($httpMethod, (array) $route['method'], true)
             && (is_callable($handler) || $handler instanceof ControllerInterface);
     }
 
