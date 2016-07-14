@@ -35,6 +35,7 @@ class MatchingResult
             'route'    => null,
             'path'     => null,
             'vars'     => null,
+            'matches'  => null,
             'handler'  => null,
             'before'   => null,
             'after'    => null,
@@ -66,6 +67,14 @@ class MatchingResult
     public function vars()
     {
         return is_array($this->data['vars']) ? $this->data['vars'] : [];
+    }
+
+    /**
+     * @return array
+     */
+    public function matches()
+    {
+        return is_array($this->data['matches']) ? $this->data['matches'] : [];
     }
 
     /**

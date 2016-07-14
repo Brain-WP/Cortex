@@ -28,6 +28,11 @@ final class ResultHandler implements ResultHandlerInterface
         $result = apply_filters('cortex.match.done', $result, $wp, $doParseRequest);
         $handlerResult = $doParseRequest;
 
+        if (! $result instanceof MatchingResult) {
+            return $result;
+        }
+
+        /** @var \Brain\Cortex\Router\MatchingResult $result */
         if ($result->matched()) {
             $doParseRequest = false;
             $origHandler = $result->handler();
@@ -37,12 +42,13 @@ final class ResultHandler implements ResultHandlerInterface
             $template = $result->template();
             (is_string($template)) or $template = '';
             $vars = $result->vars();
+            $matches = $result->matches();
 
             do_action('cortex.matched', $result, $wp);
 
-            is_callable($before) and $before($vars, $wp, $template);
-            is_callable($handler) and $handlerResult = $handler($vars, $wp, $template);
-            is_callable($after) and $after($vars, $wp, $template);
+            is_callable($before) and $before($vars, $wp, $template, $matches);
+            is_callable($handler) and $handlerResult = $handler($vars, $wp, $template, $matches);
+            is_callable($after) and $after($vars, $wp, $template, $matches);
             $template and $this->setTemplate($template);
 
             do_action('cortex.matched-after', $result, $wp, $handlerResult);

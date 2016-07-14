@@ -72,6 +72,7 @@ class ResultHandlerTest extends TestCase
         $result->shouldReceive('afterHandler')->once()->andReturn($after);
         $result->shouldReceive('template')->once()->andReturnNull();
         $result->shouldReceive('vars')->once()->andReturn(['foo' => 'bar']);
+        $result->shouldReceive('matches')->once()->andReturn([]);
 
         $wp = \Mockery::mock('WP');
 
@@ -129,6 +130,7 @@ class ResultHandlerTest extends TestCase
         $result->shouldReceive('afterHandler')->once()->andReturn(null);
         $result->shouldReceive('template')->once()->andReturn('foo');
         $result->shouldReceive('vars')->once()->andReturn([]);
+        $result->shouldReceive('matches')->once()->andReturn([]);
 
         $handler = new ResultHandler();
 
@@ -178,6 +180,7 @@ class ResultHandlerTest extends TestCase
         $result->shouldReceive('afterHandler')->once()->andReturn(null);
         $result->shouldReceive('template')->once()->andReturn('foo');
         $result->shouldReceive('vars')->once()->andReturn([]);
+        $result->shouldReceive('matches')->once()->andReturn([]);
 
         $handler = new ResultHandler();
 

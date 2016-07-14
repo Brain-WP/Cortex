@@ -224,6 +224,8 @@ final class Router implements RouterInterface
         $merge = filter_var($route['merge_query_string'], FILTER_VALIDATE_BOOLEAN);
         $uriVars = $uri->vars();
         $merge and $vars = array_merge($vars, $uriVars);
+        // vars is going to be modified if route vars is a callback, lets save this as a backup
+        $varsOriginal = $vars;
         $result = null;
         switch (true) {
             case (is_callable($route['vars'])) :
@@ -255,6 +257,7 @@ final class Router implements RouterInterface
 
         return new MatchingResult([
             'vars'     => (array)$vars,
+            'matches'  => (array)$varsOriginal,
             'route'    => $route->id(),
             'path'     => $route['path'],
             'handler'  => $route['handler'],
