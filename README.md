@@ -30,10 +30,10 @@ To add routes, it is possible to use `'cortex.routes'` hook, that passes an inst
 `RouteCollectionInterface`:
 
 ```php
-use Brain\Cortex\Route\RouteCollectionInterface as Routes;
+use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Route\QueryRoute;
 
-add_action('cortex.routes', function(Routes $routes) {
+add_action('cortex.routes', function(RouteCollectionInterface $routes) {
 	
 	$routes->addRoute(new QueryRoute(
 		'{type:[a-z]+}/latest',
@@ -63,7 +63,7 @@ route configuration.
 One of them is **"template"** to force WordPress use a template when the route matches:
 
 ```php
-add_action('cortex.routes', function(Routes $routes) {
+add_action('cortex.routes', function(RouteCollectionInterface $routes) {
 	
 	$routes->addRoute(new QueryRoute(
 		'post/latest',
@@ -99,12 +99,12 @@ Before assign groups to routes, we need to add groups.
 That can be done using `'cortex.groups'` hook, that pass an instance of `GroupCollectionInterface`:
 
 ```php
-use Brain\Cortex\Route\RouteCollectionInterface as Routes;
-use Brain\Cortex\Group\GroupCollectionInterface as Groups;
+use Brain\Cortex\Route\RouteCollectionInterface;
+use Brain\Cortex\Group\GroupCollectionInterface;
 use Brain\Cortex\Route\QueryRoute;
 use Brain\Cortex\Group\Group;
 
-add_action('cortex.groups', function(Groups $groups) {
+add_action('cortex.groups', function(GroupCollectionInterface $groups) {
 	
 	$groups->addGroup(new Group([
 	    'id'       => 'archive-group',
@@ -115,7 +115,7 @@ add_action('cortex.groups', function(Groups $groups) {
 	]));
 });
 
-add_action('cortex.routes', function(Routes $routes) {
+add_action('cortex.routes', function(RouteCollectionInterface $routes) {
 	
 	$routes->addRoute(new QueryRoute(
 	    '^post/latest$',
@@ -161,10 +161,10 @@ Another implementation included in Cortex is `RedirectRoute`. As the name sugges
 it is used to redirect urls to other urls.
 
 ```php
-use Brain\Cortex\Route\RouteCollectionInterface as Routes;
+use Brain\Cortex\Route\RouteCollectionInterface;
 use Brain\Cortex\Route\RedirectRoute;
 
-add_action('cortex.routes', function(Routes $routes) {
+add_action('cortex.routes', function(RouteCollectionInterface $routes) {
 	
 	$routes->addRoute(new RedirectRoute(
 		'old/url/{postname}',
