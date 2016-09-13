@@ -78,6 +78,12 @@ add_action('cortex.routes', function(RouteCollectionInterface $routes) {
 });
 ```
 
+As shown above,`template` argument can be a relative path to theme (or child theme) folder.
+
+To use a template that resides outside theme folder, `template` argument need to be full absolute path
+to the template file to use.
+
+
 There are other arguments, among them:
 
  - "before" and "after", that are callbacks run respectively before and after the
