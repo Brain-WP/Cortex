@@ -192,7 +192,13 @@ and if allows or not redirect to external urls (`'redirect_external'` option, de
 
 ## Installation
 
-Via Composer, require `brain\cortex` in version `~1.0.0`.
+Via Composer, require `brain/cortex` in version `~1.0.0`.
+
+`composer require brain/cortex:~1.0.0`
+
+You may need to lessen your project's minimum stability requirements.
+
+`composer config minimum-stability dev`
 
 ## Minimum Requirements
 
