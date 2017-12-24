@@ -86,13 +86,15 @@ class MatchingResult
     }
 
     /**
-     * @return string
+     * @return string|bool|callable
      */
     public function template()
     {
         $template = $this->data['template'];
 
-        return (is_string($template) || $template === false) ? $template : '';
+        return (is_string($template) || $template === false || is_callable($template))
+            ? $template
+            : '';
     }
 
     /**
