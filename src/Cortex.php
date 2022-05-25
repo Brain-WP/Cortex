@@ -65,6 +65,10 @@ class Cortex
                     $do = $instance->doBoot($wp, $do, $request);
                     unset($instance);
 
+					if ( ! $do ) {
+						$wp->query_posts();
+					}
+
                     return $do;
                 } catch (\Exception $e) {
                     if (defined('WP_DEBUG') && WP_DEBUG) {
