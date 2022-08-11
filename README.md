@@ -22,7 +22,7 @@ Brain\Cortex::boot();
 This can be done as soon as you can, no need to wrap in a hook.
 
 It will not work after [`'do_parse_request'`](https://developer.wordpress.org/reference/hooks/do_parse_request/)
-as been fired.
+has been fired.
 
 ## Adding routes
 
@@ -55,7 +55,7 @@ The callback passed as second argument receives the array of matches (`$routeInf
 and has to return an array of arguments for `WP_Query`.
 
 
-##`QueryRoute` arguments
+## `QueryRoute` arguments
 
 `QueryRoute` constructor accepts as 3rd argument an array of options for
 route configuration.
