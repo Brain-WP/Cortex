@@ -67,6 +67,8 @@ class Cortex
 
 					if ( ! $do ) {
 						$wp->query_posts();
+                        $wp->handle_404();
+                        $wp->register_globals();
 					}
 
                     return $do;
