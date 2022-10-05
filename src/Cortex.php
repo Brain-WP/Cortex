@@ -66,8 +66,12 @@ class Cortex
                     unset($instance);
 
                     if ( ! $do ) {
-                        $wp->query_posts();
-                        $wp->register_globals();
+                        global $wp_version;
+
+                        if ( $wp_version && version_compare( $wp_version, '6', '>=' ) ) {
+                            $wp->query_posts();
+                            $wp->register_globals();
+                        }
                     }
 
                     return $do;
