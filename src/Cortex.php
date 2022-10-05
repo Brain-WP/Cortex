@@ -65,11 +65,11 @@ class Cortex
                     $do = $instance->doBoot($wp, $do, $request);
                     unset($instance);
 
-					if ( ! $do ) {
-						$wp->query_posts();
+                    if ( ! $do ) {
+                        $wp->query_posts();
                         $wp->handle_404();
                         $wp->register_globals();
-					}
+                    }
 
                     return $do;
                 } catch (\Exception $e) {
