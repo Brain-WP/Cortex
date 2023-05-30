@@ -30,7 +30,7 @@ trait DerivativeRouteTrait
     /**
      * @see RouteInterface::toArray()
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->route->toArray();
     }
@@ -40,7 +40,7 @@ trait DerivativeRouteTrait
      * @param  string $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->route->offsetExists($offset);
     }
@@ -50,7 +50,7 @@ trait DerivativeRouteTrait
      * @param  string $offset
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->route->offsetGet($offset);
     }
@@ -60,7 +60,7 @@ trait DerivativeRouteTrait
      * @param string $offset
      * @param mixed  $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->route->offsetSet($offset, $value);
     }
@@ -69,7 +69,7 @@ trait DerivativeRouteTrait
      * @see RouteInterface::offsetUnset()
      * @param string $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->route->offsetUnset($offset);
     }

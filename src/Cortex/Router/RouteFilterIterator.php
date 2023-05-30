@@ -59,7 +59,7 @@ final class RouteFilterIterator extends \FilterIterator
     /**
      * @inheritdoc
      */
-    public function accept()
+    public function accept(): bool
     {
         /** @var RouteInterface $route */
         $route = $this->getInnerIterator()->current();
