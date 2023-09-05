@@ -24,14 +24,14 @@ class GroupTest extends TestCase
     {
         $group = new Group(['id' => 'test_me']);
 
-        assertSame('test_me', $group->id());
+        static::assertSame('test_me', $group->id());
     }
 
     public function testIdWhenDefault()
     {
         $group = new Group([]);
 
-        assertStringMatchesFormat('group_%s', $group->id());
+        static::assertStringMatchesFormat('group_%s', $group->id());
     }
 
     public function testToArrayStripsInvalid()
@@ -60,7 +60,7 @@ class GroupTest extends TestCase
         ksort($expected);
         ksort($actual);
 
-        assertSame($expected, $actual);
+        static::assertSame($expected, $actual);
     }
 
     public function testArrayAccess()
@@ -74,21 +74,21 @@ class GroupTest extends TestCase
             'priority' => 0,
         ]);
 
-        assertFalse($group->offsetExists('foo'));
-        assertTrue($group->offsetExists('id')); // id is auto generated
-        assertTrue($group->offsetExists('vars'));
-        assertSame('/', $group->offsetGet('path'));
-        assertSame(0, $group->offsetGet('priority'));
+        static::assertFalse($group->offsetExists('foo'));
+        static::assertTrue($group->offsetExists('id')); // id is auto generated
+        static::assertTrue($group->offsetExists('vars'));
+        static::assertSame('/', $group->offsetGet('path'));
+        static::assertSame(0, $group->offsetGet('priority'));
 
         unset($group['path']);
         $group['priority'] = 1;
         $group->offsetUnset('id');
         $group->offsetUnset('vars');
 
-        assertNull($group->offsetGet('path'));
-        assertSame(1, $group->offsetGet('priority'));
-        assertTrue($group->offsetExists('id')); // id cannot be unset
-        assertFalse($group->offsetExists('vars'));
-        assertSame('__return_true', $group['handler']);
+        static::assertNull($group->offsetGet('path'));
+        static::assertSame(1, $group->offsetGet('priority'));
+        static::assertTrue($group->offsetExists('id')); // id cannot be unset
+        static::assertFalse($group->offsetExists('vars'));
+        static::assertSame('__return_true', $group['handler']);
     }
 }

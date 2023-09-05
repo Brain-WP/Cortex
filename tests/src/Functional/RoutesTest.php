@@ -94,12 +94,14 @@ class RoutesTest extends TestCaseFunctional
         $wp = \Mockery::mock('WP');
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['name' => 'baz'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['name' => 'baz'], $wp->query_vars);
     }
 
     public function testMatchRedirectRoute()
     {
+        Functions::when('home_url')->justReturn('http://example.com/');
+
         /** @var callable|null $factory */
         $factory = null;
 
@@ -123,6 +125,6 @@ class RoutesTest extends TestCaseFunctional
         $cortex = new Proxy(new Cortex());
         $do = $cortex->doBoot(\Mockery::mock('WP'), true, $request);
 
-        assertTrue($do);
+        static::assertTrue($do);
     }
 }

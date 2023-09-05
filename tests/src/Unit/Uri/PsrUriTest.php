@@ -27,7 +27,7 @@ class PsrUriTest extends TestCase
 
         $uri = new PsrUri(['HTTP_HOST' => 'example.com']);
 
-        assertSame('https', $uri->getScheme());
+        static::assertSame('https', $uri->getScheme());
     }
 
     public function testGetSchemeNoSsl()
@@ -36,72 +36,101 @@ class PsrUriTest extends TestCase
 
         $uri = new PsrUri(['HTTP_HOST' => 'example.com']);
 
-        assertSame('http', $uri->getScheme());
+        static::assertSame('http', $uri->getScheme());
     }
 
     public function testGetHostFromHttpHost()
     {
+        Functions::when('is_ssl')->justReturn(false);
+
         $uri = new PsrUri(['HTTP_HOST' => 'example.com']);
 
-        assertSame('example.com', $uri->getHost());
+        static::assertSame('example.com', $uri->getHost());
     }
 
     public function testGetHostFromHttpServerName()
     {
+        Functions::when('is_ssl')->justReturn(false);
+
         $uri = new PsrUri(['SERVER_NAME' => 'example.it']);
 
-        assertSame('example.it', $uri->getHost());
+        static::assertSame('example.it', $uri->getHost());
     }
 
     public function testGetHostFromHomeUrl()
     {
+        Functions::when('is_ssl')->justReturn(false);
         Functions::when('home_url')->justReturn('http://www.example.co.uk/wp/');
 
         $uri = new PsrUri(['meh' => 'meh']);
 
-        assertSame('www.example.co.uk', $uri->getHost());
+        static::assertSame('www.example.co.uk', $uri->getHost());
     }
 
     public function testGetHostStripPort()
     {
+        Functions::when('is_ssl')->justReturn(false);
+
         $uri = new PsrUri(['HTTP_HOST' => 'example.com:8080']);
 
-        assertSame('example.com', $uri->getHost());
+        static::assertSame('example.com', $uri->getHost());
     }
 
     public function testGetPath()
     {
-        $uri = new PsrUri(['REQUEST_URI' => '/foo/bar/']);
+        Functions::when('is_ssl')->justReturn(false);
 
-        assertSame('foo/bar', $uri->getPath());
+        $uri = new PsrUri([
+            'HTTP_HOST'   => 'example.com',
+            'REQUEST_URI' => '/foo/bar/',
+        ]);
+
+        static::assertSame('foo/bar', $uri->getPath());
     }
 
     public function testGetPathStripHost()
     {
-        $uri = new PsrUri(['REQUEST_URI' => 'http://example.com/foo/bar/']);
+        Functions::when('is_ssl')->justReturn(false);
 
-        assertSame('foo/bar', $uri->getPath());
+        $uri = new PsrUri([
+            'HTTP_HOST'   => 'example.com',
+            'REQUEST_URI' => 'http://example.com/foo/bar/',
+        ]);
+
+        static::assertSame('foo/bar', $uri->getPath());
     }
 
     public function testGetQuery()
     {
-        $uri = new PsrUri(['QUERY_STRING' => 'foo=bar']);
+        Functions::when('is_ssl')->justReturn(false);
 
-        assertSame('foo=bar', $uri->getQuery());
+        $uri = new PsrUri([
+            'HTTP_HOST'    => 'example.com',
+            'QUERY_STRING' => 'foo=bar',
+        ]);
+
+        static::assertSame('foo=bar', $uri->getQuery());
     }
 
     public function testGetQueryStripQuestion()
     {
-        $uri = new PsrUri(['QUERY_STRING' => '?foo=bar']);
+        Functions::when('is_ssl')->justReturn(false);
 
-        assertSame('foo=bar', $uri->getQuery());
+        $uri = new PsrUri([
+            'HTTP_HOST'    => 'example.com',
+            'QUERY_STRING' => '?foo=bar',
+        ]);
+
+        static::assertSame('foo=bar', $uri->getQuery());
     }
 
     public function testGetQueryEmpty()
     {
+        Functions::when('is_ssl')->justReturn(false);
+
         $uri = new PsrUri(['HTTP_HOST' => 'example.com']);
 
-        assertSame('', $uri->getQuery());
+        static::assertSame('', $uri->getQuery());
     }
 
     public function testToString()
@@ -114,7 +143,7 @@ class PsrUriTest extends TestCase
             'QUERY_STRING' => '?foo=bar',
         ]);
 
-        assertSame('https:://example.com/foo/bar?foo=bar', (string) $uri);
+        static::assertSame('https:://example.com/foo/bar?foo=bar', (string) $uri);
     }
 
     /**

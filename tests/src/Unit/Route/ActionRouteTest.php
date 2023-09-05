@@ -34,21 +34,21 @@ class ActionRouteTest extends TestCase
             'priority' => 0
         ]);
 
-        assertFalse($route->offsetExists('foo'));
-        assertTrue($route->offsetExists('id')); // id is auto generated
-        assertSame(0, $route->offsetGet('priority'));
-        assertSame('foo/bar', $route->offsetGet('path'));
-        assertSame([], $route->offsetGet('vars'));
-        assertInternalType('callable', $route->offsetGet('handler'));
+        static::assertFalse($route->offsetExists('foo'));
+        static::assertTrue($route->offsetExists('id')); // id is auto generated
+        static::assertSame(0, $route->offsetGet('priority'));
+        static::assertSame('foo/bar', $route->offsetGet('path'));
+        static::assertSame([], $route->offsetGet('vars'));
+        static::assertInternalType('callable', $route->offsetGet('handler'));
 
         unset($route['path']);
         $route['priority'] = 1;
         $route->offsetUnset('id');
         $route->offsetUnset('vars');
 
-        assertNull($route->offsetGet('path'));
-        assertSame(1, $route->offsetGet('priority'));
-        assertTrue($route->offsetExists('id')); // id cannot be unset
-        assertFalse($route->offsetExists('vars'));
+        static::assertNull($route->offsetGet('path'));
+        static::assertSame(1, $route->offsetGet('priority'));
+        static::assertTrue($route->offsetExists('id')); // id cannot be unset
+        static::assertFalse($route->offsetExists('vars'));
     }
 }

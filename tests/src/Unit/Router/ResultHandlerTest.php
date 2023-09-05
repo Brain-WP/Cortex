@@ -36,8 +36,8 @@ class ResultHandlerTest extends TestCase
 
         $handler = new ResultHandler();
 
-        assertTrue($handler->handle($result, $wp, true));
-        assertFalse($handler->handle($result, $wp, false));
+        static::assertTrue($handler->handle($result, $wp, true));
+        static::assertFalse($handler->handle($result, $wp, false));
     }
 
     public function testHandleAllCallbacks()
@@ -85,8 +85,8 @@ class ResultHandlerTest extends TestCase
 
         $handler = new ResultHandler();
 
-        assertFalse($handler->handle($result, $wp, true));
-        assertSame($expected, $accumulator);
+        static::assertFalse($handler->handle($result, $wp, true));
+        static::assertSame($expected, $accumulator);
     }
 
     public function testHandleTemplate()
@@ -136,7 +136,7 @@ class ResultHandlerTest extends TestCase
 
         $wp = \Mockery::mock('WP');
 
-        assertTrue($handler->handle($result, $wp, true));
+        static::assertTrue($handler->handle($result, $wp, true));
     }
 
     public function testHandleTemplateDoNothingIfNoTemplateFound()
@@ -186,6 +186,6 @@ class ResultHandlerTest extends TestCase
 
         $wp = \Mockery::mock('WP');
 
-        assertTrue($handler->handle($result, $wp, true));
+        static::assertTrue($handler->handle($result, $wp, true));
     }
 }

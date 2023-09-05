@@ -40,9 +40,9 @@ class PriorityRouteCollectionTest extends TestCase
 
         $proxy = new Proxy($collection);
 
-        assertSame(4, count($collection));
+        static::assertSame(4, count($collection));
         /** @noinspection PhpUndefinedFieldInspection */
-        assertSame([10, 11, 5, 9], $proxy->priorities);
+        static::assertSame([10, 11, 5, 9], $proxy->priorities);
 
         $actual = [];
         /** @var Route $route */
@@ -50,7 +50,7 @@ class PriorityRouteCollectionTest extends TestCase
             $actual[] = $route->id();
         }
 
-        assertSame(['r_3', 'r_4', 'r_1', 'r_2'], $actual);
+        static::assertSame(['r_3', 'r_4', 'r_1', 'r_2'], $actual);
     }
 
     public function testPagedNotAddedIfNoPath()
@@ -61,9 +61,9 @@ class PriorityRouteCollectionTest extends TestCase
         $collection->addRoute($route);
         $proxy = new Proxy($collection);
 
-        assertSame(1, count($collection));
+        static::assertSame(1, count($collection));
         /** @noinspection PhpUndefinedFieldInspection */
-        assertSame([10], $proxy->priorities);
+        static::assertSame([10], $proxy->priorities);
     }
 
     public function testPagedSingle()
@@ -78,17 +78,17 @@ class PriorityRouteCollectionTest extends TestCase
         $collection->addRoute($route);
         $proxy = new Proxy($collection);
 
-        assertSame(2, count($collection));
+        static::assertSame(2, count($collection));
         /** @noinspection PhpUndefinedFieldInspection */
-        assertSame([10, 11], $proxy->priorities);
+        static::assertSame([10, 11], $proxy->priorities);
 
         /** @var Route $route */
         $i = 0;
         foreach ($collection as $route) {
             $id = $i === 0 ? 'route_example_paged' : 'route_example';
             $path = $i === 0 ? '/foo/{page:\d+}' : '/foo';
-            assertSame($id, $route->id());
-            assertSame($path, $route['path']);
+            static::assertSame($id, $route->id());
+            static::assertSame($path, $route['path']);
             $i++;
         }
     }
@@ -106,17 +106,17 @@ class PriorityRouteCollectionTest extends TestCase
         $collection->addRoute($route);
         $proxy = new Proxy($collection);
 
-        assertSame(2, count($collection));
+        static::assertSame(2, count($collection));
         /** @noinspection PhpUndefinedFieldInspection */
-        assertSame([32, 33], $proxy->priorities);
+        static::assertSame([32, 33], $proxy->priorities);
 
         /** @var Route $route */
         $i = 0;
         foreach ($collection as $route) {
             $id = $i === 0 ? 'route_example_paged' : 'route_example';
             $path = $i === 0 ? '/bar/page/{paged:\d+}' : '/bar';
-            assertSame($id, $route->id());
-            assertSame($path, $route['path']);
+            static::assertSame($id, $route->id());
+            static::assertSame($path, $route['path']);
             $i++;
         }
     }

@@ -35,9 +35,9 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => 'http://example.com/meh',
         ];
 
-        assertSame('/path/from', $route['path']);
-        assertSame($expectedVars, $route['vars']);
-        assertSame(2, $route['priority']);
+        static::assertSame('/path/from', $route['path']);
+        static::assertSame($expectedVars, $route['vars']);
+        static::assertSame(2, $route['priority']);
     }
 
     public function testRedirectToInternalFromAbsoluteString()
@@ -50,8 +50,8 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => 'https://foo.bar/',
         ];
 
-        assertSame('/path/from', $route['path']);
-        assertSame($expectedVars, $route['vars']);
+        static::assertSame('/path/from', $route['path']);
+        static::assertSame($expectedVars, $route['vars']);
     }
 
     public function testRedirectToNullIfBadStringExternal()
@@ -68,8 +68,8 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => '',
         ];
 
-        assertSame('/from', $route['path']);
-        assertSame($expectedVars, $route['vars']);
+        static::assertSame('/from', $route['path']);
+        static::assertSame($expectedVars, $route['vars']);
     }
 
     public function testRedirectToExternalFromString()
@@ -82,8 +82,8 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => 'https://foo.bar/',
         ];
 
-        assertSame('/path/from', $route['path']);
-        assertSame($expectedVars, $route['vars']);
+        static::assertSame('/path/from', $route['path']);
+        static::assertSame($expectedVars, $route['vars']);
     }
 
     public function testAutoAbsoluteRedirectToFromCallback()
@@ -106,10 +106,10 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => 'http://example.com/bar',
         ];
 
-        assertSame('/path/from', $route['path']);
-        assertSame(2, $route['priority']);
-        assertInstanceOf('Closure', $route['vars']);
-        assertSame($expectedVars, $route['vars'](['foo' => 'bar']));
+        static::assertSame('/path/from', $route['path']);
+        static::assertSame(2, $route['priority']);
+        static::assertInstanceOf('Closure', $route['vars']);
+        static::assertSame($expectedVars, $route['vars'](['foo' => 'bar']));
     }
 
     public function testRedirectToInternalEmptyIfCallbackReturnNoString()
@@ -127,8 +127,8 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => '',
         ];
 
-        assertInstanceOf('Closure', $route['vars']);
-        assertSame($expectedVars, $route['vars'](['bar' => 111]));
+        static::assertInstanceOf('Closure', $route['vars']);
+        static::assertSame($expectedVars, $route['vars'](['bar' => 111]));
     }
 
     public function testRedirectToInternalEmptyString()
@@ -141,7 +141,7 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => '',
         ];
 
-        assertSame($expectedVars, $route['vars']);
+        static::assertSame($expectedVars, $route['vars']);
     }
 
     public function testAbsoluteRedirectToFromCallback()
@@ -160,10 +160,10 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => 'http://example.com/bar',
         ];
 
-        assertSame('/path/from', $route['path']);
-        assertSame(2, $route['priority']);
-        assertInstanceOf('Closure', $route['vars']);
-        assertSame($expectedVars, $route['vars'](['foo' => 'bar']));
+        static::assertSame('/path/from', $route['path']);
+        static::assertSame(2, $route['priority']);
+        static::assertInstanceOf('Closure', $route['vars']);
+        static::assertSame($expectedVars, $route['vars'](['foo' => 'bar']));
     }
 
     public function testRedirectToExternalFromCallback()
@@ -182,9 +182,9 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => 'https://www.bar.it/',
         ];
 
-        assertSame('/path/from', $route['path']);
-        assertInstanceOf('Closure', $route['vars']);
-        assertSame($expectedVars, $route['vars'](['sub' => 'www']));
+        static::assertSame('/path/from', $route['path']);
+        static::assertInstanceOf('Closure', $route['vars']);
+        static::assertSame($expectedVars, $route['vars'](['sub' => 'www']));
     }
 
     public function testRedirectToExternalEmptyIfCallbackReturnNoUrl()
@@ -203,9 +203,9 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => '',
         ];
 
-        assertSame('/path/from', $route['path']);
-        assertInstanceOf('Closure', $route['vars']);
-        assertSame($expectedVars, $route['vars'](['sub' => 'www']));
+        static::assertSame('/path/from', $route['path']);
+        static::assertInstanceOf('Closure', $route['vars']);
+        static::assertSame($expectedVars, $route['vars'](['sub' => 'www']));
     }
 
     public function testStatusTo301IfBad()
@@ -218,6 +218,6 @@ class RedirectRouteTest extends TestCase
             'redirect_to'       => 'http://example.com',
         ];
 
-        assertSame($expectedVars, $route['vars']);
+        static::assertSame($expectedVars, $route['vars']);
     }
 }

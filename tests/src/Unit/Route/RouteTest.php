@@ -36,23 +36,23 @@ class RouteTest extends TestCase
             'priority' => 0,
         ]);
 
-        assertFalse($route->offsetExists('foo'));
-        assertSame('meh', $route->offsetGet('meh'));
-        assertTrue($route->offsetExists('id')); // id is auto generated
-        assertSame(0, $route->offsetGet('priority'));
-        assertSame('/', $route->offsetGet('path'));
-        assertSame($vars, $route->offsetGet('vars'));
-        assertSame('__return_true', $route->offsetGet('handler'));
+        static::assertFalse($route->offsetExists('foo'));
+        static::assertSame('meh', $route->offsetGet('meh'));
+        static::assertTrue($route->offsetExists('id')); // id is auto generated
+        static::assertSame(0, $route->offsetGet('priority'));
+        static::assertSame('/', $route->offsetGet('path'));
+        static::assertSame($vars, $route->offsetGet('vars'));
+        static::assertSame('__return_true', $route->offsetGet('handler'));
 
         unset($route['path']);
         $route['priority'] = 1;
         $route->offsetUnset('id');
         $route->offsetUnset('vars');
 
-        assertNull($route->offsetGet('path'));
-        assertSame(1, $route->offsetGet('priority'));
-        assertTrue($route->offsetExists('id')); // id cannot be unset
-        assertFalse($route->offsetExists('vars'));
+        static::assertNull($route->offsetGet('path'));
+        static::assertSame(1, $route->offsetGet('priority'));
+        static::assertTrue($route->offsetExists('id')); // id cannot be unset
+        static::assertFalse($route->offsetExists('vars'));
     }
 
     public function testToArray()
@@ -68,17 +68,17 @@ class RouteTest extends TestCase
 
         $array = $route->toArray();
 
-        assertTrue(array_key_exists('id', $array));
-        assertTrue(array_key_exists('vars', $array));
-        assertTrue(array_key_exists('priority', $array));
-        assertFalse(array_key_exists('handler', $array));
-        assertFalse(array_key_exists('foo', $array));
-        assertFalse(array_key_exists(0, $array));
-        assertFalse(array_key_exists(1, $array));
-        assertSame(['foo' => 'bar'], $array['meh']);
-        assertSame('foo/bar', $array['path']);
-        assertSame(['foo' => 'bar'], $array['vars']);
-        assertStringMatchesFormat('route_%s', $array['id']);
+        static::assertTrue(array_key_exists('id', $array));
+        static::assertTrue(array_key_exists('vars', $array));
+        static::assertTrue(array_key_exists('priority', $array));
+        static::assertFalse(array_key_exists('handler', $array));
+        static::assertFalse(array_key_exists('foo', $array));
+        static::assertFalse(array_key_exists(0, $array));
+        static::assertFalse(array_key_exists(1, $array));
+        static::assertSame(['foo' => 'bar'], $array['meh']);
+        static::assertSame('foo/bar', $array['path']);
+        static::assertSame(['foo' => 'bar'], $array['vars']);
+        static::assertStringMatchesFormat('route_%s', $array['id']);
     }
 
     public function testId()
@@ -86,7 +86,7 @@ class RouteTest extends TestCase
         $route1 = new Route([]);
         $route2 = new Route(['id' => 'route_2']);
 
-        assertStringMatchesFormat('route_%s', $route1->id());
-        assertSame('route_2', $route2->id());
+        static::assertStringMatchesFormat('route_%s', $route1->id());
+        static::assertSame('route_2', $route2->id());
     }
 }

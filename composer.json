@@ -32,7 +32,10 @@
         "phpunit/phpunit": "4.8.*",
         "mockery/mockery": "0.9.3",
         "brain/monkey":    "~1.2.0",
-        "gmazzap/andrew":  "~1.0.0"
+        "gmazzap/andrew":  "~1.0.0",
+        "squizlabs/php_codesniffer": "^3.7",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpcompatibility/php-compatibility": "^9.3"
     },
     "autoload":          {
         "psr-4":    {
@@ -46,6 +49,14 @@
     },
     "minimum-stability": "stable",
     "config":            {
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts" : {
+        "phpcompat": [
+            "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs -ps . --standard=PHPCompatibility --exclude=PHPCompatibility.Attributes.NewAttributes --ignore=*/vendor/* --extensions=php --runtime-set testVersion 7.0-"
+        ]
     }
 }
