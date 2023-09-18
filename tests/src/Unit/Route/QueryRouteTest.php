@@ -36,22 +36,22 @@ class QueryRouteTest extends TestCase
             'priority' => 0
         ]);
 
-        assertFalse($route->offsetExists('foo'));
-        assertTrue($route->offsetExists('id')); // id is auto generated
-        assertSame(0, $route->offsetGet('priority'));
-        assertSame('foo/bar', $route->offsetGet('path'));
-        assertSame($vars, $route->offsetGet('vars'));
-        assertInstanceOf(QueryVarsController::class, $route->offsetGet('handler'));
+        static::assertFalse($route->offsetExists('foo'));
+        static::assertTrue($route->offsetExists('id')); // id is auto generated
+        static::assertSame(0, $route->offsetGet('priority'));
+        static::assertSame('foo/bar', $route->offsetGet('path'));
+        static::assertSame($vars, $route->offsetGet('vars'));
+        static::assertInstanceOf(QueryVarsController::class, $route->offsetGet('handler'));
 
         unset($route['path']);
         $route['priority'] = 1;
         $route->offsetUnset('id');
         $route->offsetUnset('vars');
 
-        assertNull($route->offsetGet('path'));
-        assertSame(1, $route->offsetGet('priority'));
-        assertTrue($route->offsetExists('id')); // id cannot be unset
-        assertFalse($route->offsetExists('vars'));
+        static::assertNull($route->offsetGet('path'));
+        static::assertSame(1, $route->offsetGet('priority'));
+        static::assertTrue($route->offsetExists('id')); // id cannot be unset
+        static::assertFalse($route->offsetExists('vars'));
     }
 
     public function testToArray()
@@ -65,17 +65,17 @@ class QueryRouteTest extends TestCase
 
         $array = $route->toArray();
 
-        assertTrue(array_key_exists('id', $array));
-        assertTrue(array_key_exists('handler', $array));
-        assertTrue(array_key_exists('vars', $array));
-        assertTrue(array_key_exists('priority', $array));
-        assertFalse(array_key_exists('foo', $array));
-        assertFalse(array_key_exists(0, $array));
-        assertFalse(array_key_exists(1, $array));
-        assertTrue(array_key_exists('meh', $array));
-        assertSame('foo/bar', $array['path']);
-        assertSame(['foo' => 'bar'], $array['vars']);
-        assertInstanceOf(QueryVarsController::class, $array['handler']);
+        static::assertTrue(array_key_exists('id', $array));
+        static::assertTrue(array_key_exists('handler', $array));
+        static::assertTrue(array_key_exists('vars', $array));
+        static::assertTrue(array_key_exists('priority', $array));
+        static::assertFalse(array_key_exists('foo', $array));
+        static::assertFalse(array_key_exists(0, $array));
+        static::assertFalse(array_key_exists(1, $array));
+        static::assertTrue(array_key_exists('meh', $array));
+        static::assertSame('foo/bar', $array['path']);
+        static::assertSame(['foo' => 'bar'], $array['vars']);
+        static::assertInstanceOf(QueryVarsController::class, $array['handler']);
     }
 
     public function testId()
@@ -83,7 +83,7 @@ class QueryRouteTest extends TestCase
         $route1 = new QueryRoute('foo/bar', []);
         $route2 = new QueryRoute('foo/bar', [], ['id' => 'route_2']);
 
-        assertStringMatchesFormat('route_%s', $route1->id());
-        assertSame('route_2', $route2->id());
+        static::assertStringMatchesFormat('route_%s', $route1->id());
+        static::assertSame('route_2', $route2->id());
     }
 }

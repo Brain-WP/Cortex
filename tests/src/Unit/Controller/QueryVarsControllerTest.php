@@ -27,7 +27,7 @@ class QueryVarsControllerTest extends TestCase
 
         $result = $controller->run(['foo' => 'bar'], $wp);
 
-        assertFalse($result);
-        assertSame(['foo' => 'bar'], $wp->query_vars);
+        static::assertFalse($result);
+        static::assertSame(['foo' => 'bar'], $wp->query_vars);
     }
 }

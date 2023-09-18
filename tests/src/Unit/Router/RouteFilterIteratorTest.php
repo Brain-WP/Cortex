@@ -45,7 +45,7 @@ class RouteFilterIteratorTest extends TestCase
             $ok[] = $route->id();
         }
 
-        assertSame(['r1', 'r3'], $ok);
+        static::assertSame(['r1', 'r3'], $ok);
     }
 
     public function testAcceptForHost()
@@ -70,7 +70,7 @@ class RouteFilterIteratorTest extends TestCase
             $ok[] = $route->id();
         }
 
-        assertSame(['r1', 'r3'], $ok);
+        static::assertSame(['r1', 'r3'], $ok);
     }
 
     public function testAcceptForHostWildcard()
@@ -95,6 +95,6 @@ class RouteFilterIteratorTest extends TestCase
             $ok[] = $route->id();
         }
 
-        assertSame(['r1', 'r2', 'r3'], $ok);
+        static::assertSame(['r1', 'r2', 'r3'], $ok);
     }
 }

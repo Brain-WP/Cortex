@@ -42,11 +42,11 @@ class WordPressUriTest extends TestCase
         $uri = $this->psrUriFromUrl('https://www.example.com/foo/bar.php?meh=1');
         $wpUri = new WordPressUri($uri);
 
-        assertSame('https', $wpUri->scheme());
-        assertSame('www.example.com', $wpUri->host());
-        assertSame('foo/bar.php', $wpUri->path());
-        assertSame(['foo', 'bar.php'], $wpUri->chunks());
-        assertSame(['meh' => '1'], $wpUri->vars());
+        static::assertSame('https', $wpUri->scheme());
+        static::assertSame('www.example.com', $wpUri->host());
+        static::assertSame('foo/bar.php', $wpUri->path());
+        static::assertSame(['foo', 'bar.php'], $wpUri->chunks());
+        static::assertSame(['meh' => '1'], $wpUri->vars());
     }
 
     public function testNoQueryVars()
@@ -56,11 +56,11 @@ class WordPressUriTest extends TestCase
         $uri = $this->psrUriFromUrl('https://www.example.com/foo/bar/');
         $wpUri = new WordPressUri($uri);
 
-        assertSame('https', $wpUri->scheme());
-        assertSame('www.example.com', $wpUri->host());
-        assertSame('foo/bar', $wpUri->path());
-        assertSame(['foo', 'bar'], $wpUri->chunks());
-        assertSame([], $wpUri->vars());
+        static::assertSame('https', $wpUri->scheme());
+        static::assertSame('www.example.com', $wpUri->host());
+        static::assertSame('foo/bar', $wpUri->path());
+        static::assertSame(['foo', 'bar'], $wpUri->chunks());
+        static::assertSame([], $wpUri->vars());
     }
 
     public function testHomeUrlHomePath()
@@ -70,11 +70,11 @@ class WordPressUriTest extends TestCase
         $uri = $this->psrUriFromUrl('https://www.example.com/foo/');
         $wpUri = new WordPressUri($uri);
 
-        assertSame('https', $wpUri->scheme());
-        assertSame('www.example.com', $wpUri->host());
-        assertSame('/', $wpUri->path());
-        assertSame([], $wpUri->chunks());
-        assertSame([], $wpUri->vars());
+        static::assertSame('https', $wpUri->scheme());
+        static::assertSame('www.example.com', $wpUri->host());
+        static::assertSame('/', $wpUri->path());
+        static::assertSame([], $wpUri->chunks());
+        static::assertSame([], $wpUri->vars());
     }
 
     public function testHomeUrlNoHomePath()
@@ -84,10 +84,10 @@ class WordPressUriTest extends TestCase
         $uri = $this->psrUriFromUrl('https://www.example.com/');
         $wpUri = new WordPressUri($uri);
 
-        assertSame('https', $wpUri->scheme());
-        assertSame('www.example.com', $wpUri->host());
-        assertSame('/', $wpUri->path());
-        assertSame([], $wpUri->chunks());
-        assertSame([], $wpUri->vars());
+        static::assertSame('https', $wpUri->scheme());
+        static::assertSame('www.example.com', $wpUri->host());
+        static::assertSame('/', $wpUri->path());
+        static::assertSame([], $wpUri->chunks());
+        static::assertSame([], $wpUri->vars());
     }
 }

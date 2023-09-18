@@ -31,7 +31,7 @@ class RedirectControllerTest extends TestCase
 
         $controller = new RedirectController();
 
-        assertTrue($controller->run(['redirect_to' => 'meh'], $wp));
+        static::assertTrue($controller->run(['redirect_to' => 'meh'], $wp));
     }
 
     public function testRunDefaultsToHomeUrlIfNoRedirectTo()
@@ -46,7 +46,7 @@ class RedirectControllerTest extends TestCase
 
         $controller = new RedirectController();
 
-        assertTrue($controller->run([], $wp));
+        static::assertTrue($controller->run([], $wp));
     }
 
     public function testRunAllStatusSettings()
@@ -66,6 +66,6 @@ class RedirectControllerTest extends TestCase
 
         $controller = new RedirectController();
 
-        assertTrue($controller->run($data, $wp));
+        static::assertTrue($controller->run($data, $wp));
     }
 }

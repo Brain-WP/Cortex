@@ -44,7 +44,7 @@ class RouterTest extends TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $proxy->results = $result;
 
-        assertSame($result, $router->match($uri, 'GET'));
+        static::assertSame($result, $router->match($uri, 'GET'));
     }
 
     public function testMatchNothingIfNoRoutes()
@@ -71,8 +71,8 @@ class RouterTest extends TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
 
-        assertFalse($result->matched());
-        assertSame($expected, $data);
+        static::assertFalse($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchNothingIfNoFilteredRoutes()
@@ -104,8 +104,8 @@ class RouterTest extends TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
 
-        assertFalse($result->matched());
-        assertSame($expected, $data);
+        static::assertFalse($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchNothingIfNoValidatingRoutes()
@@ -141,8 +141,8 @@ class RouterTest extends TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
 
-        assertFalse($result->matched());
-        assertSame($expected, $data);
+        static::assertFalse($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchNotMatching()
@@ -176,7 +176,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->with('POST', '/bar')->andReturn([0]);
 
         $factory = function (array $args) use ($dispatcher) {
-            assertSame($args, ['foo' => 'bar']);
+            static::assertSame($args, ['foo' => 'bar']);
 
             return $dispatcher;
         };
@@ -199,8 +199,8 @@ class RouterTest extends TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
 
-        assertFalse($result->matched());
-        assertSame($expected, $data);
+        static::assertFalse($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchMatchingExactMatch()
@@ -237,7 +237,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->never();
 
         $factory = function (array $args) use ($dispatcher) {
-            assertSame($args, ['foo' => 'bar']);
+            static::assertSame($args, ['foo' => 'bar']);
 
             return $dispatcher;
         };
@@ -263,8 +263,8 @@ class RouterTest extends TestCase
         ksort($expected);
         ksort($data);
 
-        assertTrue($result->matched());
-        assertSame($expected, $data);
+        static::assertTrue($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchDynamicMatch()
@@ -309,7 +309,7 @@ class RouterTest extends TestCase
                    ]);
 
         $factory = function (array $args) use ($dispatcher) {
-            assertSame($args, ['foo' => 'bar']);
+            static::assertSame($args, ['foo' => 'bar']);
 
             return $dispatcher;
         };
@@ -335,8 +335,8 @@ class RouterTest extends TestCase
         ksort($expected);
         ksort($data);
 
-        assertTrue($result->matched());
-        assertSame($expected, $data);
+        static::assertTrue($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchMatchingExactMatchNoQueryVars()
@@ -374,7 +374,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->never();
 
         $factory = function (array $args) use ($dispatcher) {
-            assertSame($args, ['foo' => 'bar']);
+            static::assertSame($args, ['foo' => 'bar']);
 
             return $dispatcher;
         };
@@ -397,8 +397,8 @@ class RouterTest extends TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
 
-        assertTrue($result->matched());
-        assertSame($expected, $data);
+        static::assertTrue($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchMatchingNoQueryVarsMaintainPreviewVar()
@@ -443,7 +443,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->never();
 
         $factory = function (array $args) use ($dispatcher) {
-            assertSame($args, ['foo' => 'bar']);
+            static::assertSame($args, ['foo' => 'bar']);
 
             return $dispatcher;
         };
@@ -474,8 +474,8 @@ class RouterTest extends TestCase
         ksort($data);
         ksort($expected);
 
-        assertTrue($result->matched());
-        assertSame($expected, $data);
+        static::assertTrue($result->matched());
+        static::assertSame($expected, $data);
     }
 
     public function testMatchMatchingExactMatchCallableVars()
@@ -514,7 +514,7 @@ class RouterTest extends TestCase
         $dispatcher->shouldReceive('dispatch')->never();
 
         $factory = function (array $args) use ($dispatcher) {
-            assertSame($args, ['foo' => 'bar']);
+            static::assertSame($args, ['foo' => 'bar']);
 
             return $dispatcher;
         };
@@ -537,7 +537,7 @@ class RouterTest extends TestCase
         /** @noinspection PhpUndefinedFieldInspection */
         $data = $proxy->data;
 
-        assertTrue($result->matched());
-        assertSame($expected, $data);
+        static::assertTrue($result->matched());
+        static::assertSame($expected, $data);
     }
 }

@@ -33,8 +33,8 @@ class CortexTest extends TestCaseFunctional
         $boot1 = Cortex::boot();
         $boot2 = Cortex::boot();
 
-        assertTrue($boot1);
-        assertFalse($boot2);
+        static::assertTrue($boot1);
+        static::assertFalse($boot2);
     }
 
     /**
@@ -75,14 +75,14 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertTrue($do);
+        static::assertTrue($do);
     }
 
     public function testCortexBuildUriWithNoRequest()
     {
         $cortex = new Proxy(new Cortex());
 
-        assertInstanceOf(WordPressUri::class, $cortex->factoryUri());
+        static::assertInstanceOf(WordPressUri::class, $cortex->factoryUri());
     }
 
     public function testRouterReturnRouteResultsWhenGiven()
@@ -107,8 +107,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertTrue($do);
-        assertFalse(isset($wp->query_vars));
+        static::assertTrue($do);
+        static::assertFalse(isset($wp->query_vars));
     }
 
     public function testCortexMatchStaticRoute()
@@ -133,8 +133,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertSame(['post_type' => 'products'], $wp->query_vars);
-        assertFalse($do);
+        static::assertSame(['post_type' => 'products'], $wp->query_vars);
+        static::assertFalse($do);
     }
 
     public function testCortexMatchPagedRoute()
@@ -159,8 +159,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['paged' => 3], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['paged' => 3], $wp->query_vars);
     }
 
     public function testCortexAddPagedArgToMatchedPagedRoute()
@@ -173,7 +173,7 @@ class CortexTest extends TestCaseFunctional
                ->whenHappen(function (RouteCollectionInterface $routes) {
                    $routes->addRoute(new QueryRoute('/bar', function ($vars) {
 
-                       assertSame(3, $vars['paged']);
+                       static::assertSame(3, $vars['paged']);
 
                        return ['category' => 'bar'];
                    }, ['paged' => QueryRoute::PAGED_ARCHIVE]));
@@ -188,8 +188,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['category' => 'bar', 'paged' => 3], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['category' => 'bar', 'paged' => 3], $wp->query_vars);
     }
 
     public function testCortexNotMatchIfDifferentMethod()
@@ -214,7 +214,7 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertTrue($do);
+        static::assertTrue($do);
     }
 
     public function testCortexMatchStaticRouteWithUrlVars()
@@ -245,8 +245,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['post_type' => 'products', 'posts_per_page' => '12'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['post_type' => 'products', 'posts_per_page' => '12'], $wp->query_vars);
     }
 
     public function testDefaultQueryVarsAreMerged()
@@ -277,8 +277,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['posts_per_page' => 12, 'post_type' => 'products'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['posts_per_page' => 12, 'post_type' => 'products'], $wp->query_vars);
     }
 
     public function testDefaultQueryVarsAreOverwrittenByRouteVars()
@@ -309,8 +309,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['posts_per_page' => '24', 'post_type' => 'products'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['posts_per_page' => '24', 'post_type' => 'products'], $wp->query_vars);
     }
 
     public function testCortexMatchDynamicRouteWithUrlVars()
@@ -344,8 +344,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['post_type' => 'products', 'posts_per_page' => '12'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['post_type' => 'products', 'posts_per_page' => '12'], $wp->query_vars);
     }
 
     public function testCortexNotMatchDynamicRouteBadRequirements()
@@ -372,8 +372,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertTrue($do);
-        assertFalse(isset($wp->query_vars));
+        static::assertTrue($do);
+        static::assertFalse(isset($wp->query_vars));
     }
 
     public function testCortexMatchDynamicRouteOptionRequirements()
@@ -400,8 +400,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['greeting' => 'ciao'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['greeting' => 'ciao'], $wp->query_vars);
     }
 
     public function testCortexNotMatchDynamicRouteBadOptionRequirements()
@@ -428,8 +428,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertTrue($do);
-        assertFalse(isset($wp->query_vars));
+        static::assertTrue($do);
+        static::assertFalse(isset($wp->query_vars));
     }
 
     public function testCortexMatchFirstRoute()
@@ -461,8 +461,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['first' => 'bar', 'second' => 'baz'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['first' => 'bar', 'second' => 'baz'], $wp->query_vars);
     }
 
     public function testPreviewQueryArgsArePreserved()
@@ -492,8 +492,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(
+        static::assertFalse($do);
+        static::assertSame(
             [
                 'pagename'      => 'bar',
                 'preview'       => 'true',
@@ -532,8 +532,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['pagename' => 'bar'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['pagename' => 'bar'], $wp->query_vars);
     }
 
     public function testCortexNotMatchBecauseUrlChangedViaFilter()
@@ -569,8 +569,8 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertTrue($do);
-        assertFalse(isset($wp->query_vars));
+        static::assertTrue($do);
+        static::assertFalse(isset($wp->query_vars));
     }
 
     public function testCortexMatchWhenUrlChangedViaFilterIsInvalid()
@@ -599,7 +599,7 @@ class CortexTest extends TestCaseFunctional
 
         $do = $cortex->doBoot($wp, true, $request);
 
-        assertFalse($do);
-        assertSame(['post_type' => 'products'], $wp->query_vars);
+        static::assertFalse($do);
+        static::assertSame(['post_type' => 'products'], $wp->query_vars);
     }
 }

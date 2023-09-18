@@ -1,0 +1,49 @@
+name: PHP Quality Assurance
+on:
+  push:
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
+
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    strategy:
+      fail-fast: true
+      matrix:
+        php-versions: ['5.5', '5.6']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          ini-values: zend.assertions=1, error_reporting=-1, display_errors=On
+          coverage: none
+          tools: parallel-lint
+        env:
+          fail-fast: true
+
+      - name: Check syntax error in sources
+        run: parallel-lint ./src/ ./tests/
+
+      - name: Install dependencies
+        uses: "ramsey/composer-install@v2"
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM.
+          custom-cache-suffix: $(date -u "+%Y-%m")
+
+      - name: Check cross-version PHP compatibility
+        if: ${{ matrix.php-versions == '5.6' }}
+        run: composer phpcompat
+
+      - name: Run unit tests
+        run: ./vendor/bin/phpunit

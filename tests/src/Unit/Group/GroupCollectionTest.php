@@ -36,8 +36,8 @@ class GroupCollectionTest extends TestCase
         $proxy = new Proxy($collection);
 
         /** @noinspection PhpUndefinedFieldInspection */
-        assertSame($proxy->groups, ['foo' => $group]);
-        assertSame($return, $collection);
+        static::assertSame($proxy->groups, ['foo' => $group]);
+        static::assertSame($return, $collection);
     }
 
     public function testMergeGroup()
@@ -79,7 +79,7 @@ class GroupCollectionTest extends TestCase
         ksort($actual);
         ksort($expected);
 
-        assertSame($expected, $actual);
+        static::assertSame($expected, $actual);
     }
 
     public function testMergeMultipleGroups()
@@ -130,6 +130,6 @@ class GroupCollectionTest extends TestCase
         ksort($actual);
         ksort($expected);
 
-        assertSame($expected, $actual);
+        static::assertSame($expected, $actual);
     }
 }
