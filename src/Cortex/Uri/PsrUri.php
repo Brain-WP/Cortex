@@ -224,7 +224,7 @@ final class PsrUri implements PsrUriInterface
         $scheme = is_ssl() ? 'https' : 'http';
 
         $host = $this->marshallHostFromServer() ? : parse_url(home_url(), PHP_URL_HOST);
-        $host = trim($host, '/');
+        $host = trim((string)$host, '/');
 
         $pathArray = explode('?', $this->marshallPathFromServer(), 2);
         $path = trim($pathArray[0], '/');
